@@ -1,0 +1,53 @@
+from backend.modules.regulation_fragment.application.dto.create_regulation_fragment_dto import CreateRegulationFragmentDTO
+from backend.modules.regulation_fragment.application.dto.regulation_fragment_dto import RegulationFragmentDTO
+from backend.modules.regulation_fragment.infra.repositories.regulation_fragment_repository import RegulationFragmentRepository
+
+
+class RegulationFragmentService:
+    def __init__(self, regulation_fragment_repository: RegulationFragmentRepository):
+        self.regulation_fragment_repository = regulation_fragment_repository
+
+    def create(self, fragment_data: CreateRegulationFragmentDTO) -> RegulationFragmentDTO:
+        """
+        Create a new regulation fragment.
+        """
+        created_fragment = self.regulation_fragment_repository.create(fragment_data)
+        
+        return RegulationFragmentDTO(
+            id=created_fragment.id,
+            title=created_fragment.title,
+            content=created_fragment.content,
+            created_at=created_fragment.created_at
+        )
+
+    def findAll(self) -> list[RegulationFragmentDTO]:
+        """
+        Retrieve all regulation fragments.
+        """
+        fragments = self.regulation_fragment_repository.findAll()
+        
+        return [
+            RegulationFragmentDTO(
+                id=fragment.id,
+                title=fragment.title,
+                content=fragment.content,
+                created_at=fragment.created_at
+            )
+            for fragment in fragments
+        ]
+
+    def findById(self, fragment_id: int) -> RegulationFragmentDTO:
+        """
+        Retrieve a regulation fragment by its ID.
+        """
+        fragment = self.regulation_fragment_repository.findById(fragment_id)
+        
+        if not fragment:
+            return None
+            
+        return RegulationFragmentDTO(
+            id=fragment.id,
+            title=fragment.title,
+            content=fragment.content,
+            created_at=fragment.created_at
+        )
