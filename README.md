@@ -5,9 +5,11 @@ A full-stack application with a Next.js frontend and Flask backend.
 ## Project Structure
 
 - `frontend/`: Next.js application with App Router, Tailwind CSS, and TanStack Query
-- `backend/`: Flask API with OpenAI SDK integration
+- `backend/`: Flask API
 
 ## Frontend Setup
+
+TODO
 
 1. Navigate to the frontend directory:
    ```
