@@ -15,9 +15,7 @@ if __name__ == '__main__':
     app = Flask(__name__)
     app.container = container
     app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
-    print("Database URI:", app.config["SQLALCHEMY_DATABASE_URI"])
     db = container.db()
-    db.init_app(app)
     CORS(app)
     app.register_blueprint(chat_controller)
     app.register_blueprint(regulation_fragment_controller)
@@ -28,6 +26,7 @@ if __name__ == '__main__':
 
         # This is literally just to my PyCharm happy :)
         _ = models
+        db.init_app(app)
         db.create_all()
 
     app.run(debug=True)

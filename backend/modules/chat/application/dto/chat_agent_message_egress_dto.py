@@ -1,4 +1,3 @@
-import dataclasses
 from pydantic import BaseModel
 
 

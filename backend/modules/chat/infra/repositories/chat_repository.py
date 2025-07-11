@@ -1,7 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import desc
 
-from backend.models import ChatMessage
 from backend.modules.chat.application.dto.create_chat_message_dto import CreateChatMessageDTO
 from backend.modules.chat.domain.agent import Agent
 
@@ -11,7 +10,6 @@ class ChatRepository:
     Repository for managing chat messages in the database.
     Provides methods for saving and retrieving chat messages.
     """
-    from backend.models import ChatMessage
 
     def __init__(self, db: SQLAlchemy):
         self.db = db
@@ -38,5 +36,6 @@ class ChatRepository:
         """
         Retrieve all chat messages for a specific regulation fragment, ordered by creation date.
         """
+        from backend.models import ChatMessage
         return ChatMessage.query.where(regulation_fragment_id=regulation_fragment_id).order_by(
             desc(ChatMessage.created_at)).all()

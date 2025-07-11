@@ -2,7 +2,9 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import Link from 'next/link';
-import { Header } from '../components/features/Header';
+import { Header } from '@/components/features/Header';
+import Providers from '@/components/infra/Providers';
+import { Toaster } from '@/components/ui/Sonner';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -16,7 +18,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'Supporting Human Understanding of Formal Compliance',
-  description: 'Lukas Rossi\'s Master Thesis Use Case',
+  description: "Lukas Rossi's Master Thesis Use Case",
 };
 
 export default function RootLayout({
@@ -27,10 +29,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased w-vh h-dvh flex flex-col overflow-hidden bg-gray-700`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased w-vh h-dvh flex flex-col overflow-hidden bg-gray-900`}
       >
         <Header />
-        <main className={'flex-grow flex flex-col overflow-y-auto p-4'}>{children}</main>
+        <main className={'flex-grow flex flex-col p-4'}>
+          <Providers>{children}</Providers>
+        </main>
         <footer>
           <hr className={'my-2 border-gray-200'} />
           <div className="text-center text-sm text-gray-200  mb-2">
@@ -45,6 +49,7 @@ export default function RootLayout({
             )
           </div>
         </footer>
+        <Toaster />
       </body>
     </html>
   );

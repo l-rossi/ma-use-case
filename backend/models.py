@@ -8,6 +8,7 @@ db = container.db()
 
 class RegulationFragment(db.Model):
     __tablename__ = 'regulation_fragments'
+    __table_args__ = {'extend_existing': True}
 
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(nullable=False)
@@ -20,6 +21,7 @@ class RegulationFragment(db.Model):
 
 class AgenticLog(db.Model):
     __tablename__ = 'agentic_logs'
+    __table_args__ = {'extend_existing': True}
 
     id: Mapped[int] = mapped_column(primary_key=True)
     log_entry: Mapped[str] = mapped_column(nullable=False)
@@ -31,6 +33,7 @@ class AgenticLog(db.Model):
 
 class ChatMessage(db.Model):
     __tablename__ = 'chat_messages'
+    __table_args__ = {'extend_existing': True}
 
     id: Mapped[int] = mapped_column(primary_key=True)
     regulation_fragment_id: Mapped[int] = mapped_column(nullable=False)
