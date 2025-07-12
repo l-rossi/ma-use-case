@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/Button';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -34,7 +33,7 @@ const formSchema = z.object({
 
 interface Props {
   className?: string;
-  onSuccess?: (fragment: RegulationFragmentDTO) => void;
+  onSuccess?: (fragment: RegulationFragmentDTO) => Promise<void> | void;
 }
 
 export function CreateRegulationFragmentForm({ className, onSuccess }: Readonly<Props>) {
@@ -54,7 +53,7 @@ export function CreateRegulationFragmentForm({ className, onSuccess }: Readonly<
     onSuccess: f => {
       toast.success('Regulation fragment created successfully');
       form.reset();
-      onSuccess?.(f);
+      return onSuccess?.(f);
     },
     onError: error => {
       console.error('Error creating regulation fragment:', error);
@@ -83,7 +82,6 @@ export function CreateRegulationFragmentForm({ className, onSuccess }: Readonly<
               <FormControl>
                 <Input placeholder="Enter regulation fragment title" {...field} />
               </FormControl>
-              <FormDescription>The title of the regulation fragment.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -97,11 +95,10 @@ export function CreateRegulationFragmentForm({ className, onSuccess }: Readonly<
               <FormControl>
                 <Textarea
                   placeholder="Enter regulation fragment content"
-                  className="min-h-32"
+                  className="min-h-64"
                   {...field}
                 />
               </FormControl>
-              <FormDescription>The content of the regulation fragment.</FormDescription>
               <FormMessage />
             </FormItem>
           )}

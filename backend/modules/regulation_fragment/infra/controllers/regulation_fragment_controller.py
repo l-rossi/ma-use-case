@@ -21,3 +21,12 @@ def create():
     fragment_data = CreateRegulationFragmentDTO(**request.get_json())
     fragment = container.regulation_fragment_service().create(fragment_data)
     return fragment.model_dump(), 201
+
+
+@regulation_fragment_controller.delete('/regulation-fragments/<fragment_id>')
+def delete_by_id(fragment_id: str):
+    result = container.regulation_fragment_service().deleteById(int(fragment_id))
+    if result:
+        return '', 204
+    else:
+        return jsonify({"error": "Regulation fragment not found"}), 404

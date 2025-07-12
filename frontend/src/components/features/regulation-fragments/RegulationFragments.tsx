@@ -19,12 +19,14 @@ import {
 } from '@/components/ui/Dialog';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { RegulationFragmentSelectionDrawer } from '@/components/features/regulation-fragments/RegulationFragmentSelectionDrawer';
+import { Box } from '@/components/ui/Box';
+import { useSelectedRegulationFragmentId } from '@/hooks/useSelectedRegulationFragment';
 
 interface Props {
   className?: string;
 }
 
-export function RegulationFragmentsView({ className }: Readonly<Props>) {
+export function RegulationFragments({ className }: Readonly<Props>) {
   const {
     data: fragments = [],
     isPending,
@@ -35,10 +37,7 @@ export function RegulationFragmentsView({ className }: Readonly<Props>) {
     queryFn: () => getRegulationFragments(),
   });
 
-  const [selectedFragmentId, setSelectedFragmentId] = useQueryState(
-    'selectedFragment',
-    parseAsInteger
-  );
+  const [selectedFragmentId, setSelectedFragmentId] = useSelectedRegulationFragmentId();
   const selectedFragment = useMemo(
     () => fragments.find(fragment => fragment.id === selectedFragmentId),
     [fragments, selectedFragmentId]
@@ -52,28 +51,17 @@ export function RegulationFragmentsView({ className }: Readonly<Props>) {
 
   if (isError) {
     return (
-      <div
-        className={cn(
-          'text-red-500 size-full bg-gray-200 rounded-md flex flex-col gap-2 items-center justify-center text-2xl font-bold',
-          className
-        )}
-      >
+      <Box className={cn('text-red-500 shadow-red-500', className)}>
         Failed to load regulation fragments.
         <Button variant={'outline'} type={'button'} size={'lg'} onClick={() => refetch()}>
           Retry
         </Button>
-      </div>
+      </Box>
     );
   }
 
   return (
-    <div
-      className={cn(
-        'rounded-md  relative flex flex-row overflow-hidden shadow-sm border border-gray-600',
-        className
-      )}
-      ref={containerRef}
-    >
+    <Box className={cn('shadow-orange-500', className)} ref={containerRef}>
       <RegulationFragmentSelectionDrawer
         onSelect={id => {
           setSelectedFragmentId(id);
@@ -104,19 +92,26 @@ export function RegulationFragmentsView({ className }: Readonly<Props>) {
             </VisuallyHidden>
           </DialogHeader>
           <CreateRegulationFragmentForm
-            onSuccess={f => {
-              setSelectedFragmentId(f.id);
+            onSuccess={async f => {
               setIsCreateModalOpen(false);
+              await setSelectedFragmentId(f.id);
             }}
           />
         </DialogContent>
       </Dialog>
 
-      <div className={'flex-grow grid place-items-center bg-gray-100'}>
-        {fragments?.length === 0 && <CreateRegulationFragmentForm className={'size-full'} />}
+      <div className={'flex-grow grid place-items-center'}>
+        {fragments?.length === 0 && (
+          <CreateRegulationFragmentForm
+            className={'size-full px-12 py-20'}
+            onSuccess={async f => {
+              await setSelectedFragmentId(f.id);
+            }}
+          />
+        )}
 
         {selectedFragment && <pre>{JSON.stringify(selectedFragment, null, 2)}</pre>}
       </div>
-    </div>
+    </Box>
   );
 }

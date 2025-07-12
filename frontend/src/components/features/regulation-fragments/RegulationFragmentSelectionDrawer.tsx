@@ -16,7 +16,6 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/Drawer';
-import { ScrollArea } from '@/components/ui/ScrollArea';
 import { RegulationFragmentListView } from '@/components/features/regulation-fragments/RegulationFragmentListView';
 import { RegulationFragmentDTO } from '../../../../generated/types';
 import { cn } from '@/lib/utils';
@@ -37,7 +36,7 @@ export function RegulationFragmentSelectionDrawer({
   container,
   onSelect,
 }: Readonly<Props>) {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
   const { ref, isScrolledToBottom } = useScrolledTo();
 
   const [query, setQuery] = useQueryState(
@@ -73,7 +72,9 @@ export function RegulationFragmentSelectionDrawer({
         <DrawerPortal>
           <DrawerOverlay />
           <DrawerContent
-            className={'absolute inset-0 bg-neutral-100 border-none overflow-hidden h-full'}
+            className={
+              'absolute inset-0 bg-neutral-100 border-none flex flex-col overflow-hidden h-full'
+            }
           >
             <DrawerHeader className={'flex flex-row justify-between'}>
               <DrawerTitle className={'text-neutral-800'}>Regulations</DrawerTitle>
@@ -91,17 +92,17 @@ export function RegulationFragmentSelectionDrawer({
 
             <Input
               placeholder={'Search'}
-              className={'mx-1 shrink-0'}
+              className={'mx-1 shrink-0 w-auto'}
               onChange={e => setQuery(e.target.value)}
               value={query ?? ''}
               type={'text'}
             />
 
             <DrawerFooter className={'overflow-hidden relative px-0 mt-0 mb-auto '}>
-              <ScrollArea className={'size-full border-gray-800 border-t'} viewportRef={ref}>
-                <ul className={'flex flex-col h-full'}>
+              <div className={'size-full overflow-y-auto border-gray-600 border-t'} ref={ref}>
+                <ul className={'flex flex-col h-full bg-neutral-200'}>
                   {filteredFragments?.map(it => (
-                    <li key={it.id} className={'w-full border-b border-gray-800 odd:bg-gray-100 p-1'}>
+                    <li key={it.id} className={'w-full border-b border-gray-600  p-1'}>
                       <RegulationFragmentListView
                         fragment={it}
                         onClick={() => {
@@ -112,7 +113,7 @@ export function RegulationFragmentSelectionDrawer({
                     </li>
                   ))}
                 </ul>
-              </ScrollArea>
+              </div>
               <div
                 className={cn(
                   'pointer-events-none absolute inset-0 [background:linear-gradient(0deg,rgba(255,255,255,1)_0%,rgba(255,255,255,0)_20%)]',

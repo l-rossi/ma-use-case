@@ -27,3 +27,13 @@ export async function getRegulationFragments(): Promise<Array<RegulationFragment
 
   return await res.json();
 }
+
+export async function deleteRegulationFragment(id: number): Promise<void> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/regulation-fragments/${id}`, {
+    method: 'DELETE',
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to delete regulation fragment');
+  }
+}

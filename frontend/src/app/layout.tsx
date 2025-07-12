@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Supporting Human Understanding of Formal Compliance',
+  title: 'Supporting Human Understanding of Formal Compliance Rules',
   description: "Lukas Rossi's Master Thesis Use Case",
 };
 
@@ -32,7 +32,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased w-vh h-dvh flex flex-col overflow-hidden bg-gray-900`}
       >
         <Header />
-        <main className={'flex-grow flex flex-col p-4'}>
+        <main className={'flex-grow flex flex-col p-4 overflow-auto'}>
           <Providers>{children}</Providers>
         </main>
         <footer>

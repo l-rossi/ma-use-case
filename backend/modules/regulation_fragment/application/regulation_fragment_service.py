@@ -12,7 +12,7 @@ class RegulationFragmentService:
         Create a new regulation fragment.
         """
         created_fragment = self.regulation_fragment_repository.create(fragment_data)
-        
+
         return RegulationFragmentDTO(
             id=created_fragment.id,
             title=created_fragment.title,
@@ -25,7 +25,7 @@ class RegulationFragmentService:
         Retrieve all regulation fragments.
         """
         fragments = self.regulation_fragment_repository.findAll()
-        
+
         return [
             RegulationFragmentDTO(
                 id=fragment.id,
@@ -41,13 +41,20 @@ class RegulationFragmentService:
         Retrieve a regulation fragment by its ID.
         """
         fragment = self.regulation_fragment_repository.findById(fragment_id)
-        
+
         if not fragment:
             return None
-            
+
         return RegulationFragmentDTO(
             id=fragment.id,
             title=fragment.title,
             content=fragment.content,
             created_at=fragment.created_at
         )
+
+    def deleteById(self, fragment_id: int) -> bool:
+        """
+        Delete a regulation fragment by its ID.
+        Returns True if the fragment was deleted, False if it wasn't found.
+        """
+        return self.regulation_fragment_repository.deleteById(fragment_id)

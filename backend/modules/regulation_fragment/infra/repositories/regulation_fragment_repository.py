@@ -41,3 +41,19 @@ class RegulationFragmentRepository:
         """
         from backend.models import RegulationFragment
         return RegulationFragment.query.get(fragment_id)
+
+    def deleteById(self, fragment_id: int) -> bool:
+        """
+        Delete a regulation fragment by its ID.
+        Returns True if the fragment was deleted, False if it wasn't found.
+        """
+        from backend.models import RegulationFragment
+        fragment = RegulationFragment.query.get(fragment_id)
+
+        if not fragment:
+            return False
+
+        self.db.session.delete(fragment)
+        self.db.session.commit()
+
+        return True
