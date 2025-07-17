@@ -1,10 +1,10 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { getRegulationFragments } from '@/api/regulation_fragments';
+import { getRegulationFragments } from '@/components/features/regulation-fragments/regulation_fragments.api';
 import { parseAsInteger, useQueryState } from 'nuqs';
 import { cn } from '@/lib/utils';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
@@ -21,6 +21,7 @@ import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { RegulationFragmentSelectionDrawer } from '@/components/features/regulation-fragments/RegulationFragmentSelectionDrawer';
 import { Box } from '@/components/ui/Box';
 import { useSelectedRegulationFragmentId } from '@/hooks/useSelectedRegulationFragment';
+import { RegulationFragmentView } from '@/components/features/regulation-fragments/RegulationFragmentView';
 
 interface Props {
   className?: string;
@@ -110,7 +111,9 @@ export function RegulationFragments({ className }: Readonly<Props>) {
           />
         )}
 
-        {selectedFragment && <pre>{JSON.stringify(selectedFragment, null, 2)}</pre>}
+        {selectedFragment && (
+          <RegulationFragmentView fragment={selectedFragment}/>
+        )}
       </div>
     </Box>
   );

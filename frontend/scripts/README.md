@@ -2,7 +2,7 @@
 
 This directory contains scripts for generating TypeScript type definitions from Python Pydantic models.
 
-## generate-types.js
+## generate-dto-types.js
 
 This script automatically generates TypeScript interfaces from Pydantic models defined in the backend.
 
@@ -11,7 +11,7 @@ This script automatically generates TypeScript interfaces from Pydantic models d
 1. Detects the operating system (Windows or Unix-like)
 2. Activates the Python virtual environment appropriate for the detected OS
 3. Runs the `pydantic2ts` command to generate TypeScript types from the Pydantic models
-4. Outputs the generated types to `frontend/generated/types.ts`
+4. Outputs the generated types to `frontend/generated/dto-types.ts`
 
 ### Usage
 

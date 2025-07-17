@@ -1,0 +1,107 @@
+# Few-Shot Prompt: Extracting Prolog Atoms with XML Annotation
+
+You are an expert at identifying and extracting Prolog atoms from natural language compliance statements. Your task is to identify the basic predicates and entities that would be needed to represent the statement logically, then annotate the original text with XML tags that trace each atom back to its corresponding span.
+
+## Examples:
+
+**Input:** "All employees must complete safety training before starting work."
+
+**Output:**
+```xml
+<result>
+<annotated>
+All <atom id="1">employees</atom> must <atom id="2">complete</atom> <atom id="3">safety training</atom> before <atom id="4">starting work</atom>.
+</annotated>
+<atoms>
+<atom id="1">employee(X)</atom>
+<atom id="2">completed_training(X, Type)</atom>
+<atom id="3">training(safety)</atom>
+<atom id="4">started_work(X)</atom>
+</atoms>
+</result>
+```
+
+**Input:** "Managers must approve all expense reports over $500."
+
+**Output:**
+```xml
+<result>
+<annotated>
+<atom id="1">Managers</atom> must <atom id="2">approve</atom> all <atom id="3">expense reports</atom> over <atom id="4">$500</atom>.
+</annotated>
+<atoms>
+<atom id="1">manager(X)</atom>
+<atom id="2">approved_by(Report, Manager)</atom>
+<atom id="3">expense_report(X, Amount)</atom>
+<atom id="4">amount_threshold(500)</atom>
+</atoms>
+</result>
+```
+
+**Input:** "Documents must be reviewed by two different people before publication."
+
+**Output:**
+```xml
+<result>
+<annotated>
+<atom id="1">Documents</atom> must be <atom id="2">reviewed</atom> by <atom id="3">two</atom> <atom id="4">different people</atom> before <atom id="5">publication</atom>.
+</annotated>
+<atoms>
+<atom id="1">document(X)</atom>
+<atom id="2">reviewed_by(Document, Person)</atom>
+<atom id="3">review_count_required(2)</atom>
+<atom id="4">person(X)</atom>
+<atom id="5">published(X)</atom>
+</atoms>
+</result>
+```
+
+**Input:** "Access to confidential files requires both security clearance and supervisor approval."
+
+**Output:**
+```xml
+<result>
+<annotated>
+<atom id="1">Access</atom> to <atom id="2">confidential files</atom> requires both <atom id="3">security clearance</atom> and <atom id="4">supervisor</atom> <atom id="5">approval</atom>.
+</annotated>
+<atoms>
+<atom id="1">access(Person, File)</atom>
+<atom id="2">confidential_file(X)</atom>
+<atom id="3">has_clearance(Person, security)</atom>
+<atom id="4">supervisor(X, Y)</atom>
+<atom id="5">approved_by(Supervisor, Person, File)</atom>
+</atoms>
+</result>
+```
+
+**Input:** "All purchases above $1000 need written authorization from department heads."
+
+**Output:**
+```xml
+<result>
+<annotated>
+All <atom id="1">purchases</atom> above <atom id="2">$1000</atom> need <atom id="3">written authorization</atom> from <atom id="4">department heads</atom>.
+</annotated>
+<atoms>
+<atom id="1">purchase(X, Amount)</atom>
+<atom id="2">amount_threshold(1000)</atom>
+<atom id="3">written_authorization(X)</atom>
+<atom id="4">department_head(Person)</atom>
+</atoms>
+</result>
+```
+
+## Instructions:
+1. Read the compliance statement carefully
+2. Identify key entities (nouns) and relationships (verbs/actions)
+3. Wrap each relevant span with `<atom id="N">...</atom>` tags
+4. Create appropriate Prolog atom names using snake_case
+5. Use variables (X, Y, Person, etc.) for entities that would be instantiated
+6. Include constants for specific values (amounts, types, etc.)
+7. Ensure each atom id in the annotated text corresponds to an atom in the atoms section
+8. Focus on atomic predicates, not complex rules
+
+Now extract atoms from the following compliance statement:
+
+**Input:** {}
+**Output:**

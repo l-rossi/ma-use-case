@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createRegulationFragment } from '@/api/regulation_fragments';
+import { createRegulationFragment } from '@/components/features/regulation-fragments/regulation_fragments.api';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/Button';
@@ -20,7 +20,7 @@ import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { RegulationFragmentDTO } from '../../../../generated/types';
+import { RegulationFragmentDTO } from '../../../../generated/dto-types';
 
 const formSchema = z.object({
   title: z.string().min(1, {

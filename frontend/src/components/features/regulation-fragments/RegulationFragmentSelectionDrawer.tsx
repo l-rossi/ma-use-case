@@ -17,7 +17,7 @@ import {
   DrawerTrigger,
 } from '@/components/ui/Drawer';
 import { RegulationFragmentListView } from '@/components/features/regulation-fragments/RegulationFragmentListView';
-import { RegulationFragmentDTO } from '../../../../generated/types';
+import { RegulationFragmentDTO } from '../../../../generated/dto-types';
 import { cn } from '@/lib/utils';
 import { useScrolledTo } from '@/hooks/useScrolledTo';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';

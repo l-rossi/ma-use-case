@@ -1,21 +1,31 @@
 from dependency_injector import containers, providers
-from flask_sqlalchemy import SQLAlchemy
 
-from backend.db import create_db
-from backend.modules.chat.application.chat_service import ChatService
-from backend.modules.chat.infra import OpenAIChatAgent
-from backend.modules.chat.infra.repositories.chat_repository import ChatRepository
-from backend.modules.chat.infra.services.i_chat_agent import IChatAgent
-from backend.modules.regulation_fragment.application.regulation_fragment_service import RegulationFragmentService
-from backend.modules.regulation_fragment.infra.repositories.regulation_fragment_repository import \
+from db import create_db
+from modules.models.application.agentic_log_service import AgenticLogService
+from modules.models.infra.agentic_log_repository import AgenticLogRepository
+from modules.atoms.application.atom_service import AtomService
+from modules.atoms.infra.atom_repository import AtomRepository
+from modules.chat.application.chat_service import ChatService
+from modules.chat.infra.repositories.chat_repository import ChatRepository
+from modules.models.infra.services.openai_chat_agent import OpenAIChatAgent
+from modules.regulation_fragment.application.regulation_fragment_service import RegulationFragmentService
+from modules.regulation_fragment.infra.regulation_fragment_repository import \
     RegulationFragmentRepository
 
 
 class Container(containers.DeclarativeContainer):
     db = providers.Singleton(create_db)
 
+    agentic_log_repository = providers.Singleton(AgenticLogRepository, db=db)
+    agentic_log_service = providers.Singleton(
+        AgenticLogService,
+        agentic_log_repository=agentic_log_repository
+    )
+
     chat_repository = providers.Singleton(ChatRepository, db=db)
-    chat_agent = providers.Singleton(OpenAIChatAgent)
+    chat_agent = providers.Singleton(OpenAIChatAgent,
+                                     agentic_log_service=agentic_log_service
+                                     )
     chat_service = providers.Singleton(
         ChatService,
         chat_repository=chat_repository,
@@ -26,6 +36,15 @@ class Container(containers.DeclarativeContainer):
     regulation_fragment_service = providers.Singleton(
         RegulationFragmentService,
         regulation_fragment_repository=regulation_fragment_repository
+    )
+
+    atom_repository = providers.Singleton(AtomRepository, db=db)
+    atom_service = providers.Singleton(
+        AtomService,
+        regulation_fragment_service=regulation_fragment_service,
+        atom_repository=atom_repository,
+        chat_agent=chat_agent,
+        agentic_log_service=agentic_log_service
     )
 
 

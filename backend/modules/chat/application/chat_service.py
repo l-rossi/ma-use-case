@@ -1,6 +1,6 @@
-from backend.modules.chat.application.dto.create_chat_message_dto import CreateChatMessageDTO
-from backend.modules.chat.infra.repositories.chat_repository import ChatRepository
-from backend.modules.chat.infra.services.i_chat_agent import IChatAgent
+from modules.chat.application.dto.create_chat_message_dto import CreateChatMessageDTO
+from modules.chat.infra.repositories.chat_repository import ChatRepository
+from modules.models.infra.services.i_chat_agent import IChatAgent
 
 
 

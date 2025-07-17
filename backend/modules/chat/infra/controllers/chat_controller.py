@@ -1,6 +1,6 @@
 from flask import Blueprint, request
-from backend.di_container import container
-from backend.modules.chat.application.dto.create_chat_message_dto import CreateChatMessageDTO
+from di_container import container
+from modules.chat.application.dto.create_chat_message_dto import CreateChatMessageDTO
 
 chat_controller = Blueprint('chat', __name__)
 

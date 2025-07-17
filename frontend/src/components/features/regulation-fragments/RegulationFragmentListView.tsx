@@ -1,10 +1,11 @@
 'use client';
 
-import { RegulationFragmentDTO } from '../../../../generated/types';
+import { RegulationFragmentDTO } from '../../../../generated/dto-types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { deleteRegulationFragment } from '@/api/regulation_fragments';
+import { deleteRegulationFragment } from '@/components/features/regulation-fragments/regulation_fragments.api';
 import { LoaderCircle, Trash } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { useSelectedRegulationFragmentId } from '@/hooks/useSelectedRegulationFragment';
 
 interface Props {
   fragment: RegulationFragmentDTO;
@@ -13,12 +14,14 @@ interface Props {
 
 export function RegulationFragmentListView({ fragment, onClick }: Readonly<Props>) {
   const queryClient = useQueryClient();
+  const [, setSelectedFragmentId] = useSelectedRegulationFragmentId();
   const { mutate: deleteFragment, isPending } = useMutation({
     mutationFn: () => deleteRegulationFragment(fragment.id),
     onSettled: () =>
       queryClient.invalidateQueries({
         queryKey: ['regulation-fragments'],
       }),
+    onSuccess: () => setSelectedFragmentId(null),
   });
   return (
     <div

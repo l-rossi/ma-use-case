@@ -1,4 +1,4 @@
-import { CreateRegulationFragmentDTO, RegulationFragmentDTO } from '../../generated/types';
+import { CreateRegulationFragmentDTO, RegulationFragmentDTO } from '@dtos/dto-types';
 
 export async function createRegulationFragment(
   fragment: CreateRegulationFragmentDTO

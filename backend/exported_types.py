@@ -1,4 +1,1 @@
-from .modules.chat.application.dto.create_chat_message_dto import CreateChatMessageDTO
-from .modules.chat.application.dto.chat_message_dto import ChatMessageDTO
-from .modules.regulation_fragment.application.dto.create_regulation_fragment_dto import CreateRegulationFragmentDTO
-from .modules.regulation_fragment.application.dto.regulation_fragment_dto import RegulationFragmentDTO
+

@@ -14,7 +14,7 @@ const frontendDir = path.join(rootDir, 'frontend');
 
 // Define paths
 const exportedTypesPath = path.join(backendDir, 'exported_types.py');
-const outputPath = path.join(frontendDir, 'generated', 'types.ts');
+const outputPath = path.join(frontendDir, 'generated', 'dto-types.ts');
 const json2tsPath = path.join(frontendDir, 'node_modules', '.bin', 'json2ts');
 
 // Ensure the generated directory exists
