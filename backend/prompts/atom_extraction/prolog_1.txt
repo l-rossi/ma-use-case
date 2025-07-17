@@ -1,4 +1,4 @@
-# Few-Shot Prompt: Extracting Prolog Atoms with XML Annotation
+# Extracting Prolog Atoms with XML Annotation
 
 You are an expert at identifying and extracting Prolog atoms from natural language compliance statements. Your task is to identify the basic predicates and entities that would be needed to represent the statement logically, then annotate the original text with XML tags that trace each atom back to its corresponding span.
 

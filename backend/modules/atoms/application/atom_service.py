@@ -1,7 +1,10 @@
 import re
 from typing import Generator
 
-from modules.atoms.application.dto import AtomExtractionResultDTO, CreateAtomDTO, AtomDTO, AtomSpanDTO
+from modules.atoms.application.dto.atom_dto import AtomDTO
+from modules.atoms.application.dto.atom_extraction_result_dto import AtomExtractionResultDTO
+from modules.atoms.application.dto.atom_span_dto import AtomSpanDTO
+from modules.atoms.application.dto.create_atom_dto import CreateAtomDTO
 from modules.atoms.application.dto.create_atom_span_dto import CreateAtomSpanDTO
 from modules.atoms.infra.atom_repository import AtomRepository
 from modules.models.application.agentic_log_service import AgenticLogService
@@ -40,6 +43,13 @@ class AtomService:
                 ],
             ) for atom in self.atom_repository.find_by_regulation_fragment_id(regulation_fragment_id)
         ]
+
+    def delete_atoms_for_regulation_fragment(self, regulation_fragment_id: int) -> int:
+        """
+        Delete all atoms for a specific regulation fragment.
+        Returns the number of atoms deleted.
+        """
+        return self.atom_repository.delete_by_regulation_fragment_id(regulation_fragment_id)
 
     def generate_atoms_for_regulation_fragment(self, regulation_fragment_id: int):
         """
@@ -85,7 +95,7 @@ class AtomService:
         local_id_to_global_id = dict()
 
         # TODO error handling and retry logic.
-        for atom in parsed_result.atoms.atom:
+        for atom in parsed_result.atoms:
             persisted_atom = self.atom_repository.save(
                 CreateAtomDTO(
                     regulation_fragment_id=regulation_fragment_id,
@@ -109,6 +119,9 @@ class AtomService:
 def _find_atom_spans(text: str) -> Generator[CreateAtomSpanDTO, None]:
     pattern = r'<atom id="(\d+)">(.*?)<\/atom>'
 
+    print("Finding atom spans in text:")
+    print(text)
+
     virtual_character_offset = 0
     print(
         list(re.finditer(pattern, text, re.DOTALL))
@@ -124,10 +137,17 @@ def _find_atom_spans(text: str) -> Generator[CreateAtomSpanDTO, None]:
         content_len = content_end - content_start
         match_len = match_end - match_start
 
-        yield CreateAtomSpanDTO(
+        print(
+            f"{match_start=}, {match_end=}, {content_start=}, {content_end=}, {content_len=}, {match_len=}, virtual_character_offset={virtual_character_offset}"
+        )
+
+        span = CreateAtomSpanDTO(
             atom_id=atom_id,
             start=match_start - virtual_character_offset,
             end=match_start - virtual_character_offset + content_len,
         )
+        print(span)
+
+        yield span
 
         virtual_character_offset += match_len - content_len

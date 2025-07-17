@@ -1,9 +1,9 @@
 from typing import List
 
+from lxml import etree
 from pydantic_xml import BaseXmlModel, wrapped, computed_element
 from pydantic_xml import element, attr
 from pydantic_xml.element.native import ElementT as Element
-from lxml import etree
 
 
 class ExtractedAtomDTO(BaseXmlModel, tag='atom'):
@@ -12,6 +12,9 @@ class ExtractedAtomDTO(BaseXmlModel, tag='atom'):
 
 
 class AtomExtractionResultDTO(BaseXmlModel, tag='result', arbitrary_types_allowed=True):
+    # Mark this class as not exportable to JSON schema
+    __pydantic_export__ = False
+
     annotated_raw: Element = element(tag='annotated')
     atoms: List[ExtractedAtomDTO] = wrapped("atoms", element(default_factory=list))
 
@@ -19,7 +22,7 @@ class AtomExtractionResultDTO(BaseXmlModel, tag='result', arbitrary_types_allowe
     def annotated(self) -> str:
         # Impossible ChatGPT said... witness my defiance!
         # Shitty code shall prevail!
-        return (self.annotated_raw.text or '') + ''.join(
-            etree.tostring(child, encoding='unicode') + (child.tail or '')
+        return ((self.annotated_raw.text or '') + ''.join(
+            etree.tostring(child, encoding='unicode')
             for child in self.annotated_raw
-        )
+        )).strip()

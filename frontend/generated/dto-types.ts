@@ -5,10 +5,28 @@
 /* Do not modify it by hand - just update the pydantic models and then re-run the script
 */
 
+/**
+ * Data Transfer Object for an agentic log.
+ *
+ * id: Unique identifier for the log
+ * user_prompt: The prompt issued by the human user
+ * system_prompt: Optional prompt issued from the application
+ * message_source: The source of the message (USER, SYSTEM, MODEL)
+ * regulation_fragment_id: ID of the regulation fragment this log is associated with
+ * created_at: When the log was created
+ */
+export interface AgenticLogDTO {
+  id: number;
+  user_prompt: string;
+  system_prompt?: string | null;
+  message_source: string;
+  regulation_fragment_id: number;
+  created_at: string;
+}
 export interface AtomDTO {
   id: number;
   regulation_fragment_id: number;
-  name: string;
+  predicate: string;
   description: string;
   is_negated: boolean;
   spans: AtomSpanDTO[];
@@ -25,9 +43,10 @@ export interface ChatMessageDTO {
   message: string;
 }
 export interface CreateAtomDTO {
-  name: string;
+  regulation_fragment_id: number;
+  predicate: string;
   description: string;
-  is_negated?: boolean;
+  is_negated: boolean;
 }
 export interface CreateChatMessageDTO {
   content: string;

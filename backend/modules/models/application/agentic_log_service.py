@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Literal
 
 from modules.models.application.dto.agentic_log_dto import AgenticLogDTO
 from modules.models.application.dto.create_agentic_log_dto import CreateAgenticLogDTO
@@ -17,14 +17,16 @@ class AgenticLogService:
 
         return AgenticLogDTO(
             id=created_log.id,
-            log_entry=created_log.log_entry,
+            user_prompt=created_log.user_prompt,
+            system_prompt=created_log.system_prompt,
             message_source=created_log.message_source,
             regulation_fragment_id=created_log.regulation_fragment_id,
             created_at=created_log.created_at
         )
 
     def find_by_regulation_fragment_id(self, regulation_fragment_id: int, cursor: Optional[int] = None,
-                                       limit: Optional[int] = None) -> List[AgenticLogDTO]:
+                                       limit: Optional[int] = None, order_date: Literal["asc", "desc"] = "asc") -> List[
+        AgenticLogDTO]:
         """
         Retrieve agentic logs for a specific regulation fragment with optional pagination.
 
@@ -32,6 +34,7 @@ class AgenticLogService:
             regulation_fragment_id: ID of the regulation fragment
             cursor: Optional ID to start retrieving logs after (for pagination)
             limit: Optional maximum number of logs to retrieve
+            order_date: Order of logs by creation date, either "asc" or "desc"
 
         Returns:
             List of agentic logs
@@ -39,13 +42,15 @@ class AgenticLogService:
         logs = self.agentic_log_repository.find_by_regulation_fragment_id(
             regulation_fragment_id=regulation_fragment_id,
             cursor=cursor,
-            limit=limit
+            limit=limit,
+            order_date=order_date
         )
 
         return [
             AgenticLogDTO(
                 id=log.id,
-                log_entry=log.log_entry,
+                user_prompt=log.user_prompt,
+                system_prompt=log.system_prompt,
                 message_source=log.message_source,
                 regulation_fragment_id=log.regulation_fragment_id,
                 created_at=log.created_at

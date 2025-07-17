@@ -1,11 +1,6 @@
 // LLM for the win
-// [default background, higlight background]
+// [default background, highlight background]
 const colors: ReadonlyArray<Readonly<[string, string]>> = [
-  // Neutral/Gray Tones
-  ['#f8f9fa', '#e9ecef'],
-  ['#f5f5f5', '#e0e0e0'],
-  ['#ffffff', '#f0f0f0'],
-  ['#fafafa', '#e8e8e8'],
   // Blue Family
   ['#e3f2fd', '#bbdefb'],
   ['#f0f8ff', '#e6f3ff'],
@@ -38,18 +33,11 @@ const colors: ReadonlyArray<Readonly<[string, string]>> = [
   ['#f0fdfa', '#ccfbf1'],
   ['#f0f9ff', '#e0f2fe'],
   ['#ecfeff', '#cffafe'],
-  // Warm Neutrals
-  ['#faf9f7', '#f5f4f2'],
-  ['#fbfaf9', '#f0efec'],
-  ['#fcfcfb', '#f7f6f4'],
-  // Cool Neutrals
-  ['#f8f9fb', '#f1f3f4'],
-  ['#f9fafb', '#f3f4f6'],
-  ['#fafbfc', '#f4f5f7'],
 ];
 
-export function getHighlightColor(key: string): [string, string] {
+export function getHighlightColor(key: string): Readonly<[string, string]> {
   const index = djb2(key) % colors.length;
+  const c = colors[index];
   return colors[index];
 }
 

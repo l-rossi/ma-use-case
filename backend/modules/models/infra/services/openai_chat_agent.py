@@ -58,7 +58,7 @@ If a <atom id="1">Consumer</atom> tells the <atom id="2">Supplier</atom> that th
 <atom id="14">escalation_process(Y)</atom>
 </atoms>
 </result>
-""",
+""".strip(),
             is_error=False,
         )
 

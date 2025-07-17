@@ -5,4 +5,4 @@ class CreateAtomDTO(BaseModel):
     regulation_fragment_id: int
     predicate: str
     description: str
-    is_negated: bool = False
+    is_negated: bool

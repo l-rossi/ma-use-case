@@ -23,3 +23,14 @@ def generate_atoms_for_fragment(fragment_id: str):
     atom_service = container.atom_service()
     atom_service.generate_atoms_for_regulation_fragment(fragment_id)
     return '', 204
+
+
+@atom_controller.delete('/regulation-fragments/<fragment_id>/atoms')
+def delete_atoms_for_fragment(fragment_id: str):
+    """
+    Delete all atoms for a specific regulation fragment.
+    """
+    from di_container import container
+    atom_service = container.atom_service()
+    count = atom_service.delete_atoms_for_regulation_fragment(fragment_id)
+    return {'deleted': count}, 200

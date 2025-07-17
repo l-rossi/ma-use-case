@@ -26,24 +26,19 @@ class IChatAgent(ABC):
         regulation_fragment_id = message.regulation_fragment_id
         self.agentic_log_service.create(
             CreateAgenticLogDTO(
-                log_entry=message.user_prompt,
-                message_source=MessageSource.USER_PROMPT,
+                user_prompt=message.user_prompt,
+                system_prompt=message.system_prompt,
+                message_source=MessageSource.SYSTEM_PROMPT,
                 regulation_fragment_id=regulation_fragment_id,
             )
         )
-        if message.system_prompt:
-            self.agentic_log_service.create(
-                CreateAgenticLogDTO(
-                    log_entry=message.system_prompt,
-                    message_source=MessageSource.SYSTEM_PROMPT,
-                    regulation_fragment_id=regulation_fragment_id,
-                )
-            )
 
         response = self._send_message(message)
+        # Log the model response with the new field structure
         self.agentic_log_service.create(
             CreateAgenticLogDTO(
-                log_entry=response.message if not response.is_error else f"[ERROR] {response.error_message}",
+                user_prompt=response.message if not response.is_error else f"[ERROR] {response.error_message}",
+                system_prompt=None,
                 message_source=MessageSource.MODEL_RESPONSE,
                 regulation_fragment_id=regulation_fragment_id,
             )

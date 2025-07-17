@@ -29,10 +29,13 @@ def get_by_regulation_fragment_id(fragment_id: str):
     cursor_id = int(cursor) if cursor is not None else None
     limit_val = int(limit) if limit is not None else None
 
+    order_date = "asc" if request.args.get('order-date') == "asc" else "desc"
+
     return [log.model_dump() for log in container.agentic_log_service().find_by_regulation_fragment_id(
         regulation_fragment_id=int(fragment_id),
         cursor=cursor_id,
-        limit=limit_val
+        limit=limit_val,
+        order_date=order_date
     )]
 
 

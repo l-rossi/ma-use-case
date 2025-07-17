@@ -34,3 +34,21 @@ export async function generateAtomsForFragment(fragmentId: number): Promise<void
     throw new Error('Failed to generate atoms for regulation fragment');
   }
 }
+
+/**
+ * Delete all atoms for a specific regulation fragment
+ * @param fragmentId The ID of the regulation fragment
+ * @returns Promise that resolves when atoms are deleted
+ */
+export async function deleteAtomsForFragment(fragmentId: number): Promise<void> {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/regulation-fragments/${fragmentId}/atoms`,
+    {
+      method: 'DELETE',
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error('Failed to delete atoms for regulation fragment');
+  }
+}
