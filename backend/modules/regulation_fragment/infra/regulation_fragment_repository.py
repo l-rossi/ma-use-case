@@ -23,7 +23,8 @@ class RegulationFragmentRepository:
         """
         regulation_fragment = RegulationFragment(
             title=fragment_data.title,
-            content=fragment_data.content
+            content=fragment_data.content,
+            llm_identifier=fragment_data.llm_identifier,
         )
 
         self.db.session.add(regulation_fragment)

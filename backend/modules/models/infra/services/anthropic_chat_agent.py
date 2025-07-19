@@ -1,7 +1,7 @@
 import os
 from typing import override
 
-from openai import OpenAI
+from anthropic import Anthropic
 
 from modules.models.application.agentic_log_service import AgenticLogService
 from modules.models.application.dto.chat_agent_message_egress_dto import ChatAgentMessageEgressDTO
@@ -9,25 +9,27 @@ from modules.models.application.dto.chat_agent_message_ingress_dto import ChatAg
 from modules.models.infra.services.i_chat_agent import IChatAgent
 
 
-class OpenAIChatAgent(IChatAgent):
+class AnthropicAIChatAgent(IChatAgent):
     """
     Implementation of IChatAgent using the OpenAI API.
     """
 
-    def __init__(self, agentic_log_service: AgenticLogService, model="gpt-3.5-turbo"):
+    def __init__(self, agentic_log_service: AgenticLogService, model: str):
         """
         Initialize the OpenAI chat agent.
-
+        
         Args:
             model (str, optional): The OpenAI model to use. Defaults to "gpt-3.5-turbo".
         """
         super().__init__(agentic_log_service)
-        self.api_key = os.getenv("OPENAI_API_KEY")
-        if not self.api_key:
+        api_key = os.environ.get("ANTHROPIC_API_KEY")
+        if not api_key:
             raise ValueError(
-                "OpenAI API key is required.Set the OPENAI_API_KEY environment variable.")
+                "Anthropic API key is required. Set the ANTHROPIC_API_KEY environment variable.")
 
-        self.client = OpenAI(api_key=self.api_key)
+        self.client = Anthropic(
+            api_key=api_key
+        )
         self.model = model
 
     def _send_message(self, message: ChatAgentMessageIngressDTO) -> ChatAgentMessageEgressDTO:
@@ -36,7 +38,7 @@ class OpenAIChatAgent(IChatAgent):
         """
 
         try:
-            response = self.client.chat.completions.create(
+            response = self.client.messages.create(
                 temperature=0,
                 model=self.model,
                 messages=[
@@ -44,9 +46,7 @@ class OpenAIChatAgent(IChatAgent):
                     {"role": "user", "content": message.user_prompt}
                 ]
             )
-
-            assistant_message = response.choices[0].message.content
-            return ChatAgentMessageEgressDTO(message=assistant_message)
+            return ChatAgentMessageEgressDTO(message=response.content[0].text)
 
         except Exception as e:
             # In a production environment, you might want to handle different types of exceptions differently

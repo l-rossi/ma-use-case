@@ -6,6 +6,11 @@
 */
 
 /**
+ * Enum representing different LLM identifiers.
+ */
+export type LLMIdentifier = "GPT_3_5_TURBO" | "GPT_4o_MINI" | "SONNET_4" | "GEMINI_2_5_FLASH";
+
+/**
  * Data Transfer Object for an agentic log.
  *
  * id: Unique identifier for the log
@@ -54,12 +59,18 @@ export interface CreateChatMessageDTO {
 export interface CreateRegulationFragmentDTO {
   title: string;
   content: string;
+  llm_identifier: string;
+}
+export interface RegenerateAtomsDTO {
+  feedback: string;
 }
 export interface RegulationFragmentDTO {
   id: number;
   title: string;
   content: string;
   created_at: string;
+  llm_identifier: LLMIdentifier;
+  [k: string]: unknown;
 }
 export interface UpdateAtomDTO {
   description: string;

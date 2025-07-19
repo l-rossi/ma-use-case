@@ -12,6 +12,7 @@ import { Trash2 } from 'lucide-react';
 import { AtomView } from '@/components/features/atoms/AtomView';
 import { useState } from 'react';
 import { AtomDTO } from '@dtos/dto-types';
+import { RegenerationForm } from './RegenerationForm';
 
 interface Props {
   className?: string;
@@ -118,21 +119,8 @@ export function Atoms({ className }: Readonly<Props>) {
         </div>
 
         <div className={'flex flex-col'}>
-          {selectedAtom ? (
-            <>
-              <p className={'flex-1 overflow-y-auto'}>{selectedAtom.description}</p>
-              {selectedAtom.spans.length > 0 && (
-                <div className="mt-2 text-xs text-gray-500">
-                  <span>
-                    {selectedAtom.spans.length} text reference
-                    {selectedAtom.spans.length !== 1 ? 's' : ''}
-                  </span>
-                </div>
-              )}
-            </>
-          ) : (
-            <p className={'m-auto underline'}>Select an Atom for more Info</p>
-          )}
+          <h3 className="text-lg font-semibold mb-2">Regenerate Atoms</h3>
+          <RegenerationForm fragmentId={selectedFragmentId} />
         </div>
       </div>
     </Box>

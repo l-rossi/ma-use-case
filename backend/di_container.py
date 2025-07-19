@@ -2,6 +2,7 @@ from dependency_injector import containers, providers
 
 from db import create_db
 from modules.models.application.agentic_log_service import AgenticLogService
+from modules.models.application.llm_adapter import LLMAdapter
 from modules.models.infra.agentic_log_repository import AgenticLogRepository
 from modules.atoms.application.atom_service import AtomService
 from modules.atoms.infra.atom_repository import AtomRepository
@@ -22,20 +23,23 @@ class Container(containers.DeclarativeContainer):
         agentic_log_repository=agentic_log_repository
     )
 
-    chat_repository = providers.Singleton(ChatRepository, db=db)
-    chat_agent = providers.Singleton(OpenAIChatAgent,
-                                     agentic_log_service=agentic_log_service
-                                     )
-    chat_service = providers.Singleton(
-        ChatService,
-        chat_repository=chat_repository,
-        chat_agent=chat_agent
-    )
-
     regulation_fragment_repository = providers.Singleton(RegulationFragmentRepository, db=db)
     regulation_fragment_service = providers.Singleton(
         RegulationFragmentService,
         regulation_fragment_repository=regulation_fragment_repository
+    )
+
+    llm_adapter = providers.Singleton(
+        LLMAdapter,
+        agentic_log_service=agentic_log_service,
+        regulation_fragment_service=regulation_fragment_service
+    )
+
+    chat_repository = providers.Singleton(ChatRepository, db=db)
+    chat_service = providers.Singleton(
+        ChatService,
+        chat_repository=chat_repository,
+        chat_agent=llm_adapter
     )
 
     atom_repository = providers.Singleton(AtomRepository, db=db)
@@ -43,7 +47,7 @@ class Container(containers.DeclarativeContainer):
         AtomService,
         regulation_fragment_service=regulation_fragment_service,
         atom_repository=atom_repository,
-        chat_agent=chat_agent,
+        chat_agent=llm_adapter,
         agentic_log_service=agentic_log_service
     )
 

@@ -6,5 +6,9 @@ interface Props {
 }
 
 export function Rules({ className }: Readonly<Props>) {
-  return <Box className={cn(className, 'shadow-rose-500')}>Rules</Box>;
+  return (
+    <Box className={cn(className, 'shadow-rose-500 p-4')}>
+      <h3 className="text-lg font-semibold">Rules</h3>
+    </Box>
+  );
 }

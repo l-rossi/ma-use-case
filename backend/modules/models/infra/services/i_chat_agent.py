@@ -37,7 +37,7 @@ class IChatAgent(ABC):
         # Log the model response with the new field structure
         self.agentic_log_service.create(
             CreateAgenticLogDTO(
-                user_prompt=response.message if not response.is_error else f"[ERROR] {response.error_message}",
+                user_prompt=response.message if not response.is_error else f"[ERROR] {response.message}",
                 system_prompt=None,
                 message_source=MessageSource.MODEL_RESPONSE,
                 regulation_fragment_id=regulation_fragment_id,

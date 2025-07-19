@@ -4,6 +4,7 @@ from typing import List
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from modules.models.domain.llm_identifier import LLMIdentifier
 from modules.models.domain.message_source import MessageSource
 
 from db import Base
@@ -18,8 +19,12 @@ class RegulationFragment(Base):
     content: Mapped[str] = mapped_column(nullable=False)
     created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
 
-    agentic_logs: Mapped[List["AgenticLog"]] = relationship(back_populates="regulation_fragment", cascade="all, delete-orphan")
-    chat_messages: Mapped[List["ChatMessage"]] = relationship(back_populates="regulation_fragment", cascade="all, delete-orphan")
+    llm_identifier: Mapped[LLMIdentifier] = mapped_column(nullable=False, default=LLMIdentifier.GPT_3_5_TURBO)
+
+    agentic_logs: Mapped[List["AgenticLog"]] = relationship(back_populates="regulation_fragment",
+                                                            cascade="all, delete-orphan")
+    chat_messages: Mapped[List["ChatMessage"]] = relationship(back_populates="regulation_fragment",
+                                                              cascade="all, delete-orphan")
     atoms: Mapped[List["Atom"]] = relationship(back_populates="regulation_fragment", cascade="all, delete-orphan")
 
     def __repr__(self):
@@ -34,7 +39,8 @@ class AgenticLog(Base):
     user_prompt: Mapped[str] = mapped_column(nullable=False)
     system_prompt: Mapped[str] = mapped_column(nullable=True)  # Optional system prompt
     message_source: Mapped[MessageSource] = mapped_column(nullable=False)  # Kept for compatibility
-    regulation_fragment_id: Mapped[int] = mapped_column(ForeignKey("regulation_fragments.id", ondelete='CASCADE'), nullable=False)
+    regulation_fragment_id: Mapped[int] = mapped_column(ForeignKey("regulation_fragments.id", ondelete='CASCADE'),
+                                                        nullable=False)
     created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
 
     regulation_fragment: Mapped["RegulationFragment"] = relationship(back_populates="agentic_logs")
@@ -48,7 +54,8 @@ class ChatMessage(Base):
     __table_args__ = {'extend_existing': True}
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    regulation_fragment_id: Mapped[int] = mapped_column(ForeignKey("regulation_fragments.id", ondelete='CASCADE'), nullable=False)
+    regulation_fragment_id: Mapped[int] = mapped_column(ForeignKey("regulation_fragments.id", ondelete='CASCADE'),
+                                                        nullable=False)
     content: Mapped[str] = mapped_column(nullable=False)
     agent: Mapped[str] = mapped_column(nullable=False)
     created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
@@ -64,7 +71,8 @@ class Atom(Base):
     __table_args__ = {'extend_existing': True}
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    regulation_fragment_id: Mapped[int] = mapped_column(ForeignKey("regulation_fragments.id", ondelete='CASCADE'), nullable=False)
+    regulation_fragment_id: Mapped[int] = mapped_column(ForeignKey("regulation_fragments.id", ondelete='CASCADE'),
+                                                        nullable=False)
     predicate: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=False)
     is_negated: Mapped[bool] = mapped_column(default=False)

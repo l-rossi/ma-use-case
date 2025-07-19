@@ -13,6 +13,17 @@ services:
     networks:
       - lrossi-ma-thesis
 
+  lrossi-ma-thesis-swi-prolog:
+    build:
+      context: prolog
+      dockerfile: Dockerfile
+
+    restart: always
+    ports:
+      - '6544:8080'
+    networks:
+      - lrossi-ma-thesis
+
 volumes:
   lrossi-ma-thesis-db:
     driver: local

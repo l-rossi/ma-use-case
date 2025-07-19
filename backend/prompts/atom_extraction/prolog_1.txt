@@ -7,7 +7,6 @@ You are an expert at identifying and extracting Prolog atoms from natural langua
 **Input:** "All employees must complete safety training before starting work."
 
 **Output:**
-```xml
 <result>
 <annotated>
 All <atom id="1">employees</atom> must <atom id="2">complete</atom> <atom id="3">safety training</atom> before <atom id="4">starting work</atom>.
@@ -19,12 +18,11 @@ All <atom id="1">employees</atom> must <atom id="2">complete</atom> <atom id="3"
 <atom id="4">started_work(X)</atom>
 </atoms>
 </result>
-```
+
 
 **Input:** "Managers must approve all expense reports over $500."
 
 **Output:**
-```xml
 <result>
 <annotated>
 <atom id="1">Managers</atom> must <atom id="2">approve</atom> all <atom id="3">expense reports</atom> over <atom id="4">$500</atom>.
@@ -36,12 +34,11 @@ All <atom id="1">employees</atom> must <atom id="2">complete</atom> <atom id="3"
 <atom id="4">amount_threshold(500)</atom>
 </atoms>
 </result>
-```
+
 
 **Input:** "Documents must be reviewed by two different people before publication."
 
 **Output:**
-```xml
 <result>
 <annotated>
 <atom id="1">Documents</atom> must be <atom id="2">reviewed</atom> by <atom id="3">two</atom> <atom id="4">different people</atom> before <atom id="5">publication</atom>.
@@ -54,12 +51,11 @@ All <atom id="1">employees</atom> must <atom id="2">complete</atom> <atom id="3"
 <atom id="5">published(X)</atom>
 </atoms>
 </result>
-```
+
 
 **Input:** "Access to confidential files requires both security clearance and supervisor approval."
 
 **Output:**
-```xml
 <result>
 <annotated>
 <atom id="1">Access</atom> to <atom id="2">confidential files</atom> requires both <atom id="3">security clearance</atom> and <atom id="4">supervisor</atom> <atom id="5">approval</atom>.
@@ -72,12 +68,11 @@ All <atom id="1">employees</atom> must <atom id="2">complete</atom> <atom id="3"
 <atom id="5">approved_by(Supervisor, Person, File)</atom>
 </atoms>
 </result>
-```
+
 
 **Input:** "All purchases above $1000 need written authorization from department heads."
 
 **Output:**
-```xml
 <result>
 <annotated>
 All <atom id="1">purchases</atom> above <atom id="2">$1000</atom> need <atom id="3">written authorization</atom> from <atom id="4">department heads</atom>.
@@ -89,7 +84,7 @@ All <atom id="1">purchases</atom> above <atom id="2">$1000</atom> need <atom id=
 <atom id="4">department_head(Person)</atom>
 </atoms>
 </result>
-```
+
 
 ## Instructions:
 1. Read the compliance statement carefully
@@ -100,6 +95,9 @@ All <atom id="1">purchases</atom> above <atom id="2">$1000</atom> need <atom id=
 6. Include constants for specific values (amounts, types, etc.)
 7. Ensure each atom id in the annotated text corresponds to an atom in the atoms section
 8. Focus on atomic predicates, not complex rules
+9. Make sure you combine duplicate atoms into one
+10. You must not wrap the output in a code block
+11. The annotated text may not deviate from the original statement, except for the added `<atom>` tags
 
 Now extract atoms from the following compliance statement:
 

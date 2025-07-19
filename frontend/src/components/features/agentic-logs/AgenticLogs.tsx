@@ -79,7 +79,9 @@ export function AgenticLogs({ className }: Readonly<Props>) {
           }
         }}
       >
-        {isPending ? (
+        {selectedFragmentId === null ? (
+          <div>Create or Select a fragment to continue</div>
+        ) : isPending ? (
           <div>Loading logs...</div>
         ) : error ? (
           <div className="text-red-500">Error loading logs: {(error as Error).message}</div>

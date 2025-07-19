@@ -1,8 +1,8 @@
+from db_models import AtomSpan, Atom
 from modules.atoms.application.dto.create_atom_dto import CreateAtomDTO
 from modules.atoms.application.dto.create_atom_span_dto import CreateAtomSpanDTO
 from modules.atoms.application.dto.update_atom_dto import UpdateAtomDTO
 
-from db_models import AtomSpan, Atom
 
 class AtomRepository:
     def __init__(self, db):

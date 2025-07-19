@@ -1,9 +1,23 @@
 from typing import Optional
 
+from db_models import RegulationFragment
 from modules.regulation_fragment.application.dto.create_regulation_fragment_dto import \
     CreateRegulationFragmentDTO
 from modules.regulation_fragment.application.dto.regulation_fragment_dto import RegulationFragmentDTO
 from modules.regulation_fragment.infra.regulation_fragment_repository import RegulationFragmentRepository
+
+
+def _dto_from_db(fragment: RegulationFragment) -> RegulationFragmentDTO:
+    """
+    Convert a domain model to a DTO.
+    """
+    return RegulationFragmentDTO(
+        id=fragment.id,
+        title=fragment.title,
+        content=fragment.content,
+        created_at=fragment.created_at,
+        llm_identifier=fragment.llm_identifier.value
+    )
 
 
 class RegulationFragmentService:
@@ -16,12 +30,7 @@ class RegulationFragmentService:
         """
         created_fragment = self.regulation_fragment_repository.save(fragment_data)
 
-        return RegulationFragmentDTO(
-            id=created_fragment.id,
-            title=created_fragment.title,
-            content=created_fragment.content,
-            created_at=created_fragment.created_at
-        )
+        return _dto_from_db(created_fragment)
 
     def find_all(self) -> list[RegulationFragmentDTO]:
         """
@@ -29,15 +38,7 @@ class RegulationFragmentService:
         """
         fragments = self.regulation_fragment_repository.find_all()
 
-        return [
-            RegulationFragmentDTO(
-                id=fragment.id,
-                title=fragment.title,
-                content=fragment.content,
-                created_at=fragment.created_at
-            )
-            for fragment in fragments
-        ]
+        return [_dto_from_db(fragment) for fragment in fragments]
 
     def find_by_id(self, fragment_id: int) -> Optional[RegulationFragmentDTO]:
         """
@@ -48,12 +49,7 @@ class RegulationFragmentService:
         if not fragment:
             return None
 
-        return RegulationFragmentDTO(
-            id=fragment.id,
-            title=fragment.title,
-            content=fragment.content,
-            created_at=fragment.created_at
-        )
+        return _dto_from_db(fragment)
 
     def delete_by_id(self, fragment_id: int) -> bool:
         """

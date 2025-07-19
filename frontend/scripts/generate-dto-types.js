@@ -38,8 +38,11 @@ if (isWindows) {
   pythonCommand = 'python3';
 }
 
+// Set PYTHONPATH to include the backend directory
+const pythonPath = isWindows ? `set PYTHONPATH=${backendDir} &&` : `PYTHONPATH=${backendDir}`;
+
 // Build the full command
-const command = `${activateCommand} pydantic2ts --module ${exportedTypesPath} --output "${outputPath}" --json2ts-cmd "${json2tsPath}"`;
+const command = `${activateCommand} ${pythonPath} pydantic2ts --module ${exportedTypesPath} --output "${outputPath}" --json2ts-cmd "${json2tsPath}"`;
 
 console.log('Generating TypeScript types...');
 console.log(`Command: ${command}`);

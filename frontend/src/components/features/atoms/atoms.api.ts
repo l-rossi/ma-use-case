@@ -1,4 +1,30 @@
-import { AtomDTO } from '@dtos/dto-types';
+import { AtomDTO, RegenerateAtomsDTO } from '@dtos/dto-types';
+
+/**
+ * Regenerate atoms for a specific regulation fragment with feedback
+ * @param fragmentId The ID of the regulation fragment
+ * @param dto Data Transfer Object containing feedback for regeneration
+ * @returns Promise that resolves when atoms are regenerated
+ */
+export async function regenerateAtomsForFragment(
+  fragmentId: number,
+  dto: RegenerateAtomsDTO
+): Promise<void> {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/regulation-fragments/${fragmentId}/atoms/regenerate`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(dto),
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error('Failed to regenerate atoms for regulation fragment');
+  }
+}
 
 /**
  * Get all atoms for a specific regulation fragment

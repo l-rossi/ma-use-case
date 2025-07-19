@@ -1,0 +1,80 @@
+# Prolog Atom Regeneration with User Feedback
+
+You are refining previously extracted Prolog atoms based on user feedback. Your task is to take the existing atom extraction and user feedback, then regenerate the complete extraction incorporating all feedback instructions.
+
+## Feedback Processing Rules:
+1. **No Unwanted Changes**: Do not modify atoms unless explicitly requested in the feedback
+1. **Split atoms**: Break compound atoms into separate components when requested
+2. **Reuse existing atoms**: When feedback mentions reusing existing atoms, maintain consistent naming and structure
+3. **Merge atoms**: Combine multiple atoms into a single concept when requested
+4. **Rename atoms**: Update atom names while preserving logical meaning when specified
+5. **Add missing atoms**: Extract additional concepts identified in feedback when needed
+6. **Remove atoms**: Eliminate unnecessary atoms as specified
+7. **Adjust granularity**: Make atoms more specific or more general as requested
+
+## Instructions:
+1. **Analyze the feedback**: Understand what changes are being requested
+2. **Identify affected atoms**: Determine which existing atoms need modification
+3. **Apply changes systematically**: Make all requested modifications
+4. **Update annotations**: Ensure the annotated text reflects the new atom structure
+5. **Maintain consistency**: Keep atom IDs sequential and ensure all referenced atoms exist
+6. **Preserve original text**: The annotated text must match the original statement exactly (except for atom tags)
+7. **Complete regeneration**: Provide the full updated extraction, not just the changes
+
+## Input Format:
+- **Original Statement**: [The compliance statement that was originally analyzed]
+- **Previous Extraction**: [The previously extracted atoms and annotation]
+- **Feedback**: [User instructions for modifications]
+
+## Output Format:
+Provide the complete regenerated extraction in the same format as the Previous Extraction.
+
+
+## Example
+**Original Statement:**
+Access to confidential files requires both security clearance and supervisor approval.
+
+**Previous Extraction:**
+<result>
+<annotated>
+<atom id="1">Access</atom> to <atom id="2">confidential files</atom> requires both <atom id="3">security clearance</atom> and <atom id="4">supervisor</atom> <atom id="5">approval</atom>.
+</annotated>
+<atoms>
+<atom id="1">access(Person, File)</atom>
+<atom id="2">confidential_file(X)</atom>
+<atom id="3">has_clearance(Person, security)</atom>
+<atom id="4">supervisor(X, Y)</atom>
+<atom id="5">approved_by(Supervisor, Person, File)</atom>
+</atoms>
+</result>
+
+**Feedback:**
+Split the confidential file atom into two separate atoms.
+
+**Regenerated Output:**
+<result>
+<annotated>
+<atom id="1">Access</atom> to <atom id="2">confidential</atom> <atom id="3">files</atom> requires both <atom id="4">security clearance</atom> and <atom id="5">supervisor</atom> <atom id="6">approval</atom>.
+</annotated>
+<atoms>
+<atom id="1">access(Person, File)</atom>
+<atom id="2">confidential(X)</atom>
+<atom id="3">file(X)</atom>
+<atom id="4">has_clearance(Person, security)</atom>
+<atom id="5">supervisor(X, Y)</atom>
+<atom id="6">approved_by(Supervisor, Person, File)</atom>
+</atoms>
+</result>
+
+---
+
+**Original Statement:**
+{}
+
+**Previous Extraction:**
+{}
+
+**Feedback:**
+{}
+
+**Regenerated Output:**

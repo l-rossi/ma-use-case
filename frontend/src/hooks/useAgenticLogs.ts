@@ -18,6 +18,7 @@ type PageParam = {
 export function useAgenticLogs(fragmentId: number | null) {
   const LIMIT = 20;
 
+  const queryClient = useQueryClient();
   const queryKeyOld = ['agentic-logs', fragmentId];
 
   const query = useInfiniteQuery<Array<AgenticLogDTO>>({
@@ -64,7 +65,11 @@ export function useAgenticLogs(fragmentId: number | null) {
     // Automatically refetch new logs every 5 seconds
     const interval = setInterval(() => {
       if (query.isFetching || !fragmentId) return;
-      query.fetchNextPage();
+      if (query.data?.pages?.length === 0) {
+        queryClient.invalidateQueries({ queryKey: queryKeyOld });
+      } else {
+        query.fetchNextPage();
+      }
     }, 5000);
 
     return () => clearInterval(interval);

@@ -20,7 +20,9 @@ import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { RegulationFragmentDTO } from '../../../../generated/dto-types';
+import { LLMIdentifier, RegulationFragmentDTO } from '@dtos/dto-types';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select';
+import { modelNames } from '@/lib/modelNames';
 
 const formSchema = z.object({
   title: z.string().min(1, {
@@ -29,6 +31,7 @@ const formSchema = z.object({
   content: z.string().min(1, {
     message: 'Content is required.',
   }),
+  llm_identifier: z.string(),
 });
 
 interface Props {
@@ -45,6 +48,7 @@ export function CreateRegulationFragmentForm({ className, onSuccess }: Readonly<
     defaultValues: {
       title: '',
       content: '',
+      llm_identifier: 'GEMINI_2_5_FLASH' satisfies LLMIdentifier,
     },
   });
 
@@ -70,6 +74,8 @@ export function CreateRegulationFragmentForm({ className, onSuccess }: Readonly<
     createFragmentMutation.mutate(values);
   }
 
+
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className={cn('space-y-4', className)}>
@@ -82,6 +88,33 @@ export function CreateRegulationFragmentForm({ className, onSuccess }: Readonly<
               <FormControl>
                 <Input placeholder="Enter regulation fragment title" {...field} />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="llm_identifier"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Use Model</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a model" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {Object.entries(modelNames).map(([value, label]) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
