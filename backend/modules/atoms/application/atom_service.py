@@ -1,8 +1,10 @@
 import re
 from typing import Generator
 
+from lxml import etree
+
 from modules.atoms.application.dto.atom_dto import AtomDTO
-from modules.atoms.application.dto.atom_extraction_result_dto import AtomExtractionResultDTO
+from modules.atoms.application.dto.atom_extraction_result_dto import AtomExtractionResultDTO, ExtractedAtomDTO
 from modules.atoms.application.dto.atom_span_dto import AtomSpanDTO
 from modules.atoms.application.dto.create_atom_dto import CreateAtomDTO
 from modules.atoms.application.dto.create_atom_span_dto import CreateAtomSpanDTO
@@ -67,14 +69,54 @@ class AtomService:
         """
         print(f"Regenerating atoms for regulation fragment {regulation_fragment_id}...")
 
+        fragment = self.regulation_fragment_service.find_by_id(regulation_fragment_id)
+        if not fragment:
+            raise ValueError(f"Regulation fragment with ID {regulation_fragment_id} not found.")
+
+        atoms = self.get_atoms_for_regulation_fragment(regulation_fragment_id)
+        if not atoms:
+            raise ValueError(f"No atoms found for regulation fragment {regulation_fragment_id}.")
+
+        # I am guessing lower numbers are better for LLM performance, so we normalize IDs to start from 1 to reduce confusion.
+        db_id_to_normalized_id = {atom.id: idx for idx, atom in enumerate(atoms, start=1)}
+
+        previous_result = AtomExtractionResultDTO(
+            annotated_raw=etree.fromstring(f"""<annotated>{_insert_atom_spans(
+                fragment.content,
+                [AtomSpanDTO(
+                    id=span.id,
+                    atom_id=db_id_to_normalized_id[span.atom_id],
+                    start=span.start,
+                    end=span.end
+                ) for atom in atoms for span in atom.spans],
+            )}</annotated>"""),
+            atoms=[
+                ExtractedAtomDTO(
+                    # Use normalized IDs for atoms
+                    id=db_id_to_normalized_id[atom.id],
+                    predicate=atom.predicate,
+                ) for atom in atoms
+            ]
+        ).to_xml().decode('utf-8')
+
         regeneration_request = self.regeneration_prompt.format(
-            regulation_fragment_id=regulation_fragment_id,
-            feedback=regenerate_data.feedback if regenerate_data else "No feedback provided."
+            fragment.content,  # Original Statement
+            previous_result,  # Previous extraction result
+            regenerate_data.feedback  # Feedback for regeneration
         )
 
-        response = self.chat_agent.send_message()
+        response = self.chat_agent.send_message(
+            ChatAgentMessageIngressDTO(
+                user_prompt=regeneration_request,
+                regulation_fragment_id=regulation_fragment_id,
+            )
+        )
+        if response.is_error:
+            raise ValueError(f"Error regenerating atoms: {response.message}")
 
+        regenerated_result = AtomExtractionResultDTO.from_xml(response.message)
         self.delete_atoms_for_regulation_fragment(regulation_fragment_id)
+        self._save_extracted_atoms(regenerated_result, regulation_fragment_id)
 
     def generate_atoms_for_regulation_fragment(self, regulation_fragment_id: int):
         """
@@ -107,16 +149,10 @@ class AtomService:
         if returned_message.is_error:
             raise ValueError(f"Error generating atoms: {returned_message.message}")
 
-        print("-" * 12)
-
-        print(returned_message.message)
-
-        print("-" * 12)
-
         parsed_result = AtomExtractionResultDTO.from_xml(returned_message.message)
+        self._save_extracted_atoms(parsed_result, regulation_fragment_id)
 
-        print(parsed_result)
-
+    def _save_extracted_atoms(self, parsed_result: AtomExtractionResultDTO, regulation_fragment_id: int):
         local_id_to_global_id = dict()
 
         # TODO error handling and retry logic.
@@ -141,7 +177,7 @@ class AtomService:
             )
 
 
-def _insert_atom_spans(text: str, atom_spans: list[CreateAtomSpanDTO]) -> str:
+def _insert_atom_spans(text: str, atom_spans: list[AtomSpanDTO]) -> str:
     """
     Insert atom spans into the text at the specified positions.
     This function assumes that the atom spans are sorted by their start position.

@@ -1,15 +1,23 @@
 # MA Use Case
 
-A full-stack application with a Next.js frontend and Flask backend.
+A full-stack application with a Next.js frontend and Flask backend designed to optimize formal requirements extraction from regulatory texts for improved human understandability.
+
+## Project Overview
+
+This application explores the extraction and representation of formal requirements (atoms) from regulatory text fragments. By leveraging natural language processing and large language models, the system identifies logical predicates within regulatory documents and presents them in a more structured and understandable format.
+
+Key features:
+- Extraction of formal requirements (atoms) from regulatory text
+- Visual highlighting of requirement spans within source text
+- Regeneration of requirements based on user feedback
+- Interactive interface for exploring and understanding regulatory requirements
 
 ## Project Structure
 
 - `frontend/`: Next.js application with App Router, Tailwind CSS, and TanStack Query
-- `backend/`: Flask API
+- `backend/`: Flask API with LLM integration for requirement extraction
 
 ## Frontend Setup
-
-TODO
 
 1. Navigate to the frontend directory:
    ```
@@ -71,9 +79,24 @@ TODO
 - TypeScript
 - Tailwind CSS
 - TanStack Query
-- RadixUI/Shadcn (to be implemented)
+- RadixUI/Shadcn UI components
 
 ### Backend
 - Flask
-- OpenAI SDK
+- OpenAI SDK for LLM integration
 - Python-dotenv for environment management
+- Pydantic for data validation and serialization
+
+## Use Case: Optimizing Formal Requirements Extraction
+
+This project demonstrates how large language models can be used to extract formal requirements from regulatory texts in a way that enhances human understanding. Traditional formal requirement extraction often results in highly technical specifications that are difficult for non-specialists to comprehend.
+
+By using a combination of natural language processing techniques and interactive visualization:
+
+1. **Contextual Understanding**: Requirements are presented within their original context, with visual highlighting to show the relationship between formal predicates and source text.
+
+2. **Iterative Refinement**: Users can provide feedback to regenerate and improve the extracted requirements, creating a human-in-the-loop system that continuously enhances accuracy and understandability.
+
+3. **Structured Representation**: Complex regulatory texts are broken down into atomic predicates that capture individual requirements in a more digestible format.
+
+This approach bridges the gap between formal specification and human comprehension, making regulatory compliance more accessible and manageable.

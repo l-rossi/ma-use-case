@@ -10,9 +10,11 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { Button } from '@/components/ui/Button';
 import { Trash2 } from 'lucide-react';
 import { AtomView } from '@/components/features/atoms/AtomView';
-import { useState } from 'react';
+import { CSSProperties, ReactNode, useRef, useState } from 'react';
 import { AtomDTO } from '@dtos/dto-types';
 import { RegenerationForm } from './RegenerationForm';
+import { getHighlightColor } from '@/lib/getHighlightColor';
+import { useHoveredAtom } from '@/hooks/useHoveredAtom';
 
 interface Props {
   className?: string;
@@ -20,7 +22,6 @@ interface Props {
 
 export function Atoms({ className }: Readonly<Props>) {
   const [selectedFragmentId] = useSelectedRegulationFragmentId();
-  const [selectedAtom, setSelectedAtom] = useState<AtomDTO | null>(null);
 
   const { data: atoms = [], isPending, isError, refetch } = useAtoms(selectedFragmentId);
 
@@ -40,6 +41,13 @@ export function Atoms({ className }: Readonly<Props>) {
         queryKey: ['atoms', selectedFragmentId],
       }),
   });
+
+  const feedbackTextRef = useRef<HTMLTextAreaElement>(null);
+  const [feedbackFocused, setFeedbackFocused] = useState(false);
+  const [feedback, setFeedback] = useState('');
+
+  // const highlightedFeedback = useDeferredValue(highlightAtomsInFeedback(feedback, atoms));
+  const [highlightedFeedback, setHighlightedFeedback] = useState<ReactNode>(null);
 
   if (!selectedFragmentId) {
     return (
@@ -105,24 +113,118 @@ export function Atoms({ className }: Readonly<Props>) {
       <div className={'grid grid-cols-2 overflow-hidden gap-2'}>
         <div className="flex flex-col gap-3 overflow-y-auto">
           {atoms.map(atom => (
-            <button
+            <AtomView
+              atom={atom}
               key={atom.id}
-              onClick={() => setSelectedAtom(atom)}
-              className={cn(
-                'cursor-pointer active:bg-gray-200 border',
-                selectedAtom?.id === atom.id && 'border-gray-500'
-              )}
-            >
-              <AtomView atom={atom} />
-            </button>
+              onClick={
+                feedbackFocused
+                  ? () => {
+                      const textarea = feedbackTextRef.current;
+                      if (!textarea) return;
+                      textarea.focus();
+                      setFeedback(oldFeedback => {
+                        const textBefore = oldFeedback.substring(0, textarea.selectionStart);
+                        const textAfter = oldFeedback.substring(textarea.selectionEnd);
+                        return textBefore + atom.predicate + textAfter;
+                      });
+                    }
+                  : undefined
+              }
+              onMouseDown={feedbackFocused ? e => e.preventDefault() : undefined}
+            />
           ))}
         </div>
 
         <div className={'flex flex-col'}>
           <h3 className="text-lg font-semibold mb-2">Regenerate Atoms</h3>
-          <RegenerationForm fragmentId={selectedFragmentId} />
+          <RegenerationForm
+            feedback={feedback}
+            setFeedback={setFeedback}
+            fragmentId={selectedFragmentId}
+            onFocus={() => {
+              setFeedbackFocused(true);
+              setHighlightedFeedback(null);
+            }}
+            onBlur={() => {
+              setFeedbackFocused(false);
+              setHighlightedFeedback(
+                highlightAtomsInFeedback(feedback, atoms, feedbackTextRef.current)
+              );
+            }}
+            highlightedFeedback={highlightedFeedback}
+            ref={feedbackTextRef}
+          />
         </div>
       </div>
     </Box>
+  );
+}
+
+function highlightAtomsInFeedback(
+  feedback: string,
+  atoms: AtomDTO[],
+  textAreaRef: HTMLTextAreaElement | null
+): ReactNode {
+  const escapedTokens = atoms.map(atom => atom.predicate.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'));
+  const regex = new RegExp(`(${escapedTokens.join('|')})`, 'gi');
+  const splitFeedback = feedback.split(regex);
+
+  let textOffset = 0;
+  return splitFeedback.map((part, index) => {
+    // TODO, known limitation: This is purely orthographic matching. "Duplicate" predicates will not be highlighted correctly.
+    const atom = atoms.find(atom => atom.predicate === part);
+    textOffset += part.length;
+    if (atom) {
+      return (
+        <InlineHighlight
+          atomId={atom.id}
+          text={atom.predicate}
+          key={index}
+          textAreaRef={textAreaRef}
+          textOffset={textOffset}
+        />
+      );
+    }
+    return part;
+  });
+}
+
+function InlineHighlight({
+  atomId,
+  text,
+  textAreaRef,
+  textOffset,
+}: {
+  atomId: number;
+  text: string;
+  textAreaRef: HTMLTextAreaElement | null;
+  textOffset: number;
+}) {
+  const [hoveredAtom, setHoveredAtom] = useHoveredAtom();
+  const [base, hover] = getHighlightColor(atomId.toString());
+  const isSelected = hoveredAtom === atomId;
+
+  return (
+    <span
+      style={
+        {
+          '--bg-base': isSelected ? hover : base,
+          '--bg-hover': hover,
+        } as CSSProperties
+      }
+      className={cn(
+        'transition-colors hover:bg-[var(--bg-hover)] bg-[var(--bg-base)] duration-100 pointer-events-auto'
+      )}
+      onMouseEnter={() => setHoveredAtom(atomId)}
+      onMouseLeave={() => setHoveredAtom(null)}
+      // This is 100% not aria conform :DDDDD
+      onClick={e => {
+        if (!textAreaRef) return;
+        textAreaRef.focus();
+        textAreaRef.setSelectionRange(textOffset - text.length, textOffset);
+      }}
+    >
+      {text}
+    </span>
   );
 }

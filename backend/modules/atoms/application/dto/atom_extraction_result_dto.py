@@ -20,8 +20,6 @@ class AtomExtractionResultDTO(BaseXmlModel, tag='result', arbitrary_types_allowe
 
     @computed_element
     def annotated(self) -> str:
-        # Impossible ChatGPT said... witness my defiance!
-        # Shitty code shall prevail!
         return ((self.annotated_raw.text or '') + ''.join(
             etree.tostring(child, encoding='unicode')
             for child in self.annotated_raw
