@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
+from typing import List, Optional
 
+from modules.chat.application.dto.context_message_dto import ContextMessageDTO
 from modules.models.application.agentic_log_service import AgenticLogService
 from modules.models.application.dto.chat_agent_message_egress_dto import ChatAgentMessageEgressDTO
 from modules.models.application.dto.chat_agent_message_ingress_dto import ChatAgentMessageIngressDTO
@@ -16,7 +18,8 @@ class IChatAgent(ABC):
         """
         self.agentic_log_service = agentic_log_service
 
-    def send_message(self, message: ChatAgentMessageIngressDTO) -> ChatAgentMessageEgressDTO:
+    def send_message(self, message: ChatAgentMessageIngressDTO,
+                     context_messages: Optional[List[ContextMessageDTO]] = None) -> ChatAgentMessageEgressDTO:
         """
         Process a message to a model and return a response. This method logs the message and then calls the internal
         `_send_message` method to handle the actual message sending.
@@ -33,7 +36,7 @@ class IChatAgent(ABC):
             )
         )
 
-        response = self._send_message(message)
+        response = self._send_message(message, context_messages=context_messages or [])
         # Log the model response with the new field structure
         self.agentic_log_service.create(
             CreateAgenticLogDTO(
@@ -46,7 +49,8 @@ class IChatAgent(ABC):
         return response
 
     @abstractmethod
-    def _send_message(self, message: ChatAgentMessageIngressDTO) -> ChatAgentMessageEgressDTO:
+    def _send_message(self, message: ChatAgentMessageIngressDTO,
+                      context_messages: List[ContextMessageDTO]) -> ChatAgentMessageEgressDTO:
         """
         Internal method to send a message. This is intended to be overridden by subclasses.
         """

@@ -30,11 +30,18 @@ class AtomRepository:
         self.db.session.commit()
         return atom_span
 
-    def update(self, atom: UpdateAtomDTO) -> Atom:
-        existing_atom = self.db.query(Atom).filter(Atom.id == atom.id).first()
+    def update(self, atom_id: str, atom: UpdateAtomDTO) -> Atom:
+        existing_atom = self.db.query(Atom).filter(Atom.id == atom_id).one()
         if not existing_atom:
             raise ValueError("Atom not found")
-        existing_atom.description = atom.description
+
+        if atom.predicate is not None:
+            existing_atom.predicate = atom.predicate
+        if atom.description is not None:
+            existing_atom.description = atom.description
+        if atom.is_negated is not None:
+            existing_atom.is_negated = atom.is_negated
+
         self.db.session.add(existing_atom)
         self.db.session.commit()
         return existing_atom
@@ -60,3 +67,15 @@ class AtomRepository:
 
         self.db.session.commit()
         return count
+
+    def delete_by_id(self, atom_id: int) -> bool:
+        """
+        Delete an atom by its ID.
+        :param atom_id: int ID of the atom to delete
+        """
+        atom = Atom.query.filter_by(id=atom_id).one()
+        if atom is None:
+            return False
+        self.db.session.delete(atom)
+        self.db.session.commit()
+        return True

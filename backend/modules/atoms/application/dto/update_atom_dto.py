@@ -1,5 +1,8 @@
+from typing import List, Optional
 from pydantic import BaseModel
 
 
 class UpdateAtomDTO(BaseModel):
-    description: str
+    predicate: Optional[str]
+    description: Optional[str] = None
+    is_negated: Optional[bool] = None

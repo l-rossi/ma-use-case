@@ -1,8 +1,10 @@
 import os
+from typing import List
 
 from google import genai
 from google.genai.types import GenerateContentConfig
 
+from modules.chat.application.dto.context_message_dto import ContextMessageDTO
 from modules.models.application.agentic_log_service import AgenticLogService
 from modules.models.application.dto.chat_agent_message_egress_dto import ChatAgentMessageEgressDTO
 from modules.models.application.dto.chat_agent_message_ingress_dto import ChatAgentMessageIngressDTO
@@ -17,7 +19,7 @@ class GoogleChatAgent(IChatAgent):
     def __init__(self, agentic_log_service: AgenticLogService, model: str):
         """
         Initialize the Google chat agent.
-        
+
         Args:
             model (str): The Google Generative AI model to use.
         """
@@ -31,13 +33,30 @@ class GoogleChatAgent(IChatAgent):
         self.client = genai.Client(api_key=api_key)
         self.model = model
 
-    def _send_message(self, message: ChatAgentMessageIngressDTO) -> ChatAgentMessageEgressDTO:
+    def _send_message(self, message: ChatAgentMessageIngressDTO,
+                      context_messages: List[ContextMessageDTO]) -> ChatAgentMessageEgressDTO:
         """
         Process a message and return a response using the Google Generative AI API.
         """
 
         try:
-            request_message = f"System: {message.system_prompt}\n\nUser: {message.user_prompt}" if message.system_prompt else message.user_prompt
+            # Start with system prompt if available
+            request_parts = []
+            if message.system_prompt:
+                request_parts.append(f"System: {message.system_prompt}")
+
+            # Add context messages if they exist
+            for ctx_msg in context_messages:
+                if ctx_msg.type.value == "user":
+                    request_parts.append(f"User: {ctx_msg.content}")
+                elif ctx_msg.type.value == "agent":
+                    request_parts.append(f"Assistant: {ctx_msg.content}")
+
+            # Add the current user prompt
+            request_parts.append(f"User: {message.user_prompt}")
+
+            # Join all parts with double newlines
+            request_message = "\n\n".join(request_parts)
 
             response = self.client.models.generate_content(
                 model=self.model,

@@ -1,13 +1,14 @@
-from typing import Dict
+from typing import Dict, Optional, List
 
+from modules.chat.application.dto.context_message_dto import ContextMessageDTO
 from modules.models.application.agentic_log_service import AgenticLogService
 from modules.models.application.dto.chat_agent_message_egress_dto import ChatAgentMessageEgressDTO
 from modules.models.application.dto.chat_agent_message_ingress_dto import ChatAgentMessageIngressDTO
 from modules.models.domain.llm_identifier import LLMIdentifier
-from modules.models.infra.services.i_chat_agent import IChatAgent
-from modules.models.infra.services.openai_chat_agent import OpenAIChatAgent
 from modules.models.infra.services.anthropic_chat_agent import AnthropicAIChatAgent
 from modules.models.infra.services.google_chat_agent import GoogleChatAgent
+from modules.models.infra.services.i_chat_agent import IChatAgent
+from modules.models.infra.services.openai_chat_agent import OpenAIChatAgent
 from modules.regulation_fragment.application.regulation_fragment_service import RegulationFragmentService
 
 
@@ -34,10 +35,12 @@ class LLMAdapter:
         }
         self.regulation_fragment_service = regulation_fragment_service
 
-    def send_message(self, message: ChatAgentMessageIngressDTO) -> ChatAgentMessageEgressDTO:
+    def send_message(self, message: ChatAgentMessageIngressDTO,
+                     context_messages: Optional[List[ContextMessageDTO]] = None) -> ChatAgentMessageEgressDTO:
         """
         Delegates the message to the appropriate agent based on the regulation fragment's LLM identifier.
-        :param message:
+        :param context_messages: Optional list of context messages to include in the request.
+        :param message: The message to be sent to the LLM.
         :return:
         """
         regulation = self.regulation_fragment_service.find_by_id(
@@ -51,4 +54,4 @@ class LLMAdapter:
         if agent is None:
             raise ValueError(f"No agent found for LLM identifier {regulation.llm_identifier}.")
 
-        return agent.send_message(message)
+        return agent.send_message(message, context_messages)

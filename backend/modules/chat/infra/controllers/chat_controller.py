@@ -7,10 +7,10 @@ chat_controller = Blueprint('chat', __name__)
 
 @chat_controller.get('/regulations/<regulation_id>/chat')
 def get_by_regulation_id(regulation_id: str):
-    return container.chat_service.get_by_regulation_id(regulation_id)
+    return [m.model_dump() for m in container.chat_service().get_by_regulation_id(regulation_id)]
 
 
 @chat_controller.post('/regulations/<regulation_id>/chat')
 def create(regulation_id: str):
     chat_data = CreateChatMessageDTO(**request.get_json())
-    return container.chat_service.handle_user_message(regulation_id, chat_data), 201
+    return container.chat_service().send_chat_message(regulation_id, chat_data).model_dump(), 201

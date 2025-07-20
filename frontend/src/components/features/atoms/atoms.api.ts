@@ -1,4 +1,4 @@
-import { AtomDTO, RegenerateAtomsDTO } from '@dtos/dto-types';
+import { AtomDTO, CreateAtomDTO, RegenerateAtomsDTO, UpdateAtomDTO } from '@dtos/dto-types';
 
 /**
  * Regenerate atoms for a specific regulation fragment with feedback
@@ -77,4 +77,70 @@ export async function deleteAtomsForFragment(fragmentId: number): Promise<void> 
   if (!res.ok) {
     throw new Error('Failed to delete atoms for regulation fragment');
   }
+}
+
+/**
+ * Delete a single atom by its ID
+ * @param atomId The ID of the atom to delete
+ * @returns Promise that resolves when the atom is deleted
+ */
+export async function deleteAtomById(atomId: number): Promise<void> {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/atoms/${atomId}`,
+    {
+      method: 'DELETE',
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error('Failed to delete atom');
+  }
+}
+
+/**
+ * Update an atom
+ * @param dto The UpdateAtomDTO containing the atom data to update
+ * @returns Promise with the updated AtomDTO
+ */
+export async function updateAtom(dto: UpdateAtomDTO): Promise<AtomDTO> {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/atoms/${dto.id}`,
+    {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(dto),
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error('Failed to update atom');
+  }
+
+  return await res.json();
+}
+
+/**
+ * Create a new atom
+ * @param dto The CreateAtomDTO containing the atom data to create
+ * @returns Promise with the created AtomDTO
+ */
+export async function createAtom(dto: CreateAtomDTO): Promise<AtomDTO> {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/atoms`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(dto),
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error('Failed to create atom');
+  }
+
+  return await res.json();
 }

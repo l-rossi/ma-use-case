@@ -1,7 +1,8 @@
 FROM swipl:latest
 
-WORKDIR /
 
-COPY server.pl server.pl
+ARG BUST_CACHE=1
+COPY server.pl .
 
-CMD ["swipl", "-g", "server(8080), thread_get_message(_)", "-s", "server.pl"]
+# Run the Python Flask app using the virtual environment
+CMD ["swipl", "server.pl"]

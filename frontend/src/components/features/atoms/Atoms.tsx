@@ -10,11 +10,12 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { Button } from '@/components/ui/Button';
 import { Trash2 } from 'lucide-react';
 import { AtomView } from '@/components/features/atoms/AtomView';
-import { CSSProperties, ReactNode, useRef, useState } from 'react';
+import { CSSProperties, ReactNode, useEffect, useRef, useState } from 'react';
 import { AtomDTO } from '@dtos/dto-types';
 import { RegenerationForm } from './RegenerationForm';
 import { getHighlightColor } from '@/lib/getHighlightColor';
 import { useHoveredAtom } from '@/hooks/useHoveredAtom';
+import { CreateAtomModal } from '@/components/features/atoms/CreateAtomModal';
 
 interface Props {
   className?: string;
@@ -48,6 +49,12 @@ export function Atoms({ className }: Readonly<Props>) {
 
   // const highlightedFeedback = useDeferredValue(highlightAtomsInFeedback(feedback, atoms));
   const [highlightedFeedback, setHighlightedFeedback] = useState<ReactNode>(null);
+  useEffect(() => {
+    if (!feedback) {
+      setHighlightedFeedback(null);
+      return;
+    }
+  }, [feedback]);
 
   if (!selectedFragmentId) {
     return (
@@ -66,7 +73,7 @@ export function Atoms({ className }: Readonly<Props>) {
       <Box
         className={cn(
           'text-red-500 shadow-sky-500 p-4 flex flex-col items-center justify-center',
-          className
+          className,
         )}
       >
         <p className="mb-4">Failed to load atoms.</p>
@@ -111,28 +118,20 @@ export function Atoms({ className }: Readonly<Props>) {
       </div>
 
       <div className={'grid grid-cols-2 overflow-hidden gap-2'}>
-        <div className="flex flex-col gap-3 overflow-y-auto">
-          {atoms.map(atom => (
-            <AtomView
-              atom={atom}
-              key={atom.id}
-              onClick={
-                feedbackFocused
-                  ? () => {
-                      const textarea = feedbackTextRef.current;
-                      if (!textarea) return;
-                      textarea.focus();
-                      setFeedback(oldFeedback => {
-                        const textBefore = oldFeedback.substring(0, textarea.selectionStart);
-                        const textAfter = oldFeedback.substring(textarea.selectionEnd);
-                        return textBefore + atom.predicate + textAfter;
-                      });
-                    }
-                  : undefined
-              }
-              onMouseDown={feedbackFocused ? e => e.preventDefault() : undefined}
-            />
-          ))}
+        <div className={"h-full overflow-hidden flex flex-col"}>
+          <ul className="flex flex-col gap-3 overflow-y-auto">
+            {atoms.map(atom => (
+              <li key={atom.id}>
+                <AtomView
+                  atom={atom}
+                  textarea={feedbackTextRef.current}
+                  setFeedback={setFeedback}
+                  feedbackFocused={feedbackFocused}
+                />
+              </li>
+            ))}
+          </ul>
+          <CreateAtomModal regulationFragmentId={selectedFragmentId} />
         </div>
 
         <div className={'flex flex-col'}>
@@ -148,7 +147,7 @@ export function Atoms({ className }: Readonly<Props>) {
             onBlur={() => {
               setFeedbackFocused(false);
               setHighlightedFeedback(
-                highlightAtomsInFeedback(feedback, atoms, feedbackTextRef.current)
+                highlightAtomsInFeedback(feedback, atoms, feedbackTextRef.current),
               );
             }}
             highlightedFeedback={highlightedFeedback}
@@ -163,7 +162,7 @@ export function Atoms({ className }: Readonly<Props>) {
 function highlightAtomsInFeedback(
   feedback: string,
   atoms: AtomDTO[],
-  textAreaRef: HTMLTextAreaElement | null
+  textAreaRef: HTMLTextAreaElement | null,
 ): ReactNode {
   const escapedTokens = atoms.map(atom => atom.predicate.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'));
   const regex = new RegExp(`(${escapedTokens.join('|')})`, 'gi');
@@ -190,11 +189,11 @@ function highlightAtomsInFeedback(
 }
 
 function InlineHighlight({
-  atomId,
-  text,
-  textAreaRef,
-  textOffset,
-}: {
+                           atomId,
+                           text,
+                           textAreaRef,
+                           textOffset,
+                         }: {
   atomId: number;
   text: string;
   textAreaRef: HTMLTextAreaElement | null;
@@ -213,7 +212,7 @@ function InlineHighlight({
         } as CSSProperties
       }
       className={cn(
-        'transition-colors hover:bg-[var(--bg-hover)] bg-[var(--bg-base)] duration-100 pointer-events-auto'
+        'transition-colors hover:bg-[var(--bg-hover)] bg-[var(--bg-base)] duration-100 pointer-events-auto',
       )}
       onMouseEnter={() => setHoveredAtom(atomId)}
       onMouseLeave={() => setHoveredAtom(null)}

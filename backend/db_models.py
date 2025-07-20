@@ -4,6 +4,7 @@ from typing import List
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from modules.chat.domain.agent import Agent
 from modules.models.domain.llm_identifier import LLMIdentifier
 from modules.models.domain.message_source import MessageSource
 
@@ -57,7 +58,7 @@ class ChatMessage(Base):
     regulation_fragment_id: Mapped[int] = mapped_column(ForeignKey("regulation_fragments.id", ondelete='CASCADE'),
                                                         nullable=False)
     content: Mapped[str] = mapped_column(nullable=False)
-    agent: Mapped[str] = mapped_column(nullable=False)
+    agent: Mapped[Agent] = mapped_column(nullable=False)
     created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
 
     regulation_fragment: Mapped["RegulationFragment"] = relationship(back_populates="chat_messages")

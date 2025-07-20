@@ -5,6 +5,7 @@
 /* Do not modify it by hand - just update the pydantic models and then re-run the script
 */
 
+export type Agent = "USER" | "AI";
 /**
  * Enum representing different LLM identifiers.
  */
@@ -45,7 +46,8 @@ export interface AtomSpanDTO {
 export interface ChatMessageDTO {
   id: number;
   created_at: string;
-  message: string;
+  content: string;
+  agent: Agent;
 }
 export interface CreateAtomDTO {
   regulation_fragment_id: number;
@@ -73,5 +75,7 @@ export interface RegulationFragmentDTO {
   [k: string]: unknown;
 }
 export interface UpdateAtomDTO {
-  description: string;
+  predicate: string | null;
+  description?: string | null;
+  is_negated?: boolean | null;
 }

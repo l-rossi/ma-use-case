@@ -9,6 +9,7 @@ from modules.atoms.application.dto.atom_span_dto import AtomSpanDTO
 from modules.atoms.application.dto.create_atom_dto import CreateAtomDTO
 from modules.atoms.application.dto.create_atom_span_dto import CreateAtomSpanDTO
 from modules.atoms.application.dto.regenerate_atoms_dto import RegenerateAtomsDTO
+from modules.atoms.application.dto.update_atom_dto import UpdateAtomDTO
 from modules.atoms.infra.atom_repository import AtomRepository
 from modules.models.application.agentic_log_service import AgenticLogService
 from modules.models.application.dto.chat_agent_message_ingress_dto import ChatAgentMessageIngressDTO
@@ -56,6 +57,54 @@ class AtomService:
         Returns the number of atoms deleted.
         """
         return self.atom_repository.delete_by_regulation_fragment_id(regulation_fragment_id)
+
+    def delete_atom_by_id(self, atom_id: int) -> bool:
+        """
+        Delete an atom by its ID.
+        Returns True if the atom was deleted, False if it wasn't found.
+        """
+        return self.atom_repository.delete_by_id(atom_id)
+
+    def create_atom(self, create_atom_dto: CreateAtomDTO) -> AtomDTO:
+        """
+        Create a new atom with the provided data.
+        Returns the created atom as an AtomDTO.
+        """
+        created_atom = self.atom_repository.save(create_atom_dto)
+
+        # Convert to DTO
+        return AtomDTO(
+            id=created_atom.id,
+            regulation_fragment_id=created_atom.regulation_fragment_id,
+            predicate=created_atom.predicate,
+            description=created_atom.description,
+            is_negated=created_atom.is_negated,
+            spans=[], # New atoms don't have spans initially
+        )
+
+    def update_atom(self, update_atom_dto: UpdateAtomDTO) -> AtomDTO:
+        """
+        Update an atom with the provided data.
+        Returns the updated atom as an AtomDTO.
+        """
+        updated_atom = self.atom_repository.update(update_atom_dto)
+
+        # Convert to DTO
+        return AtomDTO(
+            id=updated_atom.id,
+            regulation_fragment_id=updated_atom.regulation_fragment_id,
+            predicate=updated_atom.predicate,
+            description=updated_atom.description,
+            is_negated=updated_atom.is_negated,
+            spans=[
+                AtomSpanDTO(
+                    id=span.id,
+                    atom_id=span.atom_id,
+                    start=span.start,
+                    end=span.end
+                ) for span in updated_atom.spans
+            ],
+        )
 
     def regenerate_atoms_for_regulation_fragment(self, regulation_fragment_id: int,
                                                  regenerate_data: RegenerateAtomsDTO = None):

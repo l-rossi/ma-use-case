@@ -35,13 +35,6 @@ class Container(containers.DeclarativeContainer):
         regulation_fragment_service=regulation_fragment_service
     )
 
-    chat_repository = providers.Singleton(ChatRepository, db=db)
-    chat_service = providers.Singleton(
-        ChatService,
-        chat_repository=chat_repository,
-        chat_agent=llm_adapter
-    )
-
     atom_repository = providers.Singleton(AtomRepository, db=db)
     atom_service = providers.Singleton(
         AtomService,
@@ -49,6 +42,15 @@ class Container(containers.DeclarativeContainer):
         atom_repository=atom_repository,
         chat_agent=llm_adapter,
         agentic_log_service=agentic_log_service
+    )
+
+    chat_repository = providers.Singleton(ChatRepository, db=db)
+    chat_service = providers.Singleton(
+        ChatService,
+        atom_service=atom_service,
+        regulation_fragment_service=regulation_fragment_service,
+        chat_repository=chat_repository,
+        chat_agent=llm_adapter,
     )
 
 

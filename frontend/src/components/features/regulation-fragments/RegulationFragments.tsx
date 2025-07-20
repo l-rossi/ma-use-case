@@ -52,7 +52,12 @@ export function RegulationFragments({ className }: Readonly<Props>) {
 
   if (isError) {
     return (
-      <Box className={cn('text-red-500 shadow-red-500', className)}>
+      <Box
+        className={cn(
+          'text-red-500 shadow-red-500 flex flex-col items-center justify-center gap-4',
+          className
+        )}
+      >
         Failed to load regulation fragments.
         <Button variant={'outline'} type={'button'} size={'lg'} onClick={() => refetch()}>
           Retry
@@ -111,9 +116,7 @@ export function RegulationFragments({ className }: Readonly<Props>) {
           />
         )}
 
-        {selectedFragment && (
-          <RegulationFragmentView fragment={selectedFragment}/>
-        )}
+        {selectedFragment && <RegulationFragmentView fragment={selectedFragment} />}
       </div>
     </Box>
   );

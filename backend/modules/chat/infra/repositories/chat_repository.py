@@ -19,7 +19,7 @@ class ChatRepository:
     def save(self,
              agent: Agent,
              regulation_fragment_id: int,
-             chat_data: CreateChatMessageDTO) -> None:
+             chat_data: CreateChatMessageDTO) -> ChatMessage:
         """
         Save a chat message to the database.
         """
@@ -32,9 +32,11 @@ class ChatRepository:
         self.db.session.add(chat_message)
         self.db.session.commit()
 
+        return chat_message
+
     def find_by_regulation_fragment_id(self, regulation_fragment_id: int) -> List[ChatMessage]:
         """
         Retrieve all chat messages for a specific regulation fragment, ordered by creation date.
         """
-        return ChatMessage.query.where(regulation_fragment_id=regulation_fragment_id).order_by(
+        return ChatMessage.query.filter_by(regulation_fragment_id=regulation_fragment_id).order_by(
             desc(ChatMessage.created_at)).all()

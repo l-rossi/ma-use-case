@@ -15,8 +15,8 @@ services:
 
   lrossi-ma-thesis-swi-prolog:
     build:
-      context: prolog
-      dockerfile: Dockerfile
+      context: ./prolog
+      dockerfile: prolog/Dockerfile
 
     restart: always
     ports:

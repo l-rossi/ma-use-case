@@ -1,6 +1,6 @@
 from enum import Enum
 
 
-class Agent(Enum):
+class Agent(str, Enum):
     USER = "USER"
     AI = "AI"
