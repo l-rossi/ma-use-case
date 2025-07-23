@@ -2,42 +2,46 @@
 // [default background, highlight background]
 const colors: ReadonlyArray<Readonly<[string, string]>> = [
   // Blue Family
-  ['#e3f2fd', '#7dc2fa'],
-  ['#f0f8ff', '#80ceff'],
-  ['#e8f4fd', '#74e8b4'],
-  ['#eff6ff', '#80bbff'],
+  ['#e3f2fd', '#4a94e8'],  // Deeper blue
+  ['#e8f4fd', '#74e8b4'],  // Turquoise
+  
   // Green Family
-  ['#e8f5e8', '#73e673'],
-  ['#f0fff0', '#80ff80'],
-  ['#f4f8f4', '#7af57a'],
-  ['#ecfdf5', '#7dfab9'],
+  ['#e8f5e8', '#3cb371'],  // Medium sea green
+  ['#ecfdf5', '#00c292'],  // Teal green
+  
   // Yellow/Amber Family
-  ['#fffbf0', '#ffe180'],
-  ['#fefce8', '#ffee80'],
-  ['#fff8dc', '#f0e478'],
-  ['#fffff0', '#ffff80'],
+  ['#fffbf0', '#ffd700'],  // Gold
+  ['#fff8dc', '#f0e478'],  // Light yellow
+  
   // Pink/Rose Family
-  ['#fdf2f8', '#fc7ec8'],
-  ['#fff0f5', '#ff8c80'],
-  ['#fef7f7', '#ff80a4'],
-  ['#fdf2f2', '#fa7d7d'],
+  ['#fdf2f8', '#fc7ec8'],  // Pink
+  ['#fff0f5', '#ff6b6b'],  // Coral red
+  ['#fef7f7', '#ff80a4'],  // Light pink
+  
   // Purple/Lavender Family
-  ['#f8f4ff', '#bd80ff'],
-  ['#faf5ff', '#bd80ff'],
-  ['#f9f5ff', '#9780ff'],
+  ['#f8f4ff', '#bd80ff'],  // Light purple
+  ['#f5f0ff', '#8a2be2'],  // Blue violet
+  ['#f0e6ff', '#9370db'],  // Medium purple
+  
   // Orange/Peach Family
-  ['#fff7ed', '#ffc480'],
-  ['#fef5f0', '#fcb17e'],
-  ['#fffaf0', '#ffca80'],
+  ['#fff7ed', '#ff8c00'],  // Dark orange
+  ['#fffaf0', '#ffa07a'],  // Light salmon
+  
   // Cyan/Teal Family
-  ['#f0fdfa', '#7dfadf'],
-  ['#f0f9ff', '#80ccff'],
-  ['#ecfeff', '#80f4ff'],
+  ['#f0fdfa', '#20b2aa'],  // Light sea green
+  ['#ecfeff', '#00bfff'],  // Deep sky blue
+  
+  // Brown/Earth Family (New)
+  ['#f8f6f4', '#d2b48c'],  // Tan
+  ['#f5f5dc', '#bc8f8f'],  // Rosy brown
+  
+  // Indigo/Navy Family (New)
+  ['#f0f8ff', '#4b0082'],  // Indigo
+  ['#f5f5ff', '#483d8b'],  // Dark slate blue
 ];
 
 export function getHighlightColor(key: string): Readonly<[string, string]> {
   const index = djb2(key) % colors.length;
-  const c = colors[index];
   return colors[index];
 }
 

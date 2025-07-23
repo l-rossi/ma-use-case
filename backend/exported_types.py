@@ -8,6 +8,9 @@ from modules.atoms.application.dto.update_atom_dto import UpdateAtomDTO
 from modules.atoms.application.dto.atom_dto import AtomDTO
 from modules.atoms.application.dto.atom_span_dto import AtomSpanDTO
 from modules.atoms.application.dto.regenerate_atoms_dto import RegenerateAtomsDTO
+from modules.rules.application.dto.rule_dto import RuleDTO
+from modules.rules.application.dto.create_rule_dto import CreateRuleDTO
+from modules.rules.application.dto.update_rule_dto import UpdateRuleDTO
 
 # Stop PyCharm from optimizing imports :))))))
 _ = [
@@ -20,5 +23,8 @@ _ = [
     UpdateAtomDTO,
     AtomDTO,
     AtomSpanDTO,
-    RegenerateAtomsDTO
+    RegenerateAtomsDTO,
+    RuleDTO,
+    CreateRuleDTO,
+    UpdateRuleDTO
 ]

@@ -113,7 +113,7 @@ export function Atoms({ className }: Readonly<Props>) {
           disabled={deleteAtomsMutation.isPending}
           title="Delete all atoms for this fragment"
         >
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="size-4" />
         </Button>
       </div>
 
@@ -217,7 +217,7 @@ function InlineHighlight({
       onMouseEnter={() => setHoveredAtom(atomId)}
       onMouseLeave={() => setHoveredAtom(null)}
       // This is 100% not aria conform :DDDDD
-      onClick={e => {
+      onClick={() => {
         if (!textAreaRef) return;
         textAreaRef.focus();
         textAreaRef.setSelectionRange(textOffset - text.length, textOffset);

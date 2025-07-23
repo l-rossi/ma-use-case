@@ -82,7 +82,7 @@ export function CreateAtomModal({ regulationFragmentId }: Props) {
       open={isOpen}
     >
       <DialogTrigger asChild>
-        <Button type={'button'} variant="default" size="sm" className={'mt-6'}>
+        <Button type={'button'} variant="default" className={'mt-6'}>
           <Plus className="mr-2 size-4" />
           Add Atom
         </Button>

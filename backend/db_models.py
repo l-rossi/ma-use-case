@@ -27,6 +27,7 @@ class RegulationFragment(Base):
     chat_messages: Mapped[List["ChatMessage"]] = relationship(back_populates="regulation_fragment",
                                                               cascade="all, delete-orphan")
     atoms: Mapped[List["Atom"]] = relationship(back_populates="regulation_fragment", cascade="all, delete-orphan")
+    rules: Mapped[List["Rule"]] = relationship(back_populates="regulation_fragment", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f'<Regulation Fragment {self.title}>'
@@ -96,3 +97,21 @@ class AtomSpan(Base):
 
     def __repr__(self):
         return f'<AtomSpan {self.id} for Atom {self.atom_id}>'
+
+
+class Rule(Base):
+    __tablename__ = 'rules'
+    __table_args__ = {'extend_existing': True}
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    regulation_fragment_id: Mapped[int] = mapped_column(ForeignKey("regulation_fragments.id", ondelete='CASCADE'),
+                                                        nullable=False)
+    description: Mapped[str] = mapped_column(nullable=False)
+    definition: Mapped[str] = mapped_column(nullable=False)
+    is_goal: Mapped[bool] = mapped_column(default=False)
+    created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
+
+    regulation_fragment: Mapped["RegulationFragment"] = relationship(back_populates="rules")
+
+    def __repr__(self):
+        return f'<Rule {self.id} for Fragment {self.regulation_fragment_id}>'

@@ -40,9 +40,7 @@ class AnthropicAIChatAgent(IChatAgent):
         """
 
         try:
-            messages = [
-                {"role": "system", "content": message.system_prompt},
-            ]
+            messages = []
 
             for ctx_msg in context_messages:
                 if ctx_msg.type.value == "user":
@@ -55,7 +53,9 @@ class AnthropicAIChatAgent(IChatAgent):
             response = self.client.messages.create(
                 temperature=0,
                 model=self.model,
-                messages=messages
+                messages=messages,
+                max_tokens=1024,
+                system=message.system_prompt,
             )
             return ChatAgentMessageEgressDTO(message=response.content[0].text)
 

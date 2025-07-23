@@ -106,7 +106,7 @@ export function RegulationFragments({ className }: Readonly<Props>) {
         </DialogContent>
       </Dialog>
 
-      <div className={'flex-grow grid place-items-center'}>
+      <div className={'flex-grow grid place-items-center size-full overflow-auto'}>
         {fragments?.length === 0 && (
           <CreateRegulationFragmentForm
             className={'size-full px-12 py-20'}

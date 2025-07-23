@@ -11,7 +11,6 @@ from modules.atoms.application.dto.create_atom_span_dto import CreateAtomSpanDTO
 from modules.atoms.application.dto.regenerate_atoms_dto import RegenerateAtomsDTO
 from modules.atoms.application.dto.update_atom_dto import UpdateAtomDTO
 from modules.atoms.infra.atom_repository import AtomRepository
-from modules.models.application.agentic_log_service import AgenticLogService
 from modules.models.application.dto.chat_agent_message_ingress_dto import ChatAgentMessageIngressDTO
 from modules.models.application.llm_adapter import LLMAdapter
 from modules.regulation_fragment.application.regulation_fragment_service import RegulationFragmentService
@@ -19,11 +18,10 @@ from modules.regulation_fragment.application.regulation_fragment_service import 
 
 class AtomService:
     def __init__(self, regulation_fragment_service: RegulationFragmentService, atom_repository: AtomRepository,
-                 chat_agent: LLMAdapter, agentic_log_service: AgenticLogService):
+                 chat_agent: LLMAdapter):
         self.atom_repository = atom_repository
         self.regulation_fragment_service = regulation_fragment_service
         self.chat_agent = chat_agent
-        self.agentic_log_service = agentic_log_service
 
         # TODO probably should make this configurable
         with open("./prompts/atom_extraction/prolog_1.txt", "r") as file:

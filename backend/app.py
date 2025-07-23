@@ -10,6 +10,7 @@ from modules.atoms.infra.atom_controller import atom_controller
 from modules.chat.infra.controllers.chat_controller import chat_controller
 from modules.regulation_fragment.infra.regulation_fragment_controller import \
     regulation_fragment_controller
+from modules.rules.infra.rule_controller import rule_controller
 
 load_dotenv()
 
@@ -23,6 +24,7 @@ if __name__ == '__main__':
     app.register_blueprint(chat_controller)
     app.register_blueprint(regulation_fragment_controller)
     app.register_blueprint(atom_controller)
+    app.register_blueprint(rule_controller)
 
     with app.app_context():
         # Import models to ensure they are registered with SQLAlchemy

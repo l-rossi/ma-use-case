@@ -26,16 +26,13 @@ if (!fs.existsSync(generatedDir)) {
 // Determine the OS and set the appropriate command to activate the virtual environment
 const isWindows = os.platform() === 'win32';
 let activateCommand;
-let pythonCommand;
 
 if (isWindows) {
   // Windows
   activateCommand = `${path.join(backendDir, '.venv', 'Scripts', 'activate.bat')} &&`;
-  pythonCommand = 'python';
 } else {
   // Unix-like (Linux, macOS)
   activateCommand = `source ${path.join(backendDir, '.venv', 'bin', 'activate')} &&`;
-  pythonCommand = 'python3';
 }
 
 // Set PYTHONPATH to include the backend directory
@@ -51,8 +48,8 @@ try {
   // Execute the command
   execSync(command, {
     stdio: 'inherit',
-    shell: true,
     cwd: rootDir,
+    shell: isWindows ? undefined : "/bin/bash"
   });
   console.log(`TypeScript types successfully generated at: ${outputPath}`);
 } catch (error) {

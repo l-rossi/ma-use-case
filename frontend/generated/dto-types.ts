@@ -63,6 +63,12 @@ export interface CreateRegulationFragmentDTO {
   content: string;
   llm_identifier: string;
 }
+export interface CreateRuleDTO {
+  regulation_fragment_id: number;
+  description: string;
+  definition: string;
+  is_goal?: boolean;
+}
 export interface RegenerateAtomsDTO {
   feedback: string;
 }
@@ -74,8 +80,21 @@ export interface RegulationFragmentDTO {
   llm_identifier: LLMIdentifier;
   [k: string]: unknown;
 }
+export interface RuleDTO {
+  id: number;
+  regulation_fragment_id: number;
+  description: string;
+  definition: string;
+  is_goal?: boolean;
+  created_at: string;
+}
 export interface UpdateAtomDTO {
   predicate: string | null;
   description?: string | null;
   is_negated?: boolean | null;
+}
+export interface UpdateRuleDTO {
+  description?: string | null;
+  definition?: string | null;
+  is_goal?: boolean | null;
 }

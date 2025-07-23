@@ -1,0 +1,136 @@
+# Extracting Prolog Rules from Text and Atoms
+
+You are an expert at converting natural language compliance statements into Prolog rules. Your task is to analyze the given regulation fragment and the extracted atoms, then create logical rules that capture the compliance requirements.
+
+## Examples:
+
+**Input Regulation:** "All employees must complete safety training before starting work."
+**Input Atoms:**
+- employee(X)
+- completed_training(X, Type)
+- training(safety)
+- started_work(X)
+
+**Output Rules:**
+<result>
+<rules>
+<rule>
+<definition>allowed_to_start_work(X) :- employee(X), completed_training(X, safety).</definition>
+<description>Employees must complete safety training before starting work</description>
+</rule>
+</rules>
+<goals>
+<rule>
+<definition>violation(employee_started_without_training, X) :- employee(X), started_work(X), not completed_training(X, safety).</definition>
+<description>Identifies employees who started work without completing safety training</description>
+</rule>
+</goals>
+</result>
+
+**Input Regulation:** "Managers must approve all expense reports over $500."
+**Input Atoms:**
+- manager(X)
+- approved_by(Report, Manager)
+- expense_report(X, Amount)
+- amount_threshold(500)
+
+**Output Rules:**
+<result>
+<rules>
+<rule>
+<definition>valid_expense_report(Report) :- expense_report(Report, Amount), Amount =< 500.</definition>
+<description>Expense reports under or equal to $500 are automatically valid</description>
+</rule>
+<rule>
+<definition>valid_expense_report(Report) :- expense_report(Report, Amount), Amount > 500, manager(M), approved_by(Report, M).</definition>
+<description>Expense reports over $500 need manager approval</description>
+</rule>
+</rules>
+<goals>
+<rule>
+<definition>violation(unapproved_large_expense, Report) :- expense_report(Report, Amount), Amount > 500, not (manager(M), approved_by(Report, M)).</definition>
+<description>Identifies expense reports over $500 that lack manager approval</description>
+</rule>
+</goals>
+</result>
+
+**Input Regulation:** "Documents must be reviewed by two different people before publication."
+**Input Atoms:**
+- document(X)
+- reviewed_by(Document, Person)
+- review_count_required(2)
+- person(X)
+- published(X)
+
+**Output Rules:**
+<result>
+<rules>
+<rule>
+<definition>properly_reviewed(Doc) :- document(Doc), person(P1), person(P2), P1 \= P2, reviewed_by(Doc, P1), reviewed_by(Doc, P2).</definition>
+<description>Documents need two different reviewers</description>
+</rule>
+<rule>
+<definition>can_be_published(Doc) :- document(Doc), properly_reviewed(Doc).</definition>
+<description>Documents can be published only after proper review</description>
+</rule>
+</rules>
+<goals>
+<rule>
+<definition>violation(insufficient_review, Doc) :- document(Doc), published(Doc), not properly_reviewed(Doc).</definition>
+<description>Identifies documents that were published without proper review by two different people</description>
+</rule>
+</goals>
+</result>
+
+**Input Regulation:** "Access to confidential files requires both security clearance and supervisor approval."
+**Input Atoms:**
+- access(Person, File)
+- confidential_file(X)
+- has_clearance(Person, security)
+- supervisor(X, Y)
+- approved_by(Supervisor, Person, File)
+
+**Output Rules:**
+<result>
+<rules>
+<rule>
+<definition>authorized_access(Person, File) :- confidential_file(File), has_clearance(Person, security), supervisor(Supervisor, Person), approved_by(Supervisor, Person, File).</definition>
+<description>Access to confidential files requires clearance and approval</description>
+</rule>
+</rules>
+<goals>
+<rule>
+<definition>violation(unauthorized_access, Person, File) :- access(Person, File), confidential_file(File), not authorized_access(Person, File).</definition>
+<description>Identifies unauthorized access to confidential files without proper clearance and approval</description>
+</rule>
+</goals>
+</result>
+
+## Instructions:
+1. Analyze the regulation fragment and the extracted atoms carefully
+2. Create Prolog rules that capture the compliance requirements
+3. Use the atoms provided as building blocks for your rules
+4. Ensure your rules are syntactically correct Prolog
+5. Format your output in the specified XML structure:
+   - Wrap everything in a <result> tag
+   - Include a <rules> section with one or more <rule> elements
+   - Each <rule> must have a <definition> and <description> element
+   - Include a <goals> section with one or more <rule> elements
+   - Each <rule> must have a <definition> and <description> element, just like rules
+   - All rules in <goals> section should have the same head, namely "violation"
+6. Do not include comments in the output
+7. Use meaningful predicate names for new predicates you introduce
+8. Ensure your rules handle edge cases appropriately
+9. You must not wrap the output in a code block
+10. Create one or more goals as needed to capture all violation conditions.
+11. Make sure to use all atoms provided and no additional ones.
+
+Now extract Prolog rules from the following:
+
+**Input Regulation:**
+{}
+
+**Input Atoms:**
+{}
+
+**Output Rules:**

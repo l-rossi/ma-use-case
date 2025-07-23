@@ -108,7 +108,7 @@ export function Chat({ className }: Readonly<Props>) {
       </div>
 
       <ul
-        className="flex-1 overflow-y-auto mb-4 gap-1 space-y-4 flex flex-col-reverse"
+        className="flex-1 overflow-y-auto mb-4 gap-2 flex flex-col-reverse"
         ref={scrollContainerRef}
       >
         {messages.length === 0 ? (
@@ -116,16 +116,19 @@ export function Chat({ className }: Readonly<Props>) {
             No messages yet. Start the conversation!
           </p>
         ) : (
-          messages.map((message, index, array) => (
+          messages.map((message, index) => (
             <Fragment key={message.id}>
-              {index === 0 ||
-                (getDay(message.created_at) !== getDay(array[index - 1].created_at) && (
-                  <span className="px-4 py-1 bg-gray-200 rounded-full text-sm text-gray-600 mx-auto">
-                    {getDay(message.created_at)}
-                  </span>
-                ))}
-
               <Message message={message} />
+              {(index === messages.length - 1 ||
+                getDay(message.created_at) !== getDay(messages[index + 1]?.created_at)) && (
+                <span className="px-4 py-1 bg-gray-200 rounded-full text-sm text-gray-600 mx-auto">
+                  {new Date(message.created_at).toLocaleDateString(['de'], {
+                    year: 'numeric',
+                    day: '2-digit',
+                    month: '2-digit',
+                  })}
+                </span>
+              )}
             </Fragment>
           ))
         )}

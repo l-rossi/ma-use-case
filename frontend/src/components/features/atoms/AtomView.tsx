@@ -5,6 +5,7 @@ import { useHoveredAtom } from '@/hooks/useHoveredAtom';
 import { cn } from '@/lib/utils';
 import { ArrowRight, LoaderCircle, Trash2, CircleX } from 'lucide-react';
 import { useDeleteAtom } from '@/hooks/useDeleteAtom';
+import { AtomInfoModal } from './AtomInfoModal';
 
 interface AtomCardProps {
   atom: AtomDTO;
@@ -25,7 +26,7 @@ export function AtomView({ atom, textarea, setFeedback, feedbackFocused }: AtomC
         onMouseEnter={() => setHoveredAtom(atom.id)}
         onMouseLeave={() => setHoveredAtom(null)}
         className={cn(
-          'p-2 hover:bg-gray-200 transition-colors flex justify-between items-center text-left',
+          'p-2 hover:bg-gray-200 transition-colors flex justify-between items-center text-left overflow-hidden',
           'active:bg-gray-200 border border-l-6',
           selectedAtom === atom.id && 'border-gray-500',
           ' border-l-[var(--border-color)]'
@@ -36,21 +37,26 @@ export function AtomView({ atom, textarea, setFeedback, feedbackFocused }: AtomC
           } as CSSProperties
         }
       >
-        <h3 className="font-semibold text-base">{atom.predicate}</h3>
-        <button
-          onClick={() => deleteAtom(atom.id)}
-          className="ml-2 p-1 hover:bg-gray-300 rounded"
-          title="Delete atom"
-          disabled={isPending}
-        >
-          {isPending ? (
-            <LoaderCircle className={'animate-spin size-4'} />
-          ) : isError ? (
-            <CircleX className={'size-4 text-red-500'} />
-          ) : (
-            <Trash2 className="size-4 text-red-500" />
-          )}
-        </button>
+        <h3 className="font-semibold text-base truncate whitespace-nowrap overflow-hidden text-ellipsis min-w-0">
+          {atom.predicate}
+        </h3>
+        <div className="flex items-center shrink-0">
+          <AtomInfoModal atom={atom} />
+          <button
+            onClick={() => deleteAtom(atom.id)}
+            className="ml-2 p-1 hover:bg-gray-300 rounded"
+            title="Delete atom"
+            disabled={isPending}
+          >
+            {isPending ? (
+              <LoaderCircle className={'animate-spin size-4'} />
+            ) : isError ? (
+              <CircleX className={'size-4 text-red-500'} />
+            ) : (
+              <Trash2 className="size-4 text-red-500" />
+            )}
+          </button>
+        </div>
       </div>
     );
   }

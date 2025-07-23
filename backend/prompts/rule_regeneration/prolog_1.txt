@@ -1,0 +1,108 @@
+# Prolog Rule Regeneration with User Feedback
+
+You are refining previously extracted Prolog rules based on user feedback. Your task is to take the existing rule extraction and user feedback, then regenerate the complete extraction incorporating all feedback instructions.
+
+## Feedback Processing Rules:
+1. **No Unwanted Changes**: Do not modify rules unless explicitly requested in the feedback
+2. **Split rules**: Break compound rules into separate components when requested
+3. **Reuse existing rules**: When feedback mentions reusing existing rules, maintain consistent naming and structure
+4. **Merge rules**: Combine multiple rules into a single concept when requested
+5. **Rename rules**: Update rule names while preserving logical meaning when specified
+6. **Add missing rules**: Extract additional rules identified in feedback when needed
+7. **Remove rules**: Eliminate unnecessary rules as specified
+8. **Adjust granularity**: Make rules more specific or more general as requested
+9. **Update goals**: Modify violation conditions as requested
+
+## Instructions:
+1. **Analyze the feedback**: Understand what changes are being requested
+2. **Identify affected rules**: Determine which existing rules need modification
+3. **Apply changes systematically**: Make all requested modifications
+4. **Maintain consistency**: Ensure all referenced atoms exist
+5. **Complete regeneration**: Provide the full updated extraction, not just the changes
+6. **Ensure your rules are syntactically correct Prolog**
+7. **Format your output in the specified XML structure**:
+   - Wrap everything in a <result> tag
+   - Include a <rules> section with one or more <rule> elements
+   - Each <rule> must have a <definition> and <description> element
+   - Include a <goals> section with one or more <rule> elements
+   - Each <rule> must have a <definition> and <description> element, just like rules
+   - All rules in <goals> section should have the same head, namely "violation"
+
+## Input Format:
+- **Original Statement**: [The compliance statement that was originally analyzed]
+- **Input Atoms**: [The atoms used to create the rules]
+- **Previous Extraction**: [The previously extracted rules]
+- **Feedback**: [User instructions for modifications]
+
+## Output Format:
+Provide the complete regenerated extraction in the same format as the Previous Extraction.
+
+## Example
+**Original Statement:**
+Access to confidential files requires both security clearance and supervisor approval.
+
+**Input Atoms:**
+- access(Person, File)
+- confidential_file(X)
+- has_clearance(Person, security)
+- supervisor(X, Y)
+- approved_by(Supervisor, Person, File)
+
+**Previous Extraction:**
+<r>
+<rules>
+<rule>
+<definition>authorized_access(Person, File) :- confidential_file(File), has_clearance(Person, security), supervisor(Supervisor, Person), approved_by(Supervisor, Person, File).</definition>
+<description>Access to confidential files requires clearance and approval</description>
+</rule>
+</rules>
+<goals>
+<rule>
+<definition>violation(unauthorized_access, Person, File) :- access(Person, File), confidential_file(File), not authorized_access(Person, File).</definition>
+<description>Identifies unauthorized access to confidential files without proper clearance and approval</description>
+</rule>
+</goals>
+</r>
+
+**Feedback:**
+Split the authorized_access rule into two separate rules: one for having security clearance and one for having supervisor approval.
+
+**Regenerated Output:**
+<r>
+<rules>
+<rule>
+<definition>has_security_clearance(Person) :- has_clearance(Person, security).</definition>
+<description>Person has the required security clearance</description>
+</rule>
+<rule>
+<definition>has_supervisor_approval(Person, File) :- supervisor(Supervisor, Person), approved_by(Supervisor, Person, File).</definition>
+<description>Person has supervisor approval for the file</description>
+</rule>
+<rule>
+<definition>authorized_access(Person, File) :- confidential_file(File), has_security_clearance(Person), has_supervisor_approval(Person, File).</definition>
+<description>Access to confidential files requires clearance and approval</description>
+</rule>
+</rules>
+<goals>
+<rule>
+<definition>violation(unauthorized_access, Person, File) :- access(Person, File), confidential_file(File), not authorized_access(Person, File).</definition>
+<description>Identifies unauthorized access to confidential files without proper clearance and approval</description>
+</rule>
+</goals>
+</r>
+
+---
+
+**Original Statement:**
+{}
+
+**Input Atoms:**
+{}
+
+**Previous Extraction:**
+{}
+
+**Feedback:**
+{}
+
+**Regenerated Output:**
