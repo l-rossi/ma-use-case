@@ -33,6 +33,7 @@ const formSchema = z.object({
   regulation_fragment_id: z.number().int().positive(),
   predicate: z.string().min(1, { message: 'Predicate is required' }),
   description: z.string().min(1, { message: 'Description is required' }),
+  is_fact: z.boolean().default(false),
 });
 
 interface Props {
@@ -49,6 +50,7 @@ export function CreateAtomModal({ regulationFragmentId }: Props) {
       regulation_fragment_id: regulationFragmentId,
       predicate: '',
       description: '',
+      is_fact: false,
     },
   });
 
@@ -147,6 +149,29 @@ export function CreateAtomModal({ regulationFragmentId }: Props) {
                     />
                   </FormControl>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="is_fact"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                  <FormControl>
+                    <input
+                      type="checkbox"
+                      checked={field.value}
+                      onChange={field.onChange}
+                      className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Is Fact</FormLabel>
+                    <FormDescription>
+                      Check this if the atom is a fact rather than derived
+                    </FormDescription>
+                  </div>
                 </FormItem>
               )}
             />

@@ -8,7 +8,9 @@ from pydantic_xml.element.native import ElementT as Element
 
 class ExtractedAtomDTO(BaseXmlModel, tag='atom'):
     id: int = attr(name="id")
-    predicate: str
+    predicate: str = element(tag='predicate')
+    description: str = element(tag='description')
+    is_fact: bool = element(name="is_fact", default=False)
 
 
 class AtomExtractionResultDTO(BaseXmlModel, tag='result', arbitrary_types_allowed=True):

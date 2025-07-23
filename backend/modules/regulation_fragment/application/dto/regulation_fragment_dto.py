@@ -14,4 +14,4 @@ class RegulationFragmentDTO(BaseModel):
 
     class Config:
         use_enum_values = True
-        extra = "allow"
+        extra = "forbid"

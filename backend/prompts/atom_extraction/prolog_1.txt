@@ -12,10 +12,26 @@ You are an expert at identifying and extracting Prolog atoms from natural langua
 All <atom id="1">employees</atom> must <atom id="2">complete</atom> <atom id="3">safety training</atom> before <atom id="4">starting work</atom>.
 </annotated>
 <atoms>
-<atom id="1">employee(X)</atom>
-<atom id="2">completed_training(X, Type)</atom>
-<atom id="3">training(safety)</atom>
-<atom id="4">started_work(X)</atom>
+<atom id="1">
+<predicate>employee(X)</predicate>
+<description>A person who works for the company</description>
+<is_fact>true</is_fact>
+</atom>
+<atom id="2">
+<predicate>completed_training(X, Type)</predicate>
+<description>Person X has completed a specific type of training</description>
+<is_fact>false</is_fact>
+</atom>
+<atom id="3">
+<predicate>training(safety)</predicate>
+<description>A training program focused on safety procedures</description>
+<is_fact>true</is_fact>
+</atom>
+<atom id="4">
+<predicate>started_work(X)</predicate>
+<description>Person X has begun their work duties</description>
+<is_fact>false</is_fact>
+</atom>
 </atoms>
 </result>
 
@@ -28,10 +44,26 @@ All <atom id="1">employees</atom> must <atom id="2">complete</atom> <atom id="3"
 <atom id="1">Managers</atom> must <atom id="2">approve</atom> all <atom id="3">expense reports</atom> over <atom id="4">$500</atom>.
 </annotated>
 <atoms>
-<atom id="1">manager(X)</atom>
-<atom id="2">approved_by(Report, Manager)</atom>
-<atom id="3">expense_report(X, Amount)</atom>
-<atom id="4">amount_threshold(500)</atom>
+<atom id="1">
+<predicate>manager(X)</predicate>
+<description>A person with managerial responsibilities</description>
+<is_fact>true</is_fact>
+</atom>
+<atom id="2">
+<predicate>approved_by(Report, Manager)</predicate>
+<description>A report that has been approved by a specific manager</description>
+<is_fact>false</is_fact>
+</atom>
+<atom id="3">
+<predicate>expense_report(X, Amount)</predicate>
+<description>A report documenting expenses with a specific amount</description>
+<is_fact>true</is_fact>
+</atom>
+<atom id="4">
+<predicate>amount_threshold(500)</predicate>
+<description>A monetary threshold of $500</description>
+<is_fact>true</is_fact>
+</atom>
 </atoms>
 </result>
 
@@ -44,11 +76,31 @@ All <atom id="1">employees</atom> must <atom id="2">complete</atom> <atom id="3"
 <atom id="1">Documents</atom> must be <atom id="2">reviewed</atom> by <atom id="3">two</atom> <atom id="4">different people</atom> before <atom id="5">publication</atom>.
 </annotated>
 <atoms>
-<atom id="1">document(X)</atom>
-<atom id="2">reviewed_by(Document, Person)</atom>
-<atom id="3">review_count_required(2)</atom>
-<atom id="4">person(X)</atom>
-<atom id="5">published(X)</atom>
+<atom id="1">
+<predicate>document(X)</predicate>
+<description>A written or digital file containing information</description>
+<is_fact>true</is_fact>
+</atom>
+<atom id="2">
+<predicate>reviewed_by(Document, Person)</predicate>
+<description>A document that has been reviewed by a specific person</description>
+<is_fact>false</is_fact>
+</atom>
+<atom id="3">
+<predicate>review_count_required(2)</predicate>
+<description>The required number of reviews is 2</description>
+<is_fact>true</is_fact>
+</atom>
+<atom id="4">
+<predicate>person(X)</predicate>
+<description>An individual who can perform reviews</description>
+<is_fact>true</is_fact>
+</atom>
+<atom id="5">
+<predicate>published(X)</predicate>
+<description>A document that has been made publicly available</description>
+<is_fact>false</is_fact>
+</atom>
 </atoms>
 </result>
 
@@ -61,11 +113,31 @@ All <atom id="1">employees</atom> must <atom id="2">complete</atom> <atom id="3"
 <atom id="1">Access</atom> to <atom id="2">confidential files</atom> requires both <atom id="3">security clearance</atom> and <atom id="4">supervisor</atom> <atom id="5">approval</atom>.
 </annotated>
 <atoms>
-<atom id="1">access(Person, File)</atom>
-<atom id="2">confidential_file(X)</atom>
-<atom id="3">has_clearance(Person, security)</atom>
-<atom id="4">supervisor(X, Y)</atom>
-<atom id="5">approved_by(Supervisor, Person, File)</atom>
+<atom id="1">
+<predicate>access(Person, File)</predicate>
+<description>A person has permission to access a specific file</description>
+<is_fact>false</is_fact>
+</atom>
+<atom id="2">
+<predicate>confidential_file(X)</predicate>
+<description>A file containing sensitive or restricted information</description>
+<is_fact>true</is_fact>
+</atom>
+<atom id="3">
+<predicate>has_clearance(Person, security)</predicate>
+<description>A person has been granted security clearance</description>
+<is_fact>true</is_fact>
+</atom>
+<atom id="4">
+<predicate>supervisor(X, Y)</predicate>
+<description>Person X is a supervisor of person Y</description>
+<is_fact>true</is_fact>
+</atom>
+<atom id="5">
+<predicate>approved_by(Supervisor, Person, File)</predicate>
+<description>A supervisor has approved a person's access to a file</description>
+<is_fact>false</is_fact>
+</atom>
 </atoms>
 </result>
 
@@ -78,10 +150,26 @@ All <atom id="1">employees</atom> must <atom id="2">complete</atom> <atom id="3"
 All <atom id="1">purchases</atom> above <atom id="2">$1000</atom> need <atom id="3">written authorization</atom> from <atom id="4">department heads</atom>.
 </annotated>
 <atoms>
-<atom id="1">purchase(X, Amount)</atom>
-<atom id="2">amount_threshold(1000)</atom>
-<atom id="3">written_authorization(X)</atom>
-<atom id="4">department_head(Person)</atom>
+<atom id="1">
+<predicate>purchase(X, Amount)</predicate>
+<description>A transaction to buy something with a specific monetary value</description>
+<is_fact>true</is_fact>
+</atom>
+<atom id="2">
+<predicate>amount_threshold(1000)</predicate>
+<description>A monetary threshold of $1000</description>
+<is_fact>true</is_fact>
+</atom>
+<atom id="3">
+<predicate>written_authorization(X)</predicate>
+<description>A formal documented approval for a specific action</description>
+<is_fact>false</is_fact>
+</atom>
+<atom id="4">
+<predicate>department_head(Person)</predicate>
+<description>A person who leads a department or organizational unit</description>
+<is_fact>true</is_fact>
+</atom>
 </atoms>
 </result>
 
@@ -96,8 +184,13 @@ All <atom id="1">purchases</atom> above <atom id="2">$1000</atom> need <atom id=
 7. Ensure each atom id in the annotated text corresponds to an atom in the atoms section
 8. Focus on atomic predicates, not complex rules
 9. Make sure you combine duplicate atoms into one
-10. You must not wrap the output in a code block
-11. The annotated text may not deviate from the original statement, except for the added `<atom>` tags
+10. For each atom, determine if it should be a fact or not:
+   - Facts are basic properties or relationships that aren't derived from other rules, but rather provided as knowledge
+   - Facts represent input data or environmental conditions
+   - Facts would be asserted in a Prolog database rather than computed
+   - Mark an atom as a fact by setting the `is_fact` attribute to "true" in the atom tag: `<atom id="1" is_fact="true">`
+11. You must not wrap the output in a code block
+12. The annotated text may not deviate from the original statement, except for the added `<atom>` tags
 
 Now extract atoms from the following compliance statement:
 

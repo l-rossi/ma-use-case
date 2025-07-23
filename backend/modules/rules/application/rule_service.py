@@ -8,7 +8,7 @@ from modules.regulation_fragment.application.regulation_fragment_service import 
 from modules.rules.application.dto.create_rule_dto import CreateRuleDTO
 from modules.rules.application.dto.regenerate_rules_dto import RegenerateRulesDTO
 from modules.rules.application.dto.rule_dto import RuleDTO
-from modules.rules.application.dto.rule_extraction_result_dto import RuleExtractionResultDTO
+from modules.rules.application.dto.rule_extraction_result_dto import RuleExtractionResultDTO, ExtractedRuleDTO
 from modules.rules.application.dto.update_rule_dto import UpdateRuleDTO
 from modules.rules.infra.rule_repository import RuleRepository
 
@@ -30,7 +30,7 @@ class RuleService:
 
         with open("./prompts/rule_extraction/prolog_1.txt", "r") as file:
             self.generation_prompt = file.read()
-            
+
         with open("./prompts/rule_regeneration/prolog_1.txt", "r") as file:
             self.regeneration_prompt = file.read()
 
@@ -68,7 +68,7 @@ class RuleService:
         rule = self.rule_repository.update(rule_id, rule_data)
         if rule is None:
             return None
-        
+
         return RuleDTO(
             id=rule.id,
             regulation_fragment_id=rule.regulation_fragment_id,
@@ -114,7 +114,7 @@ class RuleService:
         rule = self.rule_repository.find_by_id(rule_id)
         if rule is None:
             return None
-            
+
         return RuleDTO(
             id=rule.id,
             regulation_fragment_id=rule.regulation_fragment_id,
@@ -179,7 +179,16 @@ class RuleService:
         if not atoms:
             raise ValueError(f"No atoms found for regulation fragment {regulation_fragment_id}. Cannot generate rules.")
 
-        atom_string = '\n'.join(atom.predicate for atom in atoms)
+        # Separate facts from non-facts
+        fact_atoms = [atom for atom in atoms if atom.is_fact]
+        other_atoms = [atom for atom in atoms if not atom.is_fact]
+        
+        # Create strings for facts and other atoms
+        fact_string = '\n'.join(f"{atom.predicate}." for atom in fact_atoms)
+        other_atom_string = '\n'.join(atom.predicate for atom in other_atoms)
+        
+        # Combine them with a clear separation
+        atom_string = f"# Facts (to be asserted directly):\n{fact_string}\n\n# Other atoms (to be used in rules):\n{other_atom_string}"
 
         input_message = self.generation_prompt.format(
             regulation.content,
@@ -198,10 +207,17 @@ class RuleService:
             raise ValueError(f"Error generating rules: {returned_message.message}")
 
         parsed_result = RuleExtractionResultDTO.from_xml(returned_message.message)
+
+        for rule in parsed_result.rules:
+            print(self._check_rule_syntax(rule.definition))
+
+        for rule in parsed_result.goals:
+            print(self._check_rule_syntax(rule.definition))
+
         self._save_extracted_rules(parsed_result, regulation_fragment_id)
 
     def regenerate_rules_for_regulation_fragment(self, regulation_fragment_id: int,
-                                            regenerate_data: RegenerateRulesDTO = None) -> None:
+                                                 regenerate_data: RegenerateRulesDTO = None) -> None:
         """
         Regenerate rules for a specific regulation fragment.
         This method deletes existing rules and generates new ones based on feedback.
@@ -214,41 +230,45 @@ class RuleService:
             None
         """
         print(f"Regenerating rules for regulation fragment {regulation_fragment_id}...")
-        
+
         fragment = self.regulation_fragment_service.find_by_id(regulation_fragment_id)
         if not fragment:
             raise ValueError(f"Regulation fragment with ID {regulation_fragment_id} not found.")
-            
+
         rules = self.get_rules_by_regulation_id(regulation_fragment_id)
         if not rules:
             raise ValueError(f"No rules found for regulation fragment {regulation_fragment_id}.")
-            
+
         atoms = self.atom_service.get_atoms_for_regulation_fragment(regulation_fragment_id)
         if not atoms:
-            raise ValueError(f"No atoms found for regulation fragment {regulation_fragment_id}. Cannot regenerate rules.")
-            
-        atom_string = '\n'.join(atom.predicate for atom in atoms)
-        
-        # Format the previous extraction
-        previous_rules = "\n".join([
-            f"<rule>\n<definition>{rule.definition}</definition>\n<description>{rule.description}</description>\n</rule>"
-            for rule in rules if not rule.is_goal
-        ])
+            raise ValueError(
+                f"No atoms found for regulation fragment {regulation_fragment_id}. Cannot regenerate rules.")
 
-        previous_goals = "\n".join([
-            f"<rule>\n<definition>{rule.definition}</definition>\n<description>{rule.description}</description>\n</rule>"
-            for rule in rules if rule.is_goal
-        ])
+        res = RuleExtractionResultDTO(
+            rules=[ExtractedRuleDTO(description=rule.description, definition=rule.definition) for rule in rules if
+                   not rule.is_goal],
+            goals=[ExtractedRuleDTO(description=rule.description, definition=rule.definition) for rule in rules if
+                   rule.is_goal]
+        )
 
-        previous_extraction = f"<result>\n<rules>\n{previous_rules}\n</rules>\n<goals>\n{previous_goals}\n</goals>\n</result>"
+        # Separate facts from non-facts
+        fact_atoms = [atom for atom in atoms if atom.is_fact]
+        other_atoms = [atom for atom in atoms if not atom.is_fact]
         
+        # Create strings for facts and other atoms
+        fact_string = '\n'.join(f"{atom.predicate}." for atom in fact_atoms)
+        other_atom_string = '\n'.join(atom.predicate for atom in other_atoms)
+        
+        # Combine them with a clear separation
+        atom_string = f"# Facts (to be asserted directly):\n{fact_string}\n\n# Other atoms (to be used in rules):\n{other_atom_string}"
+
         regeneration_request = self.regeneration_prompt.format(
             fragment.content,  # Original Statement
-            atom_string,       # Input Atoms
-            previous_extraction,  # Previous extraction result
+            atom_string,  # Input Atoms
+            res.to_xml().encode("utf-8"),  # Previous extraction result
             regenerate_data.feedback if regenerate_data else ""  # Feedback for regeneration
         )
-        
+
         response = self.chat_agent.send_message(
             ChatAgentMessageIngressDTO(
                 user_prompt=regeneration_request,
@@ -257,11 +277,38 @@ class RuleService:
         )
         if response.is_error:
             raise ValueError(f"Error regenerating rules: {response.message}")
-            
+
         regenerated_result = RuleExtractionResultDTO.from_xml(response.message)
         self.delete_rules_for_regulation_fragment(regulation_fragment_id)
         self._save_extracted_rules(regenerated_result, regulation_fragment_id)
-    
+
+    def _check_rule_syntax(self, rule_definition: str) -> bool:
+        """
+        Check if a rule definition has valid Prolog syntax.
+        
+        Args:
+            rule_definition: The rule definition to check
+            
+        Returns:
+            True if the rule has valid syntax, False otherwise
+        """
+        try:
+            # Create a simple knowledge base with the rule
+            knowledge_base = rule_definition
+
+            # Create a simple goal that tries to use the rule
+            # We're not actually trying to execute the rule, just check its syntax
+            goal = "true"
+
+            # Execute the Prolog code and check if it returns an error
+            result = self.prolog_reasoner.execute_prolog(knowledge_base, goal)
+
+            # If result is None, there was a syntax error
+            return result is not None
+        except Exception as e:
+            print(f"Error checking rule syntax: {str(e)}")
+            return False
+
     def _save_extracted_rules(self, parsed_result: RuleExtractionResultDTO, regulation_fragment_id: int) -> None:
         """
         Save the extracted rules and goals to the database.
@@ -273,7 +320,6 @@ class RuleService:
         Returns:
             None
         """
-        # Save regular rules
         for rule in parsed_result.rules:
             self.rule_repository.save(
                 CreateRuleDTO(
@@ -283,8 +329,7 @@ class RuleService:
                     is_goal=False
                 )
             )
-            
-        # Save goal rules
+
         for goal in parsed_result.goals:
             self.rule_repository.save(
                 CreateRuleDTO(

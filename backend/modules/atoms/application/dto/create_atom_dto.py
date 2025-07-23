@@ -6,3 +6,4 @@ class CreateAtomDTO(BaseModel):
     predicate: str
     description: str
     is_negated: bool
+    is_fact: bool

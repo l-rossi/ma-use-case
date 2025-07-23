@@ -10,18 +10,21 @@ from modules.chat.infra.repositories.chat_repository import ChatRepository
 from modules.models.application.dto.chat_agent_message_ingress_dto import ChatAgentMessageIngressDTO
 from modules.models.application.llm_adapter import LLMAdapter
 from modules.regulation_fragment.application.regulation_fragment_service import RegulationFragmentService
+from modules.rules.application.rule_service import RuleService
 
 
-class ChatService():
+class ChatService:
     def __init__(self,
                  atom_service: AtomService,
                  regulation_fragment_service: RegulationFragmentService,
                  chat_repository: ChatRepository,
-                 chat_agent: LLMAdapter):
+                 chat_agent: LLMAdapter,
+                 rule_service: RuleService):
         self.chat_repository = chat_repository
         self.chat_agent = chat_agent
         self.atom_service = atom_service
         self.regulation_fragment_service = regulation_fragment_service
+        self.rules_service = rule_service
 
         with open("./prompts/chat/prolog_1.txt", "r") as file:
             self.system_prompt = file.read()
@@ -50,19 +53,21 @@ class ChatService():
         history = self.get_by_regulation_id(regulation_id)
 
         atoms = self.atom_service.get_atoms_for_regulation_fragment(regulation_fragment_id=regulation_id)
+        rules = self.rules_service.get_rules_by_regulation_id(regulation_fragment_id=regulation_id)
 
         regulation = self.regulation_fragment_service.find_by_id(regulation_id)
 
-        # TODO!!! Rules
-        rules = []
         formatted_atoms = "\n".join(
-            [f"{atom.predicate}: {atom.description}" for atom in atoms]
+            f"{atom.predicate}: {atom.description}" for atom in atoms
+        )
+        formatted_rules = "\n".join(
+            f"{rule.definition}: {rule.description}" for rule in rules
         )
 
         system_prompt = self.system_prompt.format(
             regulation.content,
             formatted_atoms,
-            "",
+            formatted_rules,
         )
 
         context_messages = [
@@ -70,7 +75,7 @@ class ChatService():
                 content=h.content,
                 type=_context_message_type_from_agent(h.agent)
             ) for h in history
-        ]
+        ].reverse()
 
         user_message = ChatAgentMessageIngressDTO(
             regulation_fragment_id=regulation_id,

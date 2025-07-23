@@ -38,6 +38,7 @@ class AtomService:
                 predicate=atom.predicate,
                 description=atom.description,
                 is_negated=atom.is_negated,
+                is_fact=atom.is_fact,
                 spans=[
                     AtomSpanDTO(
                         id=span.id,
@@ -77,6 +78,7 @@ class AtomService:
             predicate=created_atom.predicate,
             description=created_atom.description,
             is_negated=created_atom.is_negated,
+            is_fact=created_atom.is_fact,
             spans=[], # New atoms don't have spans initially
         )
 
@@ -87,13 +89,13 @@ class AtomService:
         """
         updated_atom = self.atom_repository.update(update_atom_dto)
 
-        # Convert to DTO
         return AtomDTO(
             id=updated_atom.id,
             regulation_fragment_id=updated_atom.regulation_fragment_id,
             predicate=updated_atom.predicate,
             description=updated_atom.description,
             is_negated=updated_atom.is_negated,
+            is_fact=updated_atom.is_fact,
             spans=[
                 AtomSpanDTO(
                     id=span.id,
@@ -142,6 +144,7 @@ class AtomService:
                     # Use normalized IDs for atoms
                     id=db_id_to_normalized_id[atom.id],
                     predicate=atom.predicate,
+                    description=atom.description,
                 ) for atom in atoms
             ]
         ).to_xml().decode('utf-8')
@@ -208,8 +211,9 @@ class AtomService:
                 CreateAtomDTO(
                     regulation_fragment_id=regulation_fragment_id,
                     predicate=atom.predicate,
-                    description="TODO",
-                    is_negated=False
+                    description=atom.description,
+                    is_negated=False,
+                    is_fact=atom.is_fact
                 )
             )
             local_id_to_global_id[atom.id] = persisted_atom.id

@@ -5,6 +5,7 @@
 /* Do not modify it by hand - just update the pydantic models and then re-run the script
 */
 
+export type MessageSource = "SYSTEM" | "USER" | "MODEL";
 export type Agent = "USER" | "AI";
 /**
  * Enum representing different LLM identifiers.
@@ -20,14 +21,16 @@ export type LLMIdentifier = "GPT_3_5_TURBO" | "GPT_4o_MINI" | "SONNET_4" | "GEMI
  * message_source: The source of the message (USER, SYSTEM, MODEL)
  * regulation_fragment_id: ID of the regulation fragment this log is associated with
  * created_at: When the log was created
+ * is_error: Whether this log entry represents an error message
  */
 export interface AgenticLogDTO {
   id: number;
   user_prompt: string;
   system_prompt?: string | null;
-  message_source: string;
+  message_source: MessageSource;
   regulation_fragment_id: number;
   created_at: string;
+  is_error?: boolean;
 }
 export interface AtomDTO {
   id: number;
@@ -35,6 +38,7 @@ export interface AtomDTO {
   predicate: string;
   description: string;
   is_negated: boolean;
+  is_fact: boolean;
   spans: AtomSpanDTO[];
 }
 export interface AtomSpanDTO {
@@ -54,6 +58,7 @@ export interface CreateAtomDTO {
   predicate: string;
   description: string;
   is_negated: boolean;
+  is_fact: boolean;
 }
 export interface CreateChatMessageDTO {
   content: string;
@@ -78,20 +83,20 @@ export interface RegulationFragmentDTO {
   content: string;
   created_at: string;
   llm_identifier: LLMIdentifier;
-  [k: string]: unknown;
 }
 export interface RuleDTO {
   id: number;
   regulation_fragment_id: number;
   description: string;
   definition: string;
-  is_goal?: boolean;
+  is_goal: boolean;
   created_at: string;
 }
 export interface UpdateAtomDTO {
   predicate: string | null;
   description?: string | null;
   is_negated?: boolean | null;
+  is_fact?: boolean | null;
 }
 export interface UpdateRuleDTO {
   description?: string | null;

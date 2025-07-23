@@ -21,7 +21,8 @@ class AgenticLogService:
             system_prompt=created_log.system_prompt,
             message_source=created_log.message_source,
             regulation_fragment_id=created_log.regulation_fragment_id,
-            created_at=created_log.created_at
+            created_at=created_log.created_at,
+            is_error=created_log.is_error
         )
 
     def find_by_regulation_fragment_id(self, regulation_fragment_id: int, cursor: Optional[int] = None,
@@ -53,7 +54,8 @@ class AgenticLogService:
                 system_prompt=log.system_prompt,
                 message_source=log.message_source,
                 regulation_fragment_id=log.regulation_fragment_id,
-                created_at=log.created_at
+                created_at=log.created_at,
+                is_error=log.is_error
             )
             for log in logs
         ]

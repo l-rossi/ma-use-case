@@ -14,6 +14,7 @@ class AtomRepository:
             description=atom.description,
             predicate=atom.predicate,
             is_negated=atom.is_negated,
+            is_fact=atom.is_fact,
         )
 
         self.db.session.add(atom)
@@ -47,7 +48,7 @@ class AtomRepository:
         return existing_atom
 
     def find_by_regulation_fragment_id(self, regulation_fragment_id: int) -> list[Atom]:
-        return Atom.query.filter(Atom.regulation_fragment_id == regulation_fragment_id).all()
+        return Atom.query.filter(Atom.regulation_fragment_id == regulation_fragment_id).order_by(Atom.is_fact.desc()).all()
 
     def delete_by_regulation_fragment_id(self, regulation_fragment_id: int) -> int:
         """

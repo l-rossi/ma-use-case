@@ -44,6 +44,7 @@ class AgenticLog(Base):
     regulation_fragment_id: Mapped[int] = mapped_column(ForeignKey("regulation_fragments.id", ondelete='CASCADE'),
                                                         nullable=False)
     created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
+    is_error: Mapped[bool] = mapped_column(default=False)
 
     regulation_fragment: Mapped["RegulationFragment"] = relationship(back_populates="agentic_logs")
 
@@ -78,6 +79,7 @@ class Atom(Base):
     predicate: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=False)
     is_negated: Mapped[bool] = mapped_column(default=False)
+    is_fact: Mapped[bool] = mapped_column(default=False)
     spans: Mapped[List["AtomSpan"]] = relationship(back_populates="atom", lazy="selectin", cascade="all, delete-orphan")
     regulation_fragment: Mapped["RegulationFragment"] = relationship(back_populates="atoms")
 

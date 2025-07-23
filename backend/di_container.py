@@ -47,15 +47,6 @@ class Container(containers.DeclarativeContainer):
         chat_agent=llm_adapter,
     )
 
-    chat_repository = providers.Singleton(ChatRepository, db=db)
-    chat_service = providers.Singleton(
-        ChatService,
-        atom_service=atom_service,
-        regulation_fragment_service=regulation_fragment_service,
-        chat_repository=chat_repository,
-        chat_agent=llm_adapter,
-    )
-
     rule_repository = providers.Singleton(RuleRepository, db=db)
     rule_service = providers.Singleton(
         RuleService,
@@ -64,6 +55,16 @@ class Container(containers.DeclarativeContainer):
         chat_agent=llm_adapter,
         prolog_reasoner=prolog_reasoner,
         atom_service=atom_service,
+    )
+
+    chat_repository = providers.Singleton(ChatRepository, db=db)
+    chat_service = providers.Singleton(
+        ChatService,
+        atom_service=atom_service,
+        regulation_fragment_service=regulation_fragment_service,
+        chat_repository=chat_repository,
+        chat_agent=llm_adapter,
+        rule_service=rule_service,
     )
 
 

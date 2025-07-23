@@ -17,7 +17,7 @@ export function Message({ message }: Readonly<Props>) {
     >
       <p className="whitespace-pre-wrap">{message.content}</p>
       <span className="text-xs text-gray-400 self-end">
-        {new Date(message.created_at).toLocaleTimeString([], {
+        {new Date(message.created_at).toLocaleTimeString(["de"], {
           hour: '2-digit',
           minute: '2-digit',
         })}

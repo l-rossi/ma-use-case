@@ -4,13 +4,14 @@ You are refining previously extracted Prolog atoms based on user feedback. Your 
 
 ## Feedback Processing Rules:
 1. **No Unwanted Changes**: Do not modify atoms unless explicitly requested in the feedback
-1. **Split atoms**: Break compound atoms into separate components when requested
-2. **Reuse existing atoms**: When feedback mentions reusing existing atoms, maintain consistent naming and structure
-3. **Merge atoms**: Combine multiple atoms into a single concept when requested
-4. **Rename atoms**: Update atom names while preserving logical meaning when specified
-5. **Add missing atoms**: Extract additional concepts identified in feedback when needed
-6. **Remove atoms**: Eliminate unnecessary atoms as specified
-7. **Adjust granularity**: Make atoms more specific or more general as requested
+2. **Split atoms**: Break compound atoms into separate components when requested
+3. **Reuse existing atoms**: When feedback mentions reusing existing atoms, maintain consistent naming and structure
+4. **Merge atoms**: Combine multiple atoms into a single concept when requested
+5. **Rename atoms**: Update atom names while preserving logical meaning when specified
+6. **Add missing atoms**: Extract additional concepts identified in feedback when needed
+7. **Remove atoms**: Eliminate unnecessary atoms as specified
+8. **Adjust granularity**: Make atoms more specific or more general as requested
+9. **Change fact status**: Update whether an atom is a fact or not when requested, but only update if specified in the feedback
 
 ## Instructions:
 1. **Analyze the feedback**: Understand what changes are being requested
@@ -40,11 +41,31 @@ Access to confidential files requires both security clearance and supervisor app
 <atom id="1">Access</atom> to <atom id="2">confidential files</atom> requires both <atom id="3">security clearance</atom> and <atom id="4">supervisor</atom> <atom id="5">approval</atom>.
 </annotated>
 <atoms>
-<atom id="1">access(Person, File)</atom>
-<atom id="2">confidential_file(X)</atom>
-<atom id="3">has_clearance(Person, security)</atom>
-<atom id="4">supervisor(X, Y)</atom>
-<atom id="5">approved_by(Supervisor, Person, File)</atom>
+<atom id="1">
+<predicate>access(Person, File)</predicate>
+<description>A person has permission to access a specific file</description>
+<is_fact>false</is_fact>
+</atom>
+<atom id="2">
+<predicate>confidential_file(X)</predicate>
+<description>A file containing sensitive or restricted information</description>
+<is_fact>true</is_fact>
+</atom>
+<atom id="3">
+<predicate>has_clearance(Person, security)</predicate>
+<description>A person has been granted security clearance</description>
+<is_fact>true</is_fact>
+</atom>
+<atom id="4">
+<predicate>supervisor(X, Y)</predicate>
+<description>Person X is a supervisor of person Y</description>
+<is_fact>true</is_fact>
+</atom>
+<atom id="5">
+<predicate>approved_by(Supervisor, Person, File)</predicate>
+<description>A supervisor has approved a person's access to a file</description>
+<is_fact>false</is_fact>
+</atom>
 </atoms>
 </result>
 
@@ -57,12 +78,36 @@ Split the confidential file atom into two separate atoms.
 <atom id="1">Access</atom> to <atom id="2">confidential</atom> <atom id="3">files</atom> requires both <atom id="4">security clearance</atom> and <atom id="5">supervisor</atom> <atom id="6">approval</atom>.
 </annotated>
 <atoms>
-<atom id="1">access(Person, File)</atom>
-<atom id="2">confidential(X)</atom>
-<atom id="3">file(X)</atom>
-<atom id="4">has_clearance(Person, security)</atom>
-<atom id="5">supervisor(X, Y)</atom>
-<atom id="6">approved_by(Supervisor, Person, File)</atom>
+<atom id="1">
+<predicate>access(Person, File)</predicate>
+<description>A person has permission to access a specific file</description>
+<is_fact>false</is_fact>
+</atom>
+<atom id="2">
+<predicate>confidential(X)</predicate>
+<description>Something that contains sensitive information</description>
+<is_fact>true</is_fact>
+</atom>
+<atom id="3">
+<predicate>file(X)</predicate>
+<description>A document or data storage unit</description>
+<is_fact>true</is_fact>
+</atom>
+<atom id="4">
+<predicate>has_clearance(Person, security)</predicate>
+<description>A person has been granted security clearance</description>
+<is_fact>true</is_fact>
+</atom>
+<atom id="5">
+<predicate>supervisor(X, Y)</predicate>
+<description>Person X is a supervisor of person Y</description>
+<is_fact>true</is_fact>
+</atom>
+<atom id="6">
+<predicate>approved_by(Supervisor, Person, File)</predicate>
+<description>A supervisor has approved a person's access to a file</description>
+<is_fact>false</is_fact>
+</atom>
 </atoms>
 </result>
 

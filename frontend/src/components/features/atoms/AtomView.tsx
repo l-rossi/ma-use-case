@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { ArrowRight, LoaderCircle, Trash2, CircleX } from 'lucide-react';
 import { useDeleteAtom } from '@/hooks/useDeleteAtom';
 import { AtomInfoModal } from './AtomInfoModal';
+import { FactFlag } from '@/components/features/atoms/FactFlag';
 
 interface AtomCardProps {
   atom: AtomDTO;
@@ -37,9 +38,12 @@ export function AtomView({ atom, textarea, setFeedback, feedbackFocused }: AtomC
           } as CSSProperties
         }
       >
-        <h3 className="font-semibold text-base truncate whitespace-nowrap overflow-hidden text-ellipsis min-w-0">
-          {atom.predicate}
-        </h3>
+        <div className="flex items-center">
+          <h3 className="font-semibold text-base truncate whitespace-nowrap overflow-hidden text-ellipsis min-w-0">
+            {atom.predicate}
+            <FactFlag isFact={atom.is_fact} />
+          </h3>
+        </div>
         <div className="flex items-center shrink-0">
           <AtomInfoModal atom={atom} />
           <button
@@ -86,7 +90,12 @@ export function AtomView({ atom, textarea, setFeedback, feedbackFocused }: AtomC
         } as CSSProperties
       }
     >
-      <h3 className="font-semibold text-base">{atom.predicate}</h3>
+      <div className="flex items-center">
+        <h3 className="font-semibold text-base truncate whitespace-nowrap overflow-hidden text-ellipsis min-w-0">
+          {atom.predicate}
+          <FactFlag isFact={atom.is_fact} />
+        </h3>
+      </div>
       <div className="flex items-center">
         <ArrowRight className="ml-2 size-4 text-gray-500" />
       </div>

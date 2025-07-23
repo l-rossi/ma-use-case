@@ -8,5 +8,5 @@ class RuleDTO(BaseModel):
     regulation_fragment_id: int
     description: str
     definition: str
-    is_goal: bool = False
+    is_goal: bool
     created_at: datetime

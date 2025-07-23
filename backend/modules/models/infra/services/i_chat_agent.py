@@ -33,6 +33,7 @@ class IChatAgent(ABC):
                 system_prompt=message.system_prompt,
                 message_source=MessageSource.SYSTEM_PROMPT,
                 regulation_fragment_id=regulation_fragment_id,
+                is_error=False
             )
         )
 
@@ -44,6 +45,7 @@ class IChatAgent(ABC):
                 system_prompt=None,
                 message_source=MessageSource.MODEL_RESPONSE,
                 regulation_fragment_id=regulation_fragment_id,
+                is_error=response.is_error
             )
         )
         return response

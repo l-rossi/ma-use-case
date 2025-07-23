@@ -9,4 +9,5 @@ class AtomDTO(BaseModel):
     predicate: str
     description: str
     is_negated: bool
+    is_fact: bool
     spans: List[AtomSpanDTO]

@@ -6,3 +6,4 @@ class UpdateAtomDTO(BaseModel):
     predicate: Optional[str]
     description: Optional[str] = None
     is_negated: Optional[bool] = None
+    is_fact: Optional[bool] = None

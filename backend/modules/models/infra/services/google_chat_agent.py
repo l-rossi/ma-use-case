@@ -40,27 +40,23 @@ class GoogleChatAgent(IChatAgent):
         """
 
         try:
-            # Start with system prompt if available
-            request_parts = []
-            if message.system_prompt:
-                request_parts.append(f"System: {message.system_prompt}")
+            contents = []
 
-            # Add context messages if they exist
             for ctx_msg in context_messages:
-                if ctx_msg.type.value == "user":
-                    request_parts.append(f"User: {ctx_msg.content}")
-                elif ctx_msg.type.value == "agent":
-                    request_parts.append(f"Assistant: {ctx_msg.content}")
+                contents.append({
+                    "role": "model" if ctx_msg.type.value == "agent" else "user",
+                    "parts": [{"text": ctx_msg.content}]
+                })
 
             # Add the current user prompt
-            request_parts.append(f"User: {message.user_prompt}")
-
-            # Join all parts with double newlines
-            request_message = "\n\n".join(request_parts)
+            contents.append({
+                "role": "user",
+                "parts": [{"text": message.user_prompt}]
+            })
 
             response = self.client.models.generate_content(
                 model=self.model,
-                contents=request_message,
+                contents=contents,
                 config=GenerateContentConfig(
                     temperature=0.0,
                     system_instruction=message.system_prompt if message.system_prompt else None

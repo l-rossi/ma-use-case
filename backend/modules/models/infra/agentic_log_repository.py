@@ -24,7 +24,8 @@ class AgenticLogRepository:
             user_prompt=log_data.user_prompt,
             system_prompt=log_data.system_prompt,
             message_source=log_data.message_source,
-            regulation_fragment_id=log_data.regulation_fragment_id
+            regulation_fragment_id=log_data.regulation_fragment_id,
+            is_error=log_data.is_error
         )
 
         self.db.session.add(agentic_log)

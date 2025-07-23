@@ -10,6 +10,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/Dialog';
 import { Info } from 'lucide-react';
+import { FactFlag } from '@/components/features/atoms/FactFlag';
 
 interface AtomInfoModalProps {
   atom: AtomDTO;
@@ -24,13 +25,10 @@ export function AtomInfoModal({ atom, showButton = true }: AtomInfoModalProps) {
   }
 
   return (
-    <Dialog
-      onOpenChange={setIsOpen}
-      open={isOpen}
-    >
+    <Dialog onOpenChange={setIsOpen} open={isOpen}>
       <DialogTrigger asChild>
         <button
-          onClick={(e) => e.stopPropagation()}
+          onClick={e => e.stopPropagation()}
           className="ml-2 p-1 hover:bg-gray-300 rounded"
           title="View atom description"
         >
@@ -38,7 +36,10 @@ export function AtomInfoModal({ atom, showButton = true }: AtomInfoModalProps) {
         </button>
       </DialogTrigger>
       <DialogContent title="Atom Description">
-        <DialogTitle>{atom.predicate}</DialogTitle>
+        <div className="flex items-center">
+          <DialogTitle>{atom.predicate}</DialogTitle>
+          <FactFlag isFact={atom.is_fact} />
+        </div>
         <DialogDescription className="mt-4 whitespace-pre-wrap">
           {atom.description}
         </DialogDescription>
