@@ -1,40 +1,15 @@
 # MA Use Case
 
-A full-stack application with a Next.js frontend and Flask backend designed to optimize formal requirements extraction from regulatory texts for improved human understandability.
+Optimizing 
 
 ## Project Overview
 
-This application explores the extraction and representation of formal requirements (atoms) from regulatory text fragments. By leveraging natural language processing and large language models, the system identifies logical predicates within regulatory documents and presents them in a more structured and understandable format.
 
-Key features:
-- Extraction of formal requirements (atoms) from regulatory text
-- Visual highlighting of requirement spans within source text
-- Regeneration of requirements based on user feedback
-- Interactive interface for exploring and understanding regulatory requirements
 
 ## Project Structure
 
 - `frontend/`: Next.js application with App Router, Tailwind CSS, and TanStack Query
 - `backend/`: Flask API with LLM integration for requirement extraction
-
-## Frontend Setup
-
-1. Navigate to the frontend directory:
-   ```
-   cd frontend
-   ```
-
-2. Install dependencies:
-   ```
-   npm install
-   ```
-
-3. Run the development server:
-   ```
-   npm run dev
-   ```
-
-4. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
 ## Backend Setup
 
@@ -43,9 +18,9 @@ Key features:
    cd backend
    ```
 
-2. Create a virtual environment:
+2. Create a virtual environment (the name is important):
    ```
-   python -m venv venv
+   python -m venv .venv
    ```
 
 3. Activate the virtual environment:
@@ -71,6 +46,26 @@ Key features:
    ```
 
 7. The API will be available at [http://localhost:5000](http://localhost:5000).
+
+
+## Frontend Setup
+
+1. Navigate to the frontend directory:
+   ```
+   cd frontend
+   ```
+
+2. Install dependencies:
+   ```
+   npm install
+   ```
+
+3. Run the development server:
+   ```
+   npm run dev
+   ```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
 ## Technologies Used
 
