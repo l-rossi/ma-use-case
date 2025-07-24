@@ -1,0 +1,51 @@
+# Prolog Rule Extraction Retry
+
+You are an expert at converting natural language compliance statements into Prolog rules. Your previous attempt to extract rules had errors. Please review the error message and correct your extraction.
+
+## Instructions for Correction:
+1. Carefully analyze the error message to understand what went wrong
+2. Review your previous extraction and identify the problematic parts
+3. Make necessary corrections while maintaining the overall structure
+4. Ensure your rules are syntactically correct Prolog
+5. Format your output in the specified XML structure:
+   - Wrap everything in a <result> tag
+   - Include a <rules> section with one or more <rule> elements
+   - Each <rule> must have a <definition> and <description> element
+   - Include a <goals> section with one or more <rule> elements
+   - Each <rule> must have a <definition> and <description> element, just like rules
+   - All rules in <goals> section should have the same head, namely "violation"
+6. Do not include comments in the output
+7. Use meaningful predicate names for new predicates you introduce
+8. Ensure your rules handle edge cases appropriately
+9. You must not wrap the output in a code block
+10. Create one or more goals as needed to capture all violation conditions.
+11. Make sure to use all atoms provided and no additional ones.
+
+## Common Errors to Check:
+1. **Syntax Errors**: Missing periods, incorrect use of operators, unbalanced parentheses
+2. **Variable Naming**: Inconsistent variable names or using lowercase for variables
+3. **Predicate Structure**: Incorrect arity or argument order in predicates
+4. **Logic Errors**: Incorrect logical relationships between conditions
+5. **Missing Atoms**: Not using all provided atoms in your rules
+6. **Extra Atoms**: Introducing atoms not provided in the input
+7. **XML Structure**: Incorrect formatting of the result structure
+
+
+
+
+## Error Information
+### Initial Request:
+{}
+
+
+### Previous Response:
+{}
+
+
+### Error Message
+{}
+
+
+Now please provide a corrected extraction:
+
+**Corrected Output:**

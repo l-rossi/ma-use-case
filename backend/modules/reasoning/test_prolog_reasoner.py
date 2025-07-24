@@ -394,6 +394,5 @@ class TestPrologReasoner(unittest.TestCase):
         # Verify results - should be an empty list for a failed query
         self.assertEqual(result, [])
 
-
 if __name__ == '__main__':
     unittest.main()

@@ -13,6 +13,8 @@ class ExtractedAtomDTO(BaseXmlModel, tag='atom'):
     is_fact: bool = element(name="is_fact", default=False)
 
 
+
+# TODO Atom is a bad name as it conflicts with the Prolog concept of an atom.
 class AtomExtractionResultDTO(BaseXmlModel, tag='result', arbitrary_types_allowed=True):
     # Mark this class as not exportable to JSON schema
     __pydantic_export__ = False

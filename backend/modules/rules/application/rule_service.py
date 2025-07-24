@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from modules.atoms.application.atom_service import AtomService
 from modules.models.application.dto.chat_agent_message_ingress_dto import ChatAgentMessageIngressDTO
@@ -28,11 +28,16 @@ class RuleService:
         self.prolog_reasoner = prolog_reasoner
         self.atom_service = atom_service
 
+        self.retry_limit = 4
+
         with open("./prompts/rule_extraction/prolog_1.txt", "r") as file:
             self.generation_prompt = file.read()
 
         with open("./prompts/rule_regeneration/prolog_1.txt", "r") as file:
             self.regeneration_prompt = file.read()
+
+        with open("./prompts/rule_extraction/prolog_retry_1.txt", "r") as file:
+            self.retry_prompt = file.read()
 
     def create_rule(self, rule_data: CreateRuleDTO) -> RuleDTO:
         """
@@ -182,11 +187,11 @@ class RuleService:
         # Separate facts from non-facts
         fact_atoms = [atom for atom in atoms if atom.is_fact]
         other_atoms = [atom for atom in atoms if not atom.is_fact]
-        
+
         # Create strings for facts and other atoms
         fact_string = '\n'.join(f"{atom.predicate}." for atom in fact_atoms)
         other_atom_string = '\n'.join(atom.predicate for atom in other_atoms)
-        
+
         # Combine them with a clear separation
         atom_string = f"# Facts (to be asserted directly):\n{fact_string}\n\n# Other atoms (to be used in rules):\n{other_atom_string}"
 
@@ -208,11 +213,32 @@ class RuleService:
 
         parsed_result = RuleExtractionResultDTO.from_xml(returned_message.message)
 
-        for rule in parsed_result.rules:
-            print(self._check_rule_syntax(rule.definition))
-
-        for rule in parsed_result.goals:
-            print(self._check_rule_syntax(rule.definition))
+        # retries_remaining = self.retry_limit
+        # syntax_correct, err = self._check_rule_syntax(parsed_result)
+        # while retries_remaining > 0 and not syntax_correct:
+        #     print(f"Rule syntax error: {err}. Retrying... ({retries_remaining} attempts left)")
+        #     retries_remaining -= 1
+        #
+        #     retry_message = self.retry_prompt.format(
+        #         input_message,
+        #         returned_message,
+        #         err,
+        #     )
+        #
+        #     returned_message = self.chat_agent.send_message(
+        #         ChatAgentMessageIngressDTO(
+        #             user_prompt=retry_message,
+        #             system_prompt='',
+        #             regulation_fragment_id=regulation_fragment_id
+        #         )
+        #     )
+        #     input_message = retry_message
+        #
+        #     if returned_message.is_error:
+        #         raise ValueError(f"Error regenerating rules: {returned_message.message}")
+        #
+        #     parsed_result = RuleExtractionResultDTO.from_xml(returned_message.message)
+        #     syntax_correct, err = self._check_rule_syntax(parsed_result)
 
         self._save_extracted_rules(parsed_result, regulation_fragment_id)
 
@@ -254,11 +280,11 @@ class RuleService:
         # Separate facts from non-facts
         fact_atoms = [atom for atom in atoms if atom.is_fact]
         other_atoms = [atom for atom in atoms if not atom.is_fact]
-        
+
         # Create strings for facts and other atoms
         fact_string = '\n'.join(f"{atom.predicate}." for atom in fact_atoms)
         other_atom_string = '\n'.join(atom.predicate for atom in other_atoms)
-        
+
         # Combine them with a clear separation
         atom_string = f"# Facts (to be asserted directly):\n{fact_string}\n\n# Other atoms (to be used in rules):\n{other_atom_string}"
 
@@ -282,32 +308,26 @@ class RuleService:
         self.delete_rules_for_regulation_fragment(regulation_fragment_id)
         self._save_extracted_rules(regenerated_result, regulation_fragment_id)
 
-    def _check_rule_syntax(self, rule_definition: str) -> bool:
+    def _check_rule_syntax(self, result: RuleExtractionResultDTO) -> Tuple[bool, str]:
         """
         Check if a rule definition has valid Prolog syntax.
         
         Args:
-            rule_definition: The rule definition to check
+            result: The rule definitions to check
             
         Returns:
             True if the rule has valid syntax, False otherwise
         """
         try:
-            # Create a simple knowledge base with the rule
-            knowledge_base = rule_definition
+            # At this point we do not really care about the actual content of the rules,
+            knowledge_base = "\n".join(x.definition for x in result.rules)
+            goal = "\n".join(x.definition for x in result.goals)
 
-            # Create a simple goal that tries to use the rule
-            # We're not actually trying to execute the rule, just check its syntax
-            goal = "true"
-
-            # Execute the Prolog code and check if it returns an error
-            result = self.prolog_reasoner.execute_prolog(knowledge_base, goal)
-
-            # If result is None, there was a syntax error
-            return result is not None
+            result_status, response = self.prolog_reasoner.execute_prolog(knowledge_base, goal)
+            return result_status != "error", response[0].value
         except Exception as e:
             print(f"Error checking rule syntax: {str(e)}")
-            return False
+            return False, str(e)
 
     def _save_extracted_rules(self, parsed_result: RuleExtractionResultDTO, regulation_fragment_id: int) -> None:
         """

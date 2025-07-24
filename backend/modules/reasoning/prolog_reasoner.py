@@ -1,5 +1,5 @@
 import os
-from typing import List, Optional
+from typing import List, Optional, Literal, Tuple
 
 import requests
 from dotenv import load_dotenv
@@ -25,7 +25,7 @@ class PrologReasoner:
         if not self.prolog_url:
             raise ValueError("SWI_PROLOG_URL environment variable is not set")
 
-    def execute_prolog(self, knowledge_base: str, goal: str) -> Optional[List[PrologResultDTO]]:
+    def execute_prolog(self, knowledge_base: str, goal: str) -> Tuple[Literal["success", "failure", "error"], List[PrologResultDTO]]:
         # Step 1: Send initial query
         print(f"Sending request to {self.prolog_url}/pengine/create")
         print(f"Knowledge base: {knowledge_base}")
@@ -50,7 +50,7 @@ class PrologReasoner:
                 print("No answer found in the Prolog response")
                 raise ValueError("No answer found in the Prolog response")
 
-            data = response_body.get("data")
+            data = answer
             print(f"Data: {data}")
 
             # success, found a solution,
@@ -70,10 +70,17 @@ class PrologReasoner:
             raise
 
         if data.get("event") == "failure":
-            return []
+            return "failure", []
 
         if data.get("event") == "error":
-            return None
+            # Yes this is a bit hacky, but I am not too good with Python typing.
+            # Not sure how to return discriminatory unions here
+            return "error", [
+                PrologResultDTO(
+                    variable="error",
+                    value=str(data.get("data", {}))
+                )
+            ]
 
         if data.get("event") == "success":
             results = []
@@ -83,6 +90,6 @@ class PrologReasoner:
                         variable=var,
                         value=val
                     ))
-            return results
+            return "success", results
 
         raise ValueError(f"Unexpected Prolog response event: {data.get('event')}")

@@ -1,6 +1,6 @@
 # Extracting Prolog Atoms with XML Annotation
 
-You are an expert at identifying and extracting Prolog atoms from natural language compliance statements. Your task is to identify the basic predicates and entities that would be needed to represent the statement logically, then annotate the original text with XML tags that trace each atom back to its corresponding span.
+You are an expert at identifying and extracting Prolog atoms from natural language compliance statements. Your task is to identify the basic predicates and entities that would be needed to represent the statement logically, then annotate the original text with XML tags that trace each atom back to its corresponding span. The extracted atoms will be used to reason over the statement in a Prolog environment. Specifically, they will be used to determine if a violation of the compliance statement has occurred given a set of facts.
 
 ## Examples:
 
@@ -9,7 +9,7 @@ You are an expert at identifying and extracting Prolog atoms from natural langua
 **Output:**
 <result>
 <annotated>
-All <atom id="1">employees</atom> must <atom id="2">complete</atom> <atom id="3">safety training</atom> before <atom id="4">starting work</atom>.
+All <atom id="1">employees</atom> must <atom id="2">complete safety training</atom> before <atom id="3">starting work</atom>.
 </annotated>
 <atoms>
 <atom id="1">
@@ -18,62 +18,24 @@ All <atom id="1">employees</atom> must <atom id="2">complete</atom> <atom id="3"
 <is_fact>true</is_fact>
 </atom>
 <atom id="2">
-<predicate>completed_training(X, Type)</predicate>
-<description>Person X has completed a specific type of training</description>
-<is_fact>false</is_fact>
-</atom>
-<atom id="3">
-<predicate>training(safety)</predicate>
-<description>A training program focused on safety procedures</description>
+<predicate>completed_safety_training(X)</predicate>
+<description>Person X has completed safety training</description>
 <is_fact>true</is_fact>
 </atom>
-<atom id="4">
+<atom id="3">
 <predicate>started_work(X)</predicate>
 <description>Person X has begun their work duties</description>
-<is_fact>false</is_fact>
-</atom>
-</atoms>
-</result>
-
-
-**Input:** "Managers must approve all expense reports over $500."
-
-**Output:**
-<result>
-<annotated>
-<atom id="1">Managers</atom> must <atom id="2">approve</atom> all <atom id="3">expense reports</atom> over <atom id="4">$500</atom>.
-</annotated>
-<atoms>
-<atom id="1">
-<predicate>manager(X)</predicate>
-<description>A person with managerial responsibilities</description>
-<is_fact>true</is_fact>
-</atom>
-<atom id="2">
-<predicate>approved_by(Report, Manager)</predicate>
-<description>A report that has been approved by a specific manager</description>
-<is_fact>false</is_fact>
-</atom>
-<atom id="3">
-<predicate>expense_report(X, Amount)</predicate>
-<description>A report documenting expenses with a specific amount</description>
-<is_fact>true</is_fact>
-</atom>
-<atom id="4">
-<predicate>amount_threshold(500)</predicate>
-<description>A monetary threshold of $500</description>
 <is_fact>true</is_fact>
 </atom>
 </atoms>
 </result>
-
 
 **Input:** "Documents must be reviewed by two different people before publication."
 
 **Output:**
 <result>
 <annotated>
-<atom id="1">Documents</atom> must be <atom id="2">reviewed</atom> by <atom id="3">two</atom> <atom id="4">different people</atom> before <atom id="5">publication</atom>.
+<atom id="1">Documents</atom> must be <atom id="2">reviewed</atom> by two <atom id="4">different</atom> <atom id="4">people</atom> before <atom id="5">publication</atom>.
 </annotated>
 <atoms>
 <atom id="1">
@@ -84,12 +46,12 @@ All <atom id="1">employees</atom> must <atom id="2">complete</atom> <atom id="3"
 <atom id="2">
 <predicate>reviewed_by(Document, Person)</predicate>
 <description>A document that has been reviewed by a specific person</description>
-<is_fact>false</is_fact>
+<is_fact>true</is_fact>
 </atom>
 <atom id="3">
-<predicate>review_count_required(2)</predicate>
-<description>The required number of reviews is 2</description>
-<is_fact>true</is_fact>
+<predicate>different(X, Y)</predicate>
+<description>Two people that are different.</description>
+<is_fact>false</is_fact>
 </atom>
 <atom id="4">
 <predicate>person(X)</predicate>
@@ -99,98 +61,31 @@ All <atom id="1">employees</atom> must <atom id="2">complete</atom> <atom id="3"
 <atom id="5">
 <predicate>published(X)</predicate>
 <description>A document that has been made publicly available</description>
-<is_fact>false</is_fact>
-</atom>
-</atoms>
-</result>
-
-
-**Input:** "Access to confidential files requires both security clearance and supervisor approval."
-
-**Output:**
-<result>
-<annotated>
-<atom id="1">Access</atom> to <atom id="2">confidential files</atom> requires both <atom id="3">security clearance</atom> and <atom id="4">supervisor</atom> <atom id="5">approval</atom>.
-</annotated>
-<atoms>
-<atom id="1">
-<predicate>access(Person, File)</predicate>
-<description>A person has permission to access a specific file</description>
-<is_fact>false</is_fact>
-</atom>
-<atom id="2">
-<predicate>confidential_file(X)</predicate>
-<description>A file containing sensitive or restricted information</description>
-<is_fact>true</is_fact>
-</atom>
-<atom id="3">
-<predicate>has_clearance(Person, security)</predicate>
-<description>A person has been granted security clearance</description>
-<is_fact>true</is_fact>
-</atom>
-<atom id="4">
-<predicate>supervisor(X, Y)</predicate>
-<description>Person X is a supervisor of person Y</description>
-<is_fact>true</is_fact>
-</atom>
-<atom id="5">
-<predicate>approved_by(Supervisor, Person, File)</predicate>
-<description>A supervisor has approved a person's access to a file</description>
-<is_fact>false</is_fact>
-</atom>
-</atoms>
-</result>
-
-
-**Input:** "All purchases above $1000 need written authorization from department heads."
-
-**Output:**
-<result>
-<annotated>
-All <atom id="1">purchases</atom> above <atom id="2">$1000</atom> need <atom id="3">written authorization</atom> from <atom id="4">department heads</atom>.
-</annotated>
-<atoms>
-<atom id="1">
-<predicate>purchase(X, Amount)</predicate>
-<description>A transaction to buy something with a specific monetary value</description>
-<is_fact>true</is_fact>
-</atom>
-<atom id="2">
-<predicate>amount_threshold(1000)</predicate>
-<description>A monetary threshold of $1000</description>
-<is_fact>true</is_fact>
-</atom>
-<atom id="3">
-<predicate>written_authorization(X)</predicate>
-<description>A formal documented approval for a specific action</description>
-<is_fact>false</is_fact>
-</atom>
-<atom id="4">
-<predicate>department_head(Person)</predicate>
-<description>A person who leads a department or organizational unit</description>
 <is_fact>true</is_fact>
 </atom>
 </atoms>
 </result>
-
 
 ## Instructions:
 1. Read the compliance statement carefully
-2. Identify key entities (nouns) and relationships (verbs/actions)
-3. Wrap each relevant span with `<atom id="N">...</atom>` tags
-4. Create appropriate Prolog atom names using snake_case
-5. Use variables (X, Y, Person, etc.) for entities that would be instantiated
-6. Include constants for specific values (amounts, types, etc.)
-7. Ensure each atom id in the annotated text corresponds to an atom in the atoms section
-8. Focus on atomic predicates, not complex rules
-9. Make sure you combine duplicate atoms into one
-10. For each atom, determine if it should be a fact or not:
+2. Identify which facts need to be provided to determine a violation.
+3. Determine which Prolog literals (atoms) are needed to reason over these facts.
+4. Wrap each relevant span with `<atom id="N">...</atom>` tags
+5. Create appropriate Prolog atom names using snake_case
+6. Use variables (X, Y, Person, etc.) for entities that would be instantiated
+7. Include constants for specific values (amounts, types, etc.)
+8. Ensure each atom id in the annotated text corresponds to an atom in the atoms section
+9. Focus on atomic predicates, not complex rules
+10. Make sure you combine duplicate atoms into one
+11. For each atom, determine if it should be a fact or not:
    - Facts are basic properties or relationships that aren't derived from other rules, but rather provided as knowledge
    - Facts represent input data or environmental conditions
    - Facts would be asserted in a Prolog database rather than computed
-   - Mark an atom as a fact by setting the `is_fact` attribute to "true" in the atom tag: `<atom id="1" is_fact="true">`
-11. You must not wrap the output in a code block
-12. The annotated text may not deviate from the original statement, except for the added `<atom>` tags
+   - Mark an atom as a fact by adding the ´is_fact` tag with a value of `true` as demonstrated in the examples.
+12. You must not wrap the output in a code block
+13. The annotated text may not deviate from the original statement, except for the added `<atom>` tags
+14. Violation will be determined for a specific instance in time.
+15. Keep facts simple. Avoid unnecessary Prolog atoms, literals and variables.
 
 Now extract atoms from the following compliance statement:
 
