@@ -1,0 +1,65 @@
+services:
+  lrossi-ma-thesis-db:
+    image: postgres:16.9
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=db
+    ports:
+      - '6543:5432'
+    volumes:
+      - lrossi-ma-thesis-db:/var/lib/postgresql/data
+    networks:
+      - lrossi-ma-thesis
+
+  lrossi-ma-thesis-swi-prolog:
+    build:
+      context: ../prolog
+      dockerfile: Dockerfile
+
+    restart: always
+    ports:
+      - '6544:8080'
+    networks:
+      - lrossi-ma-thesis
+
+  lrossi-ma-thesis-backend:
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_ENV=production
+      - DATABASE_URL=postgresql://postgres:postgres@lrossi-ma-thesis-db.service:6543/db
+      - SWI_PROLOG_URL=http://lrossi-ma-thesis-swi-prolog.service:6544
+    ports:
+      - '5000:5000'
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    networks:
+      - lrossi-ma-thesis
+    restart:
+      always
+    depends_on:
+      - lrossi-ma-thesis-db
+
+  lrossi-ma-thesis-frontend:
+    environment:
+      - NEXT_PUBLIC_BACKEND_URL=http://localhost:5000
+    ports:
+      - '3000:3000'
+    build:
+      # The build needs access to the backend service
+      context: ../
+      dockerfile: ./backend/Dockerfile
+    networks:
+      - lrossi-ma-thesis
+    restart:
+      always
+
+volumes:
+  lrossi-ma-thesis-db:
+    driver: local
+
+networks:
+  lrossi-ma-thesis:
+    driver: bridge
