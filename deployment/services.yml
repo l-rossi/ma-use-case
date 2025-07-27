@@ -42,14 +42,14 @@ services:
       - lrossi-ma-thesis-db
 
   lrossi-ma-thesis-frontend:
-    environment:
-      - NEXT_PUBLIC_BACKEND_URL=http://localhost:5000
     ports:
       - '3000:3000'
     build:
       # The build needs access to the backend service
       context: ../
       dockerfile: ./frontend/Dockerfile
+      args:
+        - NEXT_PUBLIC_BACKEND_URL=http://localhost:5000
     networks:
       - lrossi-ma-thesis
     restart:

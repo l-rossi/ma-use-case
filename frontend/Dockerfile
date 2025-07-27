@@ -13,8 +13,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY ./frontend /app/frontend
 WORKDIR /app/frontend
 
+ARG NEXT_PUBLIC_BACKEND_URL
 # Yes, this is safe, this is placed in the public build anyways.
-ENV NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL
+ENV NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}
 
 # This also builds the types
 RUN npm install
