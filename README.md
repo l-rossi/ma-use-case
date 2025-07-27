@@ -17,6 +17,7 @@ You can quickly run the entire application stack using Docker Compose:
    ```
    docker compose -f ./deployment/services.yml up
    ```
+(You might want to add a project name with the `-p` for recognizing the containers later)
 
 3. Access the application:
    A web server should now run at [http://localhost:3000](http://localhost:3000)
