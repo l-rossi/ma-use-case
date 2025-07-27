@@ -1,97 +1,89 @@
 # MA Use Case
 
-Optimizing 
+## How to Run
+
+### Using Docker Compose
+
+You can quickly run the entire application stack using Docker Compose:
+
+1. Set the following environment variables on your system or create a `.env` file in `/deployment` with the variables
+   set:
+    - `OPENAI_API_KEY` - [Get your API key from OpenAI](https://platform.openai.com/api-keys)
+    - `ANTHROPIC_API_KEY` - [Get your API key from Anthropic](https://console.anthropic.com/settings/keys)
+    - `GOOGLE_API_KEY` - [Get your API key from Google Cloud Console](https://console.cloud.google.com/apis/credentials)
+    - `GOOGLE_PROJECT_ID` - [Find your Project ID in Google Cloud Console](https://console.cloud.google.com/welcome)
+
+2. Run the following command from the project root:
+   ```
+   docker compose -f ./deployment/services.yml up
+   ```
+
+3. Access the application:
+   A web server should now run at [http://localhost:3000](http://localhost:3000)
+   (The backend will also be exposed at port 5000)
+
+### For Development
+- Run Node 22 And Python 3.13. Newer may work, but are not tested.
+  - I can recommend [nvm](https://github.com/nvm-sh/nvm) for managing node versions
+  - For python, [pyenv](https://github.com/pyenv/pyenv) should work though I have not tested it. After the venv is created (by running the venv module using the correct python version) everything should be set though.
+- Spin up the Postgres and SWI-Prolog services.
+- You will need to setup the backend first as the frontend depends on it for type generation.
+
+#### Backend
+
+Create a venv environment and install the dependencies (From within the `backend` directory):
+
+```bash
+Unix:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Windows:
+
+```bash
+python -m venv venv
+venv\Scripts\Activate
+```
+
+_Important_:
+The name of the virtual environment must be `.venv` for the type generation script to work correctly.
+
+Install the dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Run the backend:
+
+Windows:
+
+```bash
+python app.py
+```
+
+Unix:
+
+```bash
+python3 app.py
+```
+
+
+
+#### Frontend
+From inside the `frontend` directory, run the following commands:
+
+Install dependencies and generate types:
+```bash
+npm i
+```
+
+Run the Next.js development server:
+```bash
+npm run dev
+```
 
 ## Project Overview
-
-
-
-## Project Structure
-
-- `frontend/`: Next.js application with App Router, Tailwind CSS, and TanStack Query
-- `backend/`: Flask API with LLM integration for requirement extraction
-
-## Backend Setup
-
-1. Navigate to the backend directory:
-   ```
-   cd backend
-   ```
-
-2. Create a virtual environment (the name is important):
-   ```
-   python -m venv .venv
-   ```
-
-3. Activate the virtual environment:
-   - Windows:
-     ```
-     venv\Scripts\activate
-     ```
-   - macOS/Linux:
-     ```
-     source venv/bin/activate
-     ```
-
-4. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
-
-5. Create a `.env` file based on `.env.example` and add your OpenAI API key.
-
-6. Run the Flask application:
-   ```
-   flask run
-   ```
-
-7. The API will be available at [http://localhost:5000](http://localhost:5000).
-
-
-## Frontend Setup
-
-1. Navigate to the frontend directory:
-   ```
-   cd frontend
-   ```
-
-2. Install dependencies:
-   ```
-   npm install
-   ```
-
-3. Run the development server:
-   ```
-   npm run dev
-   ```
-
-4. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
-
-## Technologies Used
-
-### Frontend
-- Next.js (App Router)
-- TypeScript
-- Tailwind CSS
-- TanStack Query
-- RadixUI/Shadcn UI components
-
-### Backend
-- Flask
-- OpenAI SDK for LLM integration
-- Python-dotenv for environment management
-- Pydantic for data validation and serialization
-
-## Use Case: Optimizing Formal Requirements Extraction
-
-This project demonstrates how large language models can be used to extract formal requirements from regulatory texts in a way that enhances human understanding. Traditional formal requirement extraction often results in highly technical specifications that are difficult for non-specialists to comprehend.
-
-By using a combination of natural language processing techniques and interactive visualization:
-
-1. **Contextual Understanding**: Requirements are presented within their original context, with visual highlighting to show the relationship between formal predicates and source text.
-
-2. **Iterative Refinement**: Users can provide feedback to regenerate and improve the extracted requirements, creating a human-in-the-loop system that continuously enhances accuracy and understandability.
-
-3. **Structured Representation**: Complex regulatory texts are broken down into atomic predicates that capture individual requirements in a more digestible format.
-
-This approach bridges the gap between formal specification and human comprehension, making regulatory compliance more accessible and manageable.

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Header } from '@/components/features/Header';
 import Providers from '@/components/infra/Providers';
 import { Toaster } from '@/components/ui/Sonner';
+import React, { ReactNode } from 'react';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="en">
@@ -38,7 +39,7 @@ export default function RootLayout({
         <footer>
           <hr className={'my-2 border-gray-200'} />
           <div className="text-center text-sm text-gray-200  mb-2">
-            Part of Lukas Rossi's Master's Thesis (
+            Part of Lukas Rossi&apos;s Master&apos;s Thesis (
             <Link
               prefetch={false}
               className="text-blue-400 hover:underline"

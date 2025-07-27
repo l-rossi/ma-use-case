@@ -3,7 +3,7 @@
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { getAgenticLogs } from '@/components/features/agentic-logs/agentic_logs.api';
 import { AgenticLogDTO } from '@dtos/dto-types';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 
 type PageParam = {
   cursor: number;

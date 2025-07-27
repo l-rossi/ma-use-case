@@ -1,18 +1,17 @@
 # Important, context needs to be set to the root of the monorepo
-FROM nikolaik/python-nodejs:python3.13-nodejs22 AS builder
+FROM nikolaik/python-nodejs:python3.13-nodejs24-alpine AS builder
 
 WORKDIR /app
 
-COPY ./backend .
+COPY ./backend /app/backend
 
 WORKDIR /app/backend
 RUN python -m venv /app/.venv
-RUN source /app/.venv/bin/activate
+ENV PATH="/app/.venv/bin:$PATH"
 RUN pip install --no-cache-dir -r requirements.txt
 
-WORKDIR /app
-COPY ./frontend .
-WORKDIR ./frontend
+COPY ./frontend /app/frontend
+WORKDIR /app/frontend
 # This also builds the types
 RUN npm install
 RUN npm run build
@@ -20,17 +19,16 @@ RUN npm run build
 FROM node:22-alpine AS production
 WORKDIR /app
 
+ENV NODE_ENV=production
+
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-COPY ./frontend .
-COPY --from=builder /app/frontend/node_modules /app/frontend/node_modules
-COPY --from=builder --chown=nextjs:nodejs /app/frontend/.next ./app/.next
-COPY --from=builder /app/frontend/node_modules ./app/node_modules
-COPY --from=builder /app/frontend/package.json ./app/package.json
-COPY --from=builder /app/frontend/public ./app/public
+COPY --from=builder /app/frontend/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/frontend/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/frontend/.next/static ./.next/static
 
 USER nextjs
 
-
+ENV HOSTNAME="0.0.0.0"
 CMD ["node", "server.js"]

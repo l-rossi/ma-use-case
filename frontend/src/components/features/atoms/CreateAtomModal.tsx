@@ -33,7 +33,7 @@ const formSchema = z.object({
   regulation_fragment_id: z.number().int().positive(),
   predicate: z.string().min(1, { message: 'Predicate is required' }),
   description: z.string().min(1, { message: 'Description is required' }),
-  is_fact: z.boolean().default(false),
+  is_fact: z.boolean(),
 });
 
 interface Props {

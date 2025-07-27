@@ -2,7 +2,7 @@
 
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, Suspense } from 'react';
 import { QueryClient } from '@tanstack/query-core';
 import { EventEmitterProvider } from '@/context/EventEmitterContext';
 
@@ -31,9 +31,11 @@ export default function Providers({ children }: Readonly<PropsWithChildren>) {
 
   return (
     <EventEmitterProvider>
-      <NuqsAdapter>
-        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-      </NuqsAdapter>
+      <Suspense>
+        <NuqsAdapter>
+          <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+        </NuqsAdapter>
+      </Suspense>
     </EventEmitterProvider>
   );
 }

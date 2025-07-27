@@ -99,12 +99,13 @@ export async function deleteAtomById(atomId: number): Promise<void> {
 
 /**
  * Update an atom
+ * @param atomId The ID of the atom to update
  * @param dto The UpdateAtomDTO containing the atom data to update
  * @returns Promise with the updated AtomDTO
  */
-export async function updateAtom(dto: UpdateAtomDTO): Promise<AtomDTO> {
+export async function updateAtom(atomId: number, dto: UpdateAtomDTO): Promise<AtomDTO> {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/atoms/${dto.id}`,
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/atoms/${atomId}`,
     {
       method: 'PUT',
       headers: {

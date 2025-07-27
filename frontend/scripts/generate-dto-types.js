@@ -23,23 +23,14 @@ if (!fs.existsSync(generatedDir)) {
   fs.mkdirSync(generatedDir, { recursive: true });
 }
 
-// Determine the OS and set the appropriate command to activate the virtual environment
+// Determine the OS and set the appropriate paths for the Python executable
 const isWindows = os.platform() === 'win32';
-let activateCommand;
+// Set PYTHONPATH to include the backend directory. This is basically activating the virtual environment.
+const env = { ...process.env };
+env.PYTHONPATH = backendDir;
 
-if (isWindows) {
-  // Windows
-  activateCommand = `${path.join(backendDir, '.venv', 'Scripts', 'activate.bat')} &&`;
-} else {
-  // Unix-like (Linux, macOS)
-  activateCommand = `source ${path.join(backendDir, '.venv', 'bin', 'activate')} &&`;
-}
-
-// Set PYTHONPATH to include the backend directory
-const pythonPath = isWindows ? `set PYTHONPATH=${backendDir} &&` : `PYTHONPATH=${backendDir}`;
-
-// Build the full command
-const command = `${activateCommand} ${pythonPath} pydantic2ts --module ${exportedTypesPath} --output "${outputPath}" --json2ts-cmd "${json2tsPath}"`;
+// Build the full command using the Python executable directly
+const command = `pydantic2ts --module ${exportedTypesPath} --output "${outputPath}" --json2ts-cmd "${json2tsPath}"`;
 
 console.log('Generating TypeScript types...');
 console.log(`Command: ${command}`);
@@ -49,7 +40,7 @@ try {
   execSync(command, {
     stdio: 'inherit',
     cwd: rootDir,
-    shell: isWindows ? undefined : "/bin/bash"
+    env: env,
   });
   console.log(`TypeScript types successfully generated at: ${outputPath}`);
 } catch (error) {

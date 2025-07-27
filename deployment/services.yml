@@ -6,8 +6,6 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=db
-    ports:
-      - '6543:5432'
     volumes:
       - lrossi-ma-thesis-db:/var/lib/postgresql/data
     networks:
@@ -17,10 +15,7 @@ services:
     build:
       context: ../prolog
       dockerfile: Dockerfile
-
     restart: always
-    ports:
-      - '6544:8080'
     networks:
       - lrossi-ma-thesis
 
@@ -28,8 +23,12 @@ services:
     environment:
       - FLASK_APP=app.py
       - FLASK_ENV=production
-      - DATABASE_URL=postgresql://postgres:postgres@lrossi-ma-thesis-db.service:6543/db
-      - SWI_PROLOG_URL=http://lrossi-ma-thesis-swi-prolog.service:6544
+      - DATABASE_URL=postgresql://postgres:postgres@lrossi-ma-thesis-db:5432/db
+      - SWI_PROLOG_URL=http://lrossi-ma-thesis-swi-prolog.service:8080
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - GOOGLE_PROJECT_ID=${GOOGLE_PROJECT_ID}
     ports:
       - '5000:5000'
     build:
@@ -50,7 +49,7 @@ services:
     build:
       # The build needs access to the backend service
       context: ../
-      dockerfile: ./backend/Dockerfile
+      dockerfile: ./frontend/Dockerfile
     networks:
       - lrossi-ma-thesis
     restart:

@@ -2,9 +2,8 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { getRegulationFragments } from '@/components/features/regulation-fragments/regulation_fragments.api';
-import { parseAsInteger, useQueryState } from 'nuqs';
 import { cn } from '@/lib/utils';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/Button';

@@ -13,7 +13,7 @@ export function useScrolledTo() {
     const { scrollTop, scrollHeight, clientHeight } = ref.current;
     setIsScrolledToBottom(scrollTop + clientHeight >= scrollHeight - THRESHOLD);
     setIsScrolledToTop(scrollTop <= THRESHOLD);
-  }, [ref.current]);
+  }, []);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -32,7 +32,7 @@ export function useScrolledTo() {
     );
 
     return () => abortController.abort();
-  }, [ref.current]);
+  }, []);
 
   return useMemo(
     () => ({

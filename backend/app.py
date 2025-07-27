@@ -14,24 +14,25 @@ from modules.rules.infra.rule_controller import rule_controller
 
 load_dotenv()
 
+# Create and configure the app
+app = Flask(__name__)
+app.container = container
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+db = container.db()
+CORS(app)
+app.register_blueprint(agentic_log_controller)
+app.register_blueprint(chat_controller)
+app.register_blueprint(regulation_fragment_controller)
+app.register_blueprint(atom_controller)
+app.register_blueprint(rule_controller)
+
+with app.app_context():
+    # Import models to ensure they are registered with SQLAlchemy
+    import db_models
+
+    # This is literally just to my PyCharm happy :)
+    _ = db_models
+    db.init_app(app)
+
 if __name__ == '__main__':
-    app = Flask(__name__)
-    app.container = container
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
-    db = container.db()
-    CORS(app)
-    app.register_blueprint(agentic_log_controller)
-    app.register_blueprint(chat_controller)
-    app.register_blueprint(regulation_fragment_controller)
-    app.register_blueprint(atom_controller)
-    app.register_blueprint(rule_controller)
-
-    with app.app_context():
-        # Import models to ensure they are registered with SQLAlchemy
-        import db_models
-
-        # This is literally just to my PyCharm happy :)
-        _ = db_models
-        db.init_app(app)
-
-    app.run(debug=True)
+    app.run(debug=os.getenv("DEBUG") == "true", host='0.0.0.0', port=int(os.getenv("PORT", 5000)))
