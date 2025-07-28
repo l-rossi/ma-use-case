@@ -213,32 +213,32 @@ class RuleService:
 
         parsed_result = RuleExtractionResultDTO.from_xml(returned_message.message)
 
-        # retries_remaining = self.retry_limit
-        # syntax_correct, err = self._check_rule_syntax(parsed_result)
-        # while retries_remaining > 0 and not syntax_correct:
-        #     print(f"Rule syntax error: {err}. Retrying... ({retries_remaining} attempts left)")
-        #     retries_remaining -= 1
-        #
-        #     retry_message = self.retry_prompt.format(
-        #         input_message,
-        #         returned_message,
-        #         err,
-        #     )
-        #
-        #     returned_message = self.chat_agent.send_message(
-        #         ChatAgentMessageIngressDTO(
-        #             user_prompt=retry_message,
-        #             system_prompt='',
-        #             regulation_fragment_id=regulation_fragment_id
-        #         )
-        #     )
-        #     input_message = retry_message
-        #
-        #     if returned_message.is_error:
-        #         raise ValueError(f"Error regenerating rules: {returned_message.message}")
-        #
-        #     parsed_result = RuleExtractionResultDTO.from_xml(returned_message.message)
-        #     syntax_correct, err = self._check_rule_syntax(parsed_result)
+        retries_remaining = self.retry_limit
+        syntax_correct, err = self._check_rule_syntax(parsed_result)
+        while retries_remaining > 0 and not syntax_correct:
+            print(f"Rule syntax error: {err}. Retrying... ({retries_remaining} attempts left)")
+            retries_remaining -= 1
+
+            retry_message = self.retry_prompt.format(
+                input_message,
+                returned_message,
+                err,
+            )
+
+            returned_message = self.chat_agent.send_message(
+                ChatAgentMessageIngressDTO(
+                    user_prompt=retry_message,
+                    system_prompt='',
+                    regulation_fragment_id=regulation_fragment_id
+                )
+            )
+            input_message = retry_message
+
+            if returned_message.is_error:
+                raise ValueError(f"Error regenerating rules: {returned_message.message}")
+
+            parsed_result = RuleExtractionResultDTO.from_xml(returned_message.message)
+            syntax_correct, err = self._check_rule_syntax(parsed_result)
 
         self._save_extracted_rules(parsed_result, regulation_fragment_id)
 

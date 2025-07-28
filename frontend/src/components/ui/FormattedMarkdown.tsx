@@ -4,11 +4,12 @@ import { memo } from 'react';
 import Markdown from 'react-markdown';
 import { cn } from '@/lib/utils';
 
-interface LogMessageProps {
+interface FormattedMarkdownProps {
   content: string;
+  codeClassName?: string;
 }
 
-export const LogMessage = memo(function LogMessage({ content }: LogMessageProps) {
+export const FormattedMarkdown = memo(function FormattedMarkdown({ content, codeClassName }: FormattedMarkdownProps) {
   return (
     <Markdown
       components={{
@@ -17,7 +18,8 @@ export const LogMessage = memo(function LogMessage({ content }: LogMessageProps)
             className={cn(
               'bg-gray-800 p-1 rounded-md overflow-y-auto mb-4',
               node?.properties?.className ? 'block' : 'inline',
-              className
+              className,
+              codeClassName
             )}
             {...props}
           >

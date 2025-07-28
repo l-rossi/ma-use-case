@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
 import { ChatMessageDTO } from '@dtos/dto-types';
+import { FormattedMarkdown } from '@/components/ui/FormattedMarkdown';
 
 interface Props {
   message: ChatMessageDTO;
@@ -15,7 +16,10 @@ export function Message({ message }: Readonly<Props>) {
         'max-w-[80%]'
       )}
     >
-      <p className="whitespace-pre-wrap">{message.content}</p>
+      <FormattedMarkdown
+        codeClassName={"bg-gray-200"}
+        content={message.content}
+      />
       <span className="text-xs text-gray-400 self-end">
         {new Date(message.created_at).toLocaleTimeString(["de"], {
           hour: '2-digit',

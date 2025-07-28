@@ -4,12 +4,12 @@ import { cn } from '@/lib/utils';
 import { Box } from '@/components/ui/Box';
 import { useAgenticLogs } from '@/hooks/useAgenticLogs';
 import { useSelectedRegulationFragmentId } from '@/hooks/useSelectedRegulationFragment';
-import { memo, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CollapsibleText } from '@/components/ui/CollapsibleText';
-import Markdown from 'react-markdown';
 import { CircleAlert, Lock, LockOpen } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { FormattedMarkdown } from '@/components/ui/FormattedMarkdown';
 
 interface Props {
   className?: string;
@@ -103,7 +103,7 @@ export function AgenticLogs({ className }: Readonly<Props>) {
                 <div>
                   {/*TODO show system prompt*/}
                   <CollapsibleText maxLines={10} className={'whitespace-pre-wrap list-disc'}>
-                    <LogMessage content={log.user_prompt} />
+                    <FormattedMarkdown content={log.user_prompt} />
                   </CollapsibleText>
                 </div>
               </div>
@@ -115,50 +115,3 @@ export function AgenticLogs({ className }: Readonly<Props>) {
   );
 }
 
-const LogMessage = memo(function LogMessage({ content }: { content: string }) {
-  return (
-    <Markdown
-      components={{
-        code: ({ node, className, children, ...props }) => (
-          <code
-            className={cn(
-              'bg-gray-800 p-1 rounded-md overflow-y-auto mb-4',
-              node?.properties?.className ? 'block' : 'inline',
-              className
-            )}
-            {...props}
-          >
-            {children}
-          </code>
-        ),
-        h1: ({ className, children, ...props }) => (
-          <h1 className={cn('text-xl font-bold mb-2', className)} {...props}>
-            {children}
-          </h1>
-        ),
-        h2: ({ className, children, ...props }) => (
-          <h2 className={cn('text-lg font-semibold mb-1', className)} {...props}>
-            {children}
-          </h2>
-        ),
-        p: ({ className, children, ...props }) => (
-          <p className={cn('mb-2', className)} {...props}>
-            {children}
-          </p>
-        ),
-        ol: ({ className, children, ...props }) => (
-          <ol className={cn('list-decimal pl-10 mb-2', className)} {...props}>
-            {children}
-          </ol>
-        ),
-        ul: ({ className, children, ...props }) => (
-          <ul className={cn('list-disc pl-10 mb-2', className)} {...props}>
-            {children}
-          </ul>
-        ),
-      }}
-    >
-      {content}
-    </Markdown>
-  );
-});

@@ -36,8 +36,8 @@ const colors: ReadonlyArray<Readonly<[string, string]>> = [
   ['#f5f5dc', '#bc8f8f'],  // Rosy brown
   
   // Indigo/Navy Family (New)
-  ['#f0f8ff', '#4b0082'],  // Indigo
-  ['#f5f5ff', '#483d8b'],  // Dark slate blue
+  ['#f0f8ff', '#7c05cf'],  // Indigo
+  ['#f5f5ff', '#6f5ed6'],  // Dark slate blue
 ];
 
 export function getHighlightColor(key: string): Readonly<[string, string]> {

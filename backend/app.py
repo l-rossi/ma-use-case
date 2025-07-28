@@ -35,4 +35,4 @@ with app.app_context():
     db.init_app(app)
 
 if __name__ == '__main__':
-    app.run(debug=os.getenv("DEBUG") == "true", host='0.0.0.0', port=int(os.getenv("PORT", 5000)))
+    app.run(debug=True)

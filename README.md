@@ -6,7 +6,7 @@
 
 You can quickly run the entire application stack using Docker Compose:
 
-1. Set the following environment variables on your system or create a `.env` file in `/deployment` with the variables
+1. Set the following environment variables on your system or create a `.env` file in `/deployment` with the following variables
    set:
     - `OPENAI_API_KEY` - [Get your API key from OpenAI](https://platform.openai.com/api-keys)
     - `ANTHROPIC_API_KEY` - [Get your API key from Anthropic](https://console.anthropic.com/settings/keys)
