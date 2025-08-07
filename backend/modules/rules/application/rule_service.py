@@ -1,9 +1,14 @@
+from itertools import chain
+from locale import windows_locale
 from typing import List, Optional, Tuple
 
 from modules.atoms.application.atom_service import AtomService
+from modules.atoms.application.atom_util import mask_variables_in_atoms, create_wildcard_predicates
+from modules.atoms.application.dto.atom_dto import AtomDTO
 from modules.models.application.dto.chat_agent_message_ingress_dto import ChatAgentMessageIngressDTO
 from modules.models.application.llm_adapter import LLMAdapter
 from modules.reasoning import PrologReasoner
+from modules.reasoning.prolog_result_dto import PrologResultDTO, PrologAnswerDTO
 from modules.regulation_fragment.application.regulation_fragment_service import RegulationFragmentService
 from modules.rules.application.dto.create_rule_dto import CreateRuleDTO
 from modules.rules.application.dto.regenerate_rules_dto import RegenerateRulesDTO
@@ -214,7 +219,7 @@ class RuleService:
         parsed_result = RuleExtractionResultDTO.from_xml(returned_message.message)
 
         retries_remaining = self.retry_limit
-        syntax_correct, err = self._check_rule_syntax(parsed_result)
+        syntax_correct, err = self._check_rule_syntax(parsed_result, atoms)
         while retries_remaining > 0 and not syntax_correct:
             print(f"Rule syntax error: {err}. Retrying... ({retries_remaining} attempts left)")
             retries_remaining -= 1
@@ -232,13 +237,18 @@ class RuleService:
                     regulation_fragment_id=regulation_fragment_id
                 )
             )
+            # This bloats the message with too much old prompting. This needs to be improved.
             input_message = retry_message
 
             if returned_message.is_error:
                 raise ValueError(f"Error regenerating rules: {returned_message.message}")
 
             parsed_result = RuleExtractionResultDTO.from_xml(returned_message.message)
-            syntax_correct, err = self._check_rule_syntax(parsed_result)
+            syntax_correct, err = self._check_rule_syntax(parsed_result, atoms)
+
+        if not syntax_correct:
+            # raise ValueError(f"Failed to generate valid rules after {self.retry_limit} attempts. Last error: {err}")
+            pass
 
         self._save_extracted_rules(parsed_result, regulation_fragment_id)
 
@@ -308,9 +318,14 @@ class RuleService:
         self.delete_rules_for_regulation_fragment(regulation_fragment_id)
         self._save_extracted_rules(regenerated_result, regulation_fragment_id)
 
-    def _check_rule_syntax(self, result: RuleExtractionResultDTO) -> Tuple[bool, str]:
+    def _check_rule_syntax(self, result: RuleExtractionResultDTO, atoms: List[AtomDTO]) -> Tuple[bool, PrologAnswerDTO]:
         """
         Check if a rule definition has valid Prolog syntax.
+
+        The idea is to take the atoms with wildcard variables as a fact base,
+        adding the rules and goals as Prolog rules,
+        and creating an artificial "violation" predicate which should
+        match the first goal in the result in the number of variables.
         
         Args:
             result: The rule definitions to check
@@ -319,12 +334,22 @@ class RuleService:
             True if the rule has valid syntax, False otherwise
         """
         try:
-            # At this point we do not really care about the actual content of the rules,
-            knowledge_base = "\n".join(x.definition for x in result.rules)
-            goal = "\n".join(x.definition for x in result.goals)
+            facts = "\n".join(mask_variables_in_atoms(atoms))
+            knowledge_base = "\n".join(
+                x.definition for x in chain(result.rules, result.goals)
+            )
 
-            result_status, response = self.prolog_reasoner.execute_prolog(knowledge_base, goal)
-            return result_status != "error", response[0].value
+            masked_violation, _ = create_wildcard_predicates(result.goals[0].definition.split(":-")[0].strip(),
+                                                             wildcard_factory=lambda _: "_")
+
+            print(
+                facts + "\n" + knowledge_base
+            )
+            print(masked_violation)
+
+            result_status, response = self.prolog_reasoner.execute_prolog(facts + "\n" + knowledge_base,
+                                                                          masked_violation)
+            return result_status != "error", response
         except Exception as e:
             print(f"Error checking rule syntax: {str(e)}")
             return False, str(e)

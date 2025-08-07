@@ -1,9 +1,8 @@
-% server.pl
+:- use_module(swish:library(pengines_io)).
 :- use_module(library(pengines)).
 :- use_module(library(http/thread_httpd)).
 :- use_module(library(http/http_dispatch)).
 
-% Start HTTP server on port 8080
 :- initialization(server).
 
 server :-

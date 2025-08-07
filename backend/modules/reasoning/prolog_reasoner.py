@@ -1,10 +1,10 @@
 import os
-from typing import List, Optional, Literal, Tuple
+from typing import List, Optional, Literal, Tuple, Generator, Union
 
 import requests
 from dotenv import load_dotenv
 
-from modules.reasoning.prolog_result_dto import PrologResultDTO
+from modules.reasoning.prolog_result_dto import PrologResultDTO, PrologAnswerDTO
 
 # Load environment variables
 load_dotenv()
@@ -25,71 +25,101 @@ class PrologReasoner:
         if not self.prolog_url:
             raise ValueError("SWI_PROLOG_URL environment variable is not set")
 
-    def execute_prolog(self, knowledge_base: str, goal: str) -> Tuple[Literal["success", "failure", "error"], List[PrologResultDTO]]:
+    def execute_prolog(self, knowledge_base: str, goal: str) -> Tuple[
+        Literal["success", "failure", "error"], List[PrologAnswerDTO]]:
         # Step 1: Send initial query
         print(f"Sending request to {self.prolog_url}/pengine/create")
         print(f"Knowledge base: {knowledge_base}")
         print(f"Goal: {goal}")
 
-        try:
-            res = requests.post(f"{self.prolog_url}/pengine/create", json={
-                "ask": goal,
-                "src_text": knowledge_base,
-                "application": "pengine_sandbox",
-                "format": "json",
-                "chunks": 1_000
-            })
-            print(f"Response status code: {res.status_code}")
-            print(f"Response content: {res.text}")
+        res = requests.post(f"{self.prolog_url}/pengine/create", json={
+            "ask": goal,
+            "src_text": knowledge_base,
+            "application": "pengine_sandbox",
+            "format": "json",
+            # We cannot really handle many solutions anyways so just truncating at 1000 is good enough.
+            "chunk": 1_000
+        })
+        print(f"Response status code: {res.status_code}")
+        print(f"Response content: {res.text}")
 
-            response_body = res.json()
-            print(f"Response body: {response_body}")
+        response_body = res.json()
+        print(f"Response body: {response_body}")
 
-            answer = response_body.get("answer", None)
-            if answer is None:
-                print("No answer found in the Prolog response")
-                raise ValueError("No answer found in the Prolog response")
+        if not type(response_body) is list:
+            response_body = [response_body]
 
-            data = answer
-            print(f"Data: {data}")
+        answers = list(
+            answer  for res in response_body for answer in self._process_event(res)
+        )
 
-            # success, found a solution,
-            # failure, no solution found,
-            # error, something went wrong
-            terminal_events = ["success", "failure", "error"]
-            while data is not None and data.get("event", None) not in terminal_events:
-                print(f"Event: {data.get('event', None)}, not in terminal events, getting next data")
-                data = data.get("data", None)
-                print(f"Next data: {data}")
+        is_error = any(
+            answer.status == "error" for answer in answers
+        )
 
-            if data is None:
-                print("Data is None, invalid Prolog response format")
-                raise ValueError("Invalid Prolog response format")
-        except Exception as e:
-            print(f"Exception: {e}")
-            raise
+        is_failure = any(
+            answer.status == "failure" for answer in answers
+        )
 
-        if data.get("event") == "failure":
-            return "failure", []
+        if is_error:
+            return "error", answers
+        elif is_failure:
+            return "failure", answers
 
-        if data.get("event") == "error":
-            # Yes this is a bit hacky, but I am not too good with Python typing.
-            # Not sure how to return discriminatory unions here
-            return "error", [
-                PrologResultDTO(
-                    variable="error",
-                    value=str(data.get("data", {}))
+        return "success", answers
+
+    def _process_event(self, event: dict) -> Generator[PrologAnswerDTO, None]:
+        event_type = event.get("event", None)
+        if event_type is None:
+            raise ValueError("Event does not contain 'event' key")
+
+        if event_type == "create":
+            yield from self._process_event(
+                event.get("answer", {})
+            )
+
+        elif event_type == "destroy":
+            # Currently we do not "save" destroy events,
+            yield from self._process_event(
+                event.get("data", {})
+            )
+
+        elif event_type == "success":
+            answers: Union[List, None] = event.get("data", None)
+            if answers is None:
+                raise ValueError("Success event does not contain 'data' key")
+
+            if not isinstance(answers, list):
+                raise ValueError("Success event 'data' is not a list")
+
+            for answer in answers:
+                yield PrologAnswerDTO(
+                    status="success",
+                    answers=[PrologResultDTO(variable=k, value=v) for k, v in answer.items()]
                 )
-            ]
 
-        if data.get("event") == "success":
-            results = []
-            for d in data.get("data", []):
-                for var, val in d.items():
-                    results.append(PrologResultDTO(
-                        variable=var,
-                        value=val
-                    ))
-            return "success", results
+        elif event_type == "failure":
+            yield PrologAnswerDTO(
+                status="failure",
+                answers=[]
+            )
 
-        raise ValueError(f"Unexpected Prolog response event: {data.get('event')}")
+        elif event_type == "error":
+            yield PrologAnswerDTO(
+                status="error",
+                answers=[],
+                message=event.get("data")
+            )
+
+        elif event_type == "output":
+            # Basically there should be no output normally, except if there is for example a syntax error.
+            # We just dump the data into the answer and let the downstream task (LLM) figure out what to do with it.
+            yield PrologAnswerDTO(
+                status="error",
+                answers=[],
+                message=str(event.get("data"))
+            )
+
+
+        else:
+            raise ValueError(f"Unknown event type: {event_type}")

@@ -11,7 +11,7 @@ You are refining previously extracted Prolog atoms based on user feedback. Your 
 6. **Add missing atoms**: Extract additional concepts identified in feedback when needed
 7. **Remove atoms**: Eliminate unnecessary atoms as specified
 8. **Adjust granularity**: Make atoms more specific or more general as requested
-9. **Change fact status**: Update whether an atom is a fact or not when requested, but only update if specified in the feedback
+9. **Change fact status**: If requested, change the atom's `is_fact` status to true or false
 
 ## Instructions:
 1. **Analyze the feedback**: Understand what changes are being requested

@@ -124,6 +124,7 @@ You are an expert at converting natural language compliance statements into Prol
 9. You must not wrap the output in a code block
 10. Create one or more goals as needed to capture all violation conditions.
 11. Make sure to use all atoms provided and no additional ones.
+12. Use \+ for negation in Prolog rules.
 
 Now extract Prolog rules from the following:
 
