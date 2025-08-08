@@ -38,12 +38,10 @@ export function AtomView({ atom, textarea, setFeedback, feedbackFocused }: AtomC
           } as CSSProperties
         }
       >
-        <div className="flex items-center">
-          <h3 className="font-semibold text-base truncate whitespace-nowrap overflow-hidden text-ellipsis min-w-0">
-            {atom.predicate}
-            <FactFlag isFact={atom.is_fact} />
-          </h3>
-        </div>
+        <h3 className="font-semibold text-base truncate whitespace-nowrap overflow-hidden text-ellipsis min-w-0">
+          {atom.predicate}
+        </h3>
+        <FactFlag className={'mr-auto'} isFact={atom.is_fact} />
         <div className="flex items-center shrink-0">
           <AtomInfoModal atom={atom} />
           <button
@@ -90,12 +88,10 @@ export function AtomView({ atom, textarea, setFeedback, feedbackFocused }: AtomC
         } as CSSProperties
       }
     >
-      <div className="flex items-center">
-        <h3 className="font-semibold text-base truncate whitespace-nowrap overflow-hidden text-ellipsis min-w-0">
-          {atom.predicate}
-          <FactFlag isFact={atom.is_fact} />
-        </h3>
-      </div>
+      <h3 className="font-semibold text-base truncate whitespace-nowrap overflow-hidden text-ellipsis min-w-0">
+        {atom.predicate}
+      </h3>
+      <FactFlag className={'mr-auto'} isFact={atom.is_fact} />
       <div className="flex items-center">
         <ArrowRight className="ml-2 size-4 text-gray-500" />
       </div>

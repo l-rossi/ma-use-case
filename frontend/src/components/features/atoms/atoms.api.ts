@@ -85,12 +85,9 @@ export async function deleteAtomsForFragment(fragmentId: number): Promise<void> 
  * @returns Promise that resolves when the atom is deleted
  */
 export async function deleteAtomById(atomId: number): Promise<void> {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/atoms/${atomId}`,
-    {
-      method: 'DELETE',
-    }
-  );
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/atoms/${atomId}`, {
+    method: 'DELETE',
+  });
 
   if (!res.ok) {
     throw new Error('Failed to delete atom');
@@ -102,21 +99,20 @@ export async function deleteAtomById(atomId: number): Promise<void> {
  * @param atomId The ID of the atom to update
  * @param dto The UpdateAtomDTO containing the atom data to update
  * @returns Promise with the updated AtomDTO
+ * @throws Error with the error message from the backend if the request fails
  */
 export async function updateAtom(atomId: number, dto: UpdateAtomDTO): Promise<AtomDTO> {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/atoms/${atomId}`,
-    {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(dto),
-    }
-  );
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/atoms/${atomId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(dto),
+  });
 
   if (!res.ok) {
-    throw new Error('Failed to update atom');
+    const errorData = await res.json();
+    throw new Error(errorData.error || 'Failed to update atom');
   }
 
   return await res.json();
@@ -128,16 +124,13 @@ export async function updateAtom(atomId: number, dto: UpdateAtomDTO): Promise<At
  * @returns Promise with the created AtomDTO
  */
 export async function createAtom(dto: CreateAtomDTO): Promise<AtomDTO> {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BACKEND_URL}/atoms`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(dto),
-    }
-  );
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/atoms`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(dto),
+  });
 
   if (!res.ok) {
     throw new Error('Failed to create atom');

@@ -117,8 +117,8 @@ export function Atoms({ className }: Readonly<Props>) {
         </Button>
       </div>
 
-      <div className={'grid grid-cols-2 overflow-hidden gap-2'}>
-        <div className={"h-full overflow-hidden flex flex-col"}>
+      <div className={'grid grid-cols-2 overflow-hidden gap-2 grow'}>
+        <div className={"h-full overflow-hidden flex flex-col justify-between grow"}>
           <ul className="flex flex-col gap-3 overflow-y-auto">
             {atoms.map(atom => (
               <li key={atom.id}>

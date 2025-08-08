@@ -10,7 +10,14 @@ export type Agent = "USER" | "AI";
 /**
  * Enum representing different LLM identifiers.
  */
-export type LLMIdentifier = "GPT_3_5_TURBO" | "GPT_4o_MINI" | "SONNET_4" | "GEMINI_2_5_FLASH";
+export type LLMIdentifier =
+  | "GPT_3_5_TURBO"
+  | "GPT_4o_MINI"
+  | "GPT_5"
+  | "GPT_5_MINI"
+  | "GPT_5_NANO"
+  | "SONNET_4"
+  | "GEMINI_2_5_FLASH";
 
 /**
  * Data Transfer Object for an agentic log.
@@ -75,6 +82,9 @@ export interface CreateRuleDTO {
   is_goal?: boolean;
 }
 export interface RegenerateAtomsDTO {
+  feedback: string;
+}
+export interface RegenerateRulesDTO {
   feedback: string;
 }
 export interface RegulationFragmentDTO {

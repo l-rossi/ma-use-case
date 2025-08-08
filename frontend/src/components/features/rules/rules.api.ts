@@ -1,4 +1,30 @@
-import { RuleDTO, CreateRuleDTO, UpdateRuleDTO } from '@dtos/dto-types';
+import { RuleDTO, CreateRuleDTO, UpdateRuleDTO, RegenerateRulesDTO } from '@dtos/dto-types';
+
+/**
+ * Regenerate rules for a specific regulation fragment with feedback
+ * @param fragmentId The ID of the regulation fragment
+ * @param dto Data Transfer Object containing feedback for regeneration
+ * @returns Promise that resolves when rules are regenerated
+ */
+export async function regenerateRulesForFragment(
+  fragmentId: number,
+  dto: RegenerateRulesDTO
+): Promise<void> {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/regulation-fragments/${fragmentId}/rules/regenerate`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(dto),
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error('Failed to regenerate rules for regulation fragment');
+  }
+}
 
 /**
  * Get all rules for a specific regulation fragment

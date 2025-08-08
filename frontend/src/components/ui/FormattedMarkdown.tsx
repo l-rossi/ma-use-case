@@ -42,12 +42,12 @@ export const FormattedMarkdown = memo(function FormattedMarkdown({ content, code
           </p>
         ),
         ol: ({ className, children, ...props }) => (
-          <ol className={cn('list-decimal pl-10 mb-2', className)} {...props}>
+          <ol className={cn('list-decimal pl-5 break-words w-full overflow-hidden mb-2', className)} {...props}>
             {children}
           </ol>
         ),
         ul: ({ className, children, ...props }) => (
-          <ul className={cn('list-disc pl-10 mb-2', className)} {...props}>
+          <ul className={cn('list-disc pl-5 break-words w-full overflow-hidden mb-2', className)} {...props}>
             {children}
           </ul>
         ),

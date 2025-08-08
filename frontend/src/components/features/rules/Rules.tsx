@@ -14,6 +14,8 @@ import { Button } from '@/components/ui/Button';
 import { useAtoms } from '@/hooks/useAtoms';
 import { Trash2 } from 'lucide-react';
 import { RuleView } from '@/components/features/rules/RuleView';
+import { RegenerationForm } from '@/components/features/rules/RegenerationForm';
+import { useState } from 'react';
 
 interface Props {
   className?: string;
@@ -26,6 +28,8 @@ export function Rules({ className }: Readonly<Props>) {
   const { data: rules = [], isPending, isError, refetch } = useRules(selectedFragmentId);
 
   const queryClient = useQueryClient();
+
+  const [feedback, setFeedback] = useState('');
   const generateRulesMutation = useMutation({
     mutationFn: () => generateRulesForFragment(selectedFragmentId!),
     onSettled: () =>
@@ -109,23 +113,37 @@ export function Rules({ className }: Readonly<Props>) {
           <Trash2 className="size-4" />
         </Button>
       </div>
-      <div className={"flex flex-col overflow-y-auto"}>
-        <ul className="flex flex-col gap-2">
-          {rules
-            .filter(rule => !rule.is_goal)
-            .map(rule => (
-              <RuleView key={rule.id} rule={rule} />
-            ))}
-        </ul>
-        <h4 className={"font-semibold text-lg mt-4"}>Goals</h4>
-        <hr className={"mb-4"}/>
-        <ul className="flex flex-col gap-2">
-          {rules
-            .filter(rule => rule.is_goal)
-            .map(rule => (
-              <RuleView key={rule.id} rule={rule} />
-            ))}
-        </ul>
+
+      <div className={'grid grid-cols-2 overflow-hidden gap-2'}>
+        <div className={'h-full overflow-hidden flex flex-col'}>
+          <div className={'flex flex-col overflow-y-auto'}>
+            <ul className="flex flex-col gap-2">
+              {rules
+                .filter(rule => !rule.is_goal)
+                .map(rule => (
+                  <RuleView key={rule.id} rule={rule} />
+                ))}
+            </ul>
+            <h4 className={'font-semibold text-lg mt-4'}>Goals</h4>
+            <hr className={'mb-4'} />
+            <ul className="flex flex-col gap-2">
+              {rules
+                .filter(rule => rule.is_goal)
+                .map(rule => (
+                  <RuleView key={rule.id} rule={rule} />
+                ))}
+            </ul>
+          </div>
+        </div>
+
+        <div className={'flex flex-col'}>
+          <h3 className="text-lg font-semibold mb-2">Regenerate Rules</h3>
+          <RegenerationForm
+            feedback={feedback}
+            setFeedback={setFeedback}
+            fragmentId={selectedFragmentId}
+          />
+        </div>
       </div>
     </Box>
   );

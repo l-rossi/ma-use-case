@@ -135,12 +135,11 @@ export function Chat({ className }: Readonly<Props>) {
       </ul>
 
       <form onSubmit={handleSendMessage} className="flex gap-2">
-        <input
-          type="text"
+        <textarea
           value={newMessage}
           onChange={e => setNewMessage(e.target.value)}
           placeholder="Type your message..."
-          className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500"
+          className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 resize-none overflow-y-auto h-24"
           disabled={sendMessageMutation.isPending}
         />
         <Button
