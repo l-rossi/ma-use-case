@@ -61,19 +61,18 @@ def delete_atom_by_id(atom_id: str):
         return {'error': 'Atom not found'}, 404
 
 
-@atom_controller.put('/atoms/<atom_id>')
+@atom_controller.patch('/atoms/<atom_id>')
 def update_atom(atom_id: str):
     """
     Update an atom by its ID.
     """
     data = request.get_json()
-    data['id'] = int(atom_id)  # Ensure the ID in the path is used
 
     update_dto = UpdateAtomDTO(**data)
     atom_service = container.atom_service()
 
     try:
-        updated_atom = atom_service.update_atom(update_dto)
+        updated_atom = atom_service.update_atom(atom_id, update_dto)
         return updated_atom.model_dump(), 200
     except ValueError as e:
         return {'error': str(e)}, 404

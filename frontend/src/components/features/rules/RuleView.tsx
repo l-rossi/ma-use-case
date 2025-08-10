@@ -35,13 +35,13 @@ export function RuleView({ rule }: Readonly<Props>) {
         } as CSSProperties
       }
     >
-      <h3 className="font-semibold text-base truncate whitespace-nowrap overflow-hidden text-ellipsis min-w-0">
+      <div className="font-semibold text-base truncate whitespace-normal overflow-hidden text-ellipsis min-w-0 break-words w-full">
         <p>{head + HORN_TAIL_SEP}</p>
         {windowed(literals, 2, 2).map((it) => (
           <PredicateView key={it[0]} literal={it[0]!.trim()} separator={it[1]} atoms={atoms} />
         ))}
         .
-      </h3>
+      </div>
     </li>
   );
 }
@@ -62,13 +62,13 @@ function PredicateView({ literal, separator }: Readonly<LiteralViewProps>) {
   // console.log(upToBracket(literal));
 
   return (
-    <p className="ml-8">
-      <span
-      // style={{ backgroundColor: highlightColor }}
-      >
+    <p className="pl-8 break-words overflow-hidden w-full">
+      {/*<span*/}
+      {/*// style={{ backgroundColor: highlightColor }}*/}
+      {/*>*/}
         {literal}
         {separator}
-      </span>
+      {/*</span>*/}
     </p>
   );
 }

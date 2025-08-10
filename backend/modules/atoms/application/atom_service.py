@@ -3,6 +3,7 @@ from typing import Generator
 
 from lxml import etree
 
+from modules.atoms.application.atom_util import create_wildcard_predicates
 from modules.atoms.application.dto.atom_dto import AtomDTO
 from modules.atoms.application.dto.atom_extraction_result_dto import AtomExtractionResultDTO, ExtractedAtomDTO
 from modules.atoms.application.dto.atom_span_dto import AtomSpanDTO
@@ -13,15 +14,17 @@ from modules.atoms.application.dto.update_atom_dto import UpdateAtomDTO
 from modules.atoms.infra.atom_repository import AtomRepository
 from modules.models.application.dto.chat_agent_message_ingress_dto import ChatAgentMessageIngressDTO
 from modules.models.application.llm_adapter import LLMAdapter
+from modules.reasoning.prolog_reasoner import PrologReasoner
 from modules.regulation_fragment.application.regulation_fragment_service import RegulationFragmentService
 
 
 class AtomService:
     def __init__(self, regulation_fragment_service: RegulationFragmentService, atom_repository: AtomRepository,
-                 chat_agent: LLMAdapter):
+                 chat_agent: LLMAdapter, prolog_reasoner: PrologReasoner = None):
         self.atom_repository = atom_repository
         self.regulation_fragment_service = regulation_fragment_service
         self.chat_agent = chat_agent
+        self.prolog_reasoner = prolog_reasoner
 
         # TODO probably should make this configurable
         with open("./prompts/atom_extraction/prolog_1.txt", "r") as file:
@@ -82,12 +85,24 @@ class AtomService:
             spans=[], # New atoms don't have spans initially
         )
 
-    def update_atom(self, update_atom_dto: UpdateAtomDTO) -> AtomDTO:
+    def update_atom(self, atom_id: int, update_atom_dto: UpdateAtomDTO) -> AtomDTO:
         """
         Update an atom with the provided data.
         Returns the updated atom as an AtomDTO.
+
+        Validates that the predicate is a valid Prolog predicate by replacing variables with wildcards
+        and checking if it can be executed without errors.
         """
-        updated_atom = self.atom_repository.update(update_atom_dto)
+        if update_atom_dto.predicate is not None:
+            wildcard_predicate, _ = create_wildcard_predicates(update_atom_dto.predicate)
+            status, answers = self.prolog_reasoner.execute_prolog(f"{wildcard_predicate}.", wildcard_predicate)
+
+            # Check if the response is an error
+            if status == "error":
+                error_message = answers[0].message if answers and hasattr(answers[0], 'message') else "Invalid Prolog predicate"
+                raise ValueError(f"Invalid Prolog predicate: {error_message}")
+
+        updated_atom = self.atom_repository.update(atom_id, update_atom_dto)
 
         return AtomDTO(
             id=updated_atom.id,

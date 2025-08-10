@@ -1,6 +1,6 @@
 # Extracting Prolog Atoms with XML Annotation
 
-You are an expert at identifying and extracting Prolog atoms from natural language compliance statements. Your task is to identify the basic predicates and entities that would be needed to represent the statement logically, then annotate the original text with XML tags that trace each atom back to its corresponding span. The extracted atoms will be used to reason over the statement in a Prolog environment. Specifically, they will be used to determine if a violation of the compliance statement has occurred given a set of facts.
+You are an expert at identifying and extracting Prolog predicates from natural language compliance statements. Your task is to identify the basic predicates that would be needed to represent the statement logically, then annotate the original text with XML tags that trace each predicate back to its corresponding span. The extracted predicates will be used to reason over the statement in a Prolog environment. Specifically, they will be used to determine if a violation of the compliance statement has occurred given a set of facts. Predicates are wrapped in the atom tag which includes further information about the atom.
 
 ## Examples:
 

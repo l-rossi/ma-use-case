@@ -45,6 +45,7 @@ class Container(containers.DeclarativeContainer):
         regulation_fragment_service=regulation_fragment_service,
         atom_repository=atom_repository,
         chat_agent=llm_adapter,
+        prolog_reasoner=prolog_reasoner,
     )
 
     rule_repository = providers.Singleton(RuleRepository, db=db)

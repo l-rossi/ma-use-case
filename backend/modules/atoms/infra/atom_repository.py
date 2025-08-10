@@ -31,8 +31,8 @@ class AtomRepository:
         self.db.session.commit()
         return atom_span
 
-    def update(self, atom_id: str, atom: UpdateAtomDTO) -> Atom:
-        existing_atom = self.db.query(Atom).filter(Atom.id == atom_id).one()
+    def update(self, atom_id: int, atom: UpdateAtomDTO) -> Atom:
+        existing_atom = Atom.query.filter(Atom.id == atom_id).one()
         if not existing_atom:
             raise ValueError("Atom not found")
 
@@ -42,6 +42,8 @@ class AtomRepository:
             existing_atom.description = atom.description
         if atom.is_negated is not None:
             existing_atom.is_negated = atom.is_negated
+        if atom.is_fact is not None:
+            existing_atom.is_fact = atom.is_fact
 
         self.db.session.add(existing_atom)
         self.db.session.commit()

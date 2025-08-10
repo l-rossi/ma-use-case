@@ -52,8 +52,13 @@ class OpenAIChatAgent(IChatAgent):
             # Add the current user prompt
             messages.append({"role": "user", "content": message.user_prompt})
 
+            has_temperature_param = self.model in [
+                "gpt-3.5-turbo",
+                "gpt-4o-mini"
+            ]
+
             response = self.client.chat.completions.create(
-                temperature=0,
+                temperature=0 if has_temperature_param else 1,
                 model=self.model,
                 messages=messages
             )

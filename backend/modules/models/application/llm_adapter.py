@@ -26,6 +26,15 @@ class LLMAdapter:
             LLMIdentifier.GPT_4o_MINI.value: OpenAIChatAgent(
                 agentic_log_service=agentic_log_service,
                 model="gpt-4o-mini"),
+            LLMIdentifier.GPT_5.value: OpenAIChatAgent(
+                agentic_log_service=agentic_log_service,
+                model="gpt-5"),
+            LLMIdentifier.GPT_5_MINI.value: OpenAIChatAgent(
+                agentic_log_service=agentic_log_service,
+                model="gpt-5-mini"),
+            LLMIdentifier.GPT_5_NANO.value: OpenAIChatAgent(
+                agentic_log_service=agentic_log_service,
+                model="gpt-5-nano"),
             LLMIdentifier.SONNET_4.value: AnthropicAIChatAgent(
                 agentic_log_service=agentic_log_service,
                 model="claude-sonnet-4-20250514"),

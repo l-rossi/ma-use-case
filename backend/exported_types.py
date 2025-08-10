@@ -8,6 +8,7 @@ from modules.atoms.application.dto.update_atom_dto import UpdateAtomDTO
 from modules.atoms.application.dto.atom_dto import AtomDTO
 from modules.atoms.application.dto.atom_span_dto import AtomSpanDTO
 from modules.atoms.application.dto.regenerate_atoms_dto import RegenerateAtomsDTO
+from modules.rules.application.dto.regenerate_rules_dto import RegenerateRulesDTO
 from modules.rules.application.dto.rule_dto import RuleDTO
 from modules.rules.application.dto.create_rule_dto import CreateRuleDTO
 from modules.rules.application.dto.update_rule_dto import UpdateRuleDTO
@@ -26,5 +27,6 @@ _ = [
     RegenerateAtomsDTO,
     RuleDTO,
     CreateRuleDTO,
-    UpdateRuleDTO
+    UpdateRuleDTO,
+    RegenerateRulesDTO,
 ]
