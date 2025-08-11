@@ -9,6 +9,7 @@ from modules.models.application.agentic_log_service import AgenticLogService
 from modules.models.application.llm_adapter import LLMAdapter
 from modules.models.infra.agentic_log_repository import AgenticLogRepository
 from modules.reasoning.application.prolog_reasoner import PrologReasoner
+from modules.reasoning.application.prolog_reasoning_service import PrologReasoningService
 from modules.regulation_fragment.application.regulation_fragment_service import RegulationFragmentService
 from modules.regulation_fragment.infra.regulation_fragment_repository import \
     RegulationFragmentRepository
@@ -66,6 +67,13 @@ class Container(containers.DeclarativeContainer):
         chat_repository=chat_repository,
         chat_agent=llm_adapter,
         rule_service=rule_service,
+    )
+
+    prolog_reasoning_service = providers.Singleton(
+        PrologReasoningService,
+        rule_service=rule_service,
+        atom_service=atom_service,
+        prolog_reasoner=prolog_reasoner,
     )
 
 

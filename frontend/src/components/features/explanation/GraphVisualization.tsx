@@ -6,8 +6,6 @@ import { useRules } from '@/hooks/useRules';
 import { GraphCanvas, GraphEdge, GraphNode, lightTheme, Theme } from 'reagraph';
 import { useHoveredAtom } from '@/hooks/useHoveredAtom';
 import { useMemo } from 'react';
-import { CircleGeometry } from 'three';
-import { getHighlightColor } from '@/lib/getHighlightColor';
 
 interface Props {
   className?: string;
@@ -40,18 +38,18 @@ const extractPredicates = (definition: string): string[] => {
   );
 };
 
-export function GraphVisualization({ className }: Readonly<Props>) {
+export function GraphVisualization({}: Readonly<Props>) {
   const [selectedFragmentId] = useSelectedRegulationFragmentId();
 
   const {
     data: atoms = [],
-    isPending: atomsLoading,
-    isError: atomsError,
+    // isPending: atomsLoading,
+    // isError: atomsError,
   } = useAtoms(selectedFragmentId);
   const {
     data: rules = [],
-    isPending: rulesLoading,
-    isError: rulesError,
+    // isPending: rulesLoading,
+    // isError: rulesError,
   } = useRules(selectedFragmentId);
 
   const atomNodes: GraphNode[] = useMemo(
@@ -131,7 +129,7 @@ export function GraphVisualization({ className }: Readonly<Props>) {
           })
           .filter(it => it !== null);
       }),
-    [rules, headPredicateNameToRuleNodes]
+    [rules, headPredicateNameToRuleNodes, atomPredicatesToNodeId, headPredicateToRuleNodes]
   );
 
   const rulesToRules: GraphEdge[] = useMemo(
@@ -153,7 +151,7 @@ export function GraphVisualization({ className }: Readonly<Props>) {
           });
         })
         .filter(it => it !== null),
-    [rules]
+    [rules, headPredicateNameToRuleNodes, headPredicateToRuleNodes]
   );
 
   const nodes = useMemo(
@@ -193,7 +191,7 @@ export function GraphVisualization({ className }: Readonly<Props>) {
         // edgeLabelPosition="above"
         // nodeColor={node => (node.data?.type === 'atom' ? '#4299e1' : '#ed64a6')}
         // edgeArrowPosition="end"
-        renderNode={({ size, color, opacity, node, active }) => (
+        renderNode={({ size, color, opacity, node }) => (
           <group>
             {/*{node.data.type === 'atom' && (*/}
             {/*  <lineSegments>*/}

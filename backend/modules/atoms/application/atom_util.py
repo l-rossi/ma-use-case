@@ -1,3 +1,4 @@
+import re
 from typing import List, Tuple, Callable, Iterable
 
 from modules.atoms.application.dto.atom_dto import AtomDTO
@@ -104,3 +105,58 @@ def mask_variables_in_atoms(atoms: Iterable[AtomDTO]) -> List[str]:
         wildcard_atoms.append(f"{wildcard_predicate}.")
 
     return wildcard_atoms
+
+
+def determine_predicate_arity(predicate: str) -> int:
+    """
+    Count the number of variables in a Prolog predicate.
+
+    Args:
+        predicate: The predicate string to process (e.g., "test", "test(X)", "test(X, Y)")
+
+    Returns:
+        The number of variables in the predicate
+    """
+    # Check if the predicate has arguments (contains opening bracket)
+    open_bracket_index = predicate.find('(')
+    if open_bracket_index == -1:
+        # No arguments
+        return 0
+
+    # Find the matching closing bracket
+    close_bracket_index = predicate.rfind(')')
+    if close_bracket_index == -1:
+        raise ValueError(f"Missing closing bracket in predicate: {predicate}")
+
+    # Extract the content between brackets
+    content = predicate[open_bracket_index + 1:close_bracket_index]
+    if not content:
+        # Empty brackets: predicate()
+        return 0
+
+    # Split the content by commas, but only if the comma is not inside nested brackets
+    args = []
+    current_arg = ""
+    bracket_depth = 0
+
+    for char in content:
+        if char == '(':
+            bracket_depth += 1
+            current_arg += char
+        elif char == ')':
+            bracket_depth -= 1
+            current_arg += char
+        elif char == ',' and bracket_depth == 0:
+            args.append(current_arg.strip())
+            current_arg = ""
+        else:
+            current_arg += char
+
+    if current_arg:
+        args.append(current_arg.strip())
+
+    return len(args)
+
+
+def atoms_to_dynamic_statement(atom: AtomDTO) -> str:
+    return f":- dynamic {atom.predicate.split('(')[0]}/{determine_predicate_arity(atom.predicate)}."

@@ -13,7 +13,7 @@ export function ResultsDisplay({ status, answers }: ResultsDisplayProps) {
   return (
     <div className="p-4 border-t">
       <h3 className="text-lg font-semibold mb-4">Results</h3>
-      
+
       {status === 'success' && answers.length > 0 ? (
         <div className="space-y-2">
           {answers.map((answer, index) => (
@@ -31,7 +31,13 @@ export function ResultsDisplay({ status, answers }: ResultsDisplayProps) {
           ))}
         </div>
       ) : status === 'failure' ? (
-        <p className="text-amber-500">No solutions found. This could mean the query has no valid answers with the provided facts.</p>
+        <>
+          {/*  TODO feedback based on execution*/}
+          <p className="text-green-500 font-semibold">No solutions/violations found.</p>
+          <p className="text-green-500">
+            This means that with the current facts, no violation was detected.
+          </p>
+        </>
       ) : (
         <p className="text-red-500">Error: {answers[0]?.message || 'Unknown error'}</p>
       )}

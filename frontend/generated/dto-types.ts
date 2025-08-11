@@ -81,6 +81,22 @@ export interface CreateRuleDTO {
   definition: string;
   is_goal?: boolean;
 }
+export interface PrologAnswerDTO {
+  status: "success" | "failure" | "error";
+  answers: PrologResultDTO[];
+  message?: string;
+}
+export interface PrologResultDTO {
+  variable: string;
+  value: string;
+}
+export interface PrologHttpResponseDTO {
+  status: "success" | "failure" | "error";
+  answers: PrologAnswerDTO[];
+}
+export interface PrologQueryDTO {
+  facts: string;
+}
 export interface RegenerateAtomsDTO {
   feedback: string;
 }

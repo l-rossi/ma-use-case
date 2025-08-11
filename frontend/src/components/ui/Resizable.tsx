@@ -1,13 +1,11 @@
 'use client';
 
 import * as React from 'react';
-import { GripVerticalIcon, Expand, Grid3x2Icon } from 'lucide-react';
+import { Expand, Grid3x2Icon, GripVerticalIcon } from 'lucide-react';
 import * as ResizablePrimitive from 'react-resizable-panels';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
-import { ImperativePanelHandle, PanelResizeHandle } from 'react-resizable-panels';
-import { useRef } from 'react';
 
 function ResizablePanelGroup({
   className,

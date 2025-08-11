@@ -14,3 +14,8 @@ class PrologAnswerDTO(BaseModel):
     status: Literal["success", "failure", "error"]
     answers: List[PrologResultDTO]
     message: str = ""  # Optional message for additional context, e.g., error messages
+
+
+class PrologHttpResponseDTO(BaseModel):
+    status: Literal["success", "failure", "error"]
+    answers: List[PrologAnswerDTO]

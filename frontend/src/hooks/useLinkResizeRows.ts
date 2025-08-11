@@ -28,7 +28,7 @@ export function useLinkResizeRows() {
         enableResizeButtons: true,
         fullscreen: () => {
           console.log(`Fullscreen cell at (${x}, ${y})`);
-          rowRefs.current.forEach((panel, index) => {
+          rowRefs.current.forEach((panel) => {
             panel?.resize(0);
           });
           cellRefs.current.flat().forEach(panel => {
