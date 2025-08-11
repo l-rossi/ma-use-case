@@ -1,10 +1,10 @@
 import os
-from typing import List, Optional, Literal, Tuple, Generator, Union
+from typing import List, Literal, Tuple, Generator, Union, Dict
 
 import requests
 from dotenv import load_dotenv
 
-from modules.reasoning.prolog_result_dto import PrologResultDTO, PrologAnswerDTO
+from modules.reasoning.application.dto.prolog_result_dto import PrologResultDTO, PrologAnswerDTO
 
 # Load environment variables
 load_dotenv()
@@ -123,3 +123,40 @@ class PrologReasoner:
 
         else:
             raise ValueError(f"Unknown event type: {event_type}")
+
+    def execute_with_examples(self, facts: Dict[str, List[str]], rules: List[str], goal: str = None) -> Tuple[
+        Literal["success", "failure", "error"], List[PrologAnswerDTO]]:
+        """
+        Execute a Prolog query with user-provided facts and rules.
+
+        Args:
+            facts: Dictionary mapping predicate templates to lists of values
+            rules: List of Prolog rules
+            goal: Optional goal to query (if not provided, will use a default goal)
+
+        Returns:
+            Tuple of status and answers
+        """
+        # Build the knowledge base
+        knowledge_base = ""
+
+        # Add rules
+        for rule in rules:
+            knowledge_base += rule + ".\n"
+
+        # Add user-provided facts
+        for predicate, values in facts.items():
+            for value in values:
+                # Extract variable name and replace it with the value
+                # Find the variable name inside the parentheses
+                var_match = predicate.split('(')[1].split(')')[0].strip()
+                # Format the predicate with the value
+                fact = predicate.replace(var_match, value)
+                knowledge_base += fact + ".\n"
+
+        # If no goal is provided, use a default goal that will show all possible violations
+        if not goal:
+            goal = "violation(X)"
+
+        # Execute the query
+        return self.execute_prolog(knowledge_base=knowledge_base, goal=goal)

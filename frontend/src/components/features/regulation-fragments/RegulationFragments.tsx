@@ -80,7 +80,7 @@ export function RegulationFragments({ className }: Readonly<Props>) {
         <DialogTrigger asChild>
           <Button
             variant={'outline'}
-            className={'absolute top-2 right-2 z-10'}
+            className={'absolute top-2 right-12 z-10'}
             onClick={() => setIsCreateModalOpen(true)}
           >
             <Plus className={'size-4'} />

@@ -72,8 +72,8 @@ export function Atoms({ className }: Readonly<Props>) {
     return (
       <Box
         className={cn(
-          'text-red-500 shadow-sky-500 p-4 flex flex-col items-center justify-center',
-          className,
+          'text-red-500 shadow-sky-500 flex flex-col items-center justify-center',
+          className
         )}
       >
         <p className="mb-4">Failed to load atoms.</p>
@@ -86,9 +86,7 @@ export function Atoms({ className }: Readonly<Props>) {
 
   if (atoms.length === 0) {
     return (
-      <Box
-        className={cn('shadow-sky-500 p-4 flex flex-col items-center justify-center', className)}
-      >
+      <Box className={cn('shadow-sky-500 flex flex-col items-center justify-center', className)}>
         <p className="mb-4">No atoms found for this fragment</p>
         <Button
           variant={'outline'}
@@ -103,8 +101,8 @@ export function Atoms({ className }: Readonly<Props>) {
   }
 
   return (
-    <Box className={cn('shadow-sky-500 flex-col overflow-hidden p-4', className)}>
-      <div className="flex justify items-center mb-2 gap-1">
+    <Box className={cn('shadow-sky-500 flex-col overflow-hidden', className)}>
+      <div className="flex justify items-center mb-2 gap-1 p-4 pb-0">
         <h3 className="text-lg font-semibold">Atoms</h3>
         <Button
           variant="ghost"
@@ -117,8 +115,8 @@ export function Atoms({ className }: Readonly<Props>) {
         </Button>
       </div>
 
-      <div className={'grid grid-cols-2 overflow-hidden gap-2 grow'}>
-        <div className={"h-full overflow-hidden flex flex-col justify-between grow"}>
+      <div className={'grid grid-cols-2 overflow-hidden gap-2 grow p-4 pt-0'}>
+        <div className={'h-full overflow-hidden flex flex-col justify-between grow'}>
           <ul className="flex flex-col gap-3 overflow-y-auto">
             {atoms.map(atom => (
               <li key={atom.id}>
@@ -147,7 +145,7 @@ export function Atoms({ className }: Readonly<Props>) {
             onBlur={() => {
               setFeedbackFocused(false);
               setHighlightedFeedback(
-                highlightAtomsInFeedback(feedback, atoms, feedbackTextRef.current),
+                highlightAtomsInFeedback(feedback, atoms, feedbackTextRef.current)
               );
             }}
             highlightedFeedback={highlightedFeedback}
@@ -162,7 +160,7 @@ export function Atoms({ className }: Readonly<Props>) {
 function highlightAtomsInFeedback(
   feedback: string,
   atoms: AtomDTO[],
-  textAreaRef: HTMLTextAreaElement | null,
+  textAreaRef: HTMLTextAreaElement | null
 ): ReactNode {
   const escapedTokens = atoms.map(atom => atom.predicate.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'));
   const regex = new RegExp(`(${escapedTokens.join('|')})`, 'gi');
@@ -189,11 +187,11 @@ function highlightAtomsInFeedback(
 }
 
 function InlineHighlight({
-                           atomId,
-                           text,
-                           textAreaRef,
-                           textOffset,
-                         }: {
+  atomId,
+  text,
+  textAreaRef,
+  textOffset,
+}: {
   atomId: number;
   text: string;
   textAreaRef: HTMLTextAreaElement | null;
@@ -212,7 +210,7 @@ function InlineHighlight({
         } as CSSProperties
       }
       className={cn(
-        'transition-colors hover:bg-[var(--bg-hover)] bg-[var(--bg-base)] duration-100 pointer-events-auto',
+        'transition-colors hover:bg-[var(--bg-hover)] bg-[var(--bg-base)] duration-100 pointer-events-auto'
       )}
       onMouseEnter={() => setHoveredAtom(atomId)}
       onMouseLeave={() => setHoveredAtom(null)}

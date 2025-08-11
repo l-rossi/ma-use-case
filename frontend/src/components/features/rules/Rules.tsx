@@ -48,7 +48,7 @@ export function Rules({ className }: Readonly<Props>) {
 
   if (!selectedFragmentId) {
     return (
-      <Box className={cn('shadow-rose-500 flex items-center justify-center p-4', className)}>
+      <Box className={cn('shadow-rose-500 flex items-center justify-center', className)}>
         Please select a fragment first
       </Box>
     );
@@ -56,7 +56,7 @@ export function Rules({ className }: Readonly<Props>) {
 
   if (atoms.length === 0) {
     return (
-      <Box className={cn('shadow-rose-500 flex items-center justify-center p-4', className)}>
+      <Box className={cn('shadow-rose-500 flex items-center justify-center', className)}>
         Generate atoms first
       </Box>
     );
@@ -70,7 +70,7 @@ export function Rules({ className }: Readonly<Props>) {
     return (
       <Box
         className={cn(
-          'text-red-500 shadow-rose-500 p-4 flex flex-col items-center justify-center',
+          'text-red-500 shadow-rose-500 flex flex-col items-center justify-center',
           className
         )}
       >
@@ -85,7 +85,7 @@ export function Rules({ className }: Readonly<Props>) {
   if (rules.length === 0) {
     return (
       <Box
-        className={cn('shadow-rose-500 p-4 flex flex-col items-center justify-center', className)}
+        className={cn('shadow-rose-500 flex flex-col items-center justify-center', className)}
       >
         <p className="mb-4">No rules found for this fragment</p>
         <Button
@@ -101,8 +101,8 @@ export function Rules({ className }: Readonly<Props>) {
   }
 
   return (
-    <Box className={cn(className, 'shadow-rose-500 p-4 flex flex-col')}>
-      <div className="flex gap-2 items-center mb-4">
+    <Box className={cn(className, 'shadow-rose-500 flex flex-col')}>
+      <div className="flex gap-2 items-center mb-4 p-4 pb-0">
         <h3 className="text-lg font-semibold">Rules</h3>
         <Button
           variant="ghost"
@@ -114,7 +114,7 @@ export function Rules({ className }: Readonly<Props>) {
         </Button>
       </div>
 
-      <div className={'grid grid-cols-2 overflow-hidden gap-2'}>
+      <div className={'grid grid-cols-2 overflow-hidden gap-2 p-4 pt-0'}>
         <div className={'h-full overflow-hidden flex flex-col'}>
           <div className={'flex flex-col overflow-y-auto'}>
             <ul className="flex flex-col gap-2">

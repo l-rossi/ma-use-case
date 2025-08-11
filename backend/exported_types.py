@@ -12,6 +12,8 @@ from modules.rules.application.dto.regenerate_rules_dto import RegenerateRulesDT
 from modules.rules.application.dto.rule_dto import RuleDTO
 from modules.rules.application.dto.create_rule_dto import CreateRuleDTO
 from modules.rules.application.dto.update_rule_dto import UpdateRuleDTO
+from modules.reasoning.application.dto.prolog_result_dto import PrologResultDTO, PrologAnswerDTO
+from modules.reasoning.application.dto.prolog_query_dto import PrologQueryDTO
 
 # Stop PyCharm from optimizing imports :))))))
 _ = [
@@ -29,4 +31,7 @@ _ = [
     CreateRuleDTO,
     UpdateRuleDTO,
     RegenerateRulesDTO,
+    PrologResultDTO,
+    PrologAnswerDTO,
+    PrologQueryDTO,
 ]

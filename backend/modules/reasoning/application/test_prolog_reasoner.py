@@ -1,9 +1,8 @@
 import os
 import unittest
-import requests
 
-from modules.reasoning.prolog_reasoner import PrologReasoner
-from modules.reasoning.prolog_result_dto import PrologResultDTO
+from modules.reasoning.application.prolog_reasoner import PrologReasoner
+from modules.reasoning.application.dto.prolog_result_dto import PrologResultDTO
 
 
 class TestPrologReasoner(unittest.TestCase):

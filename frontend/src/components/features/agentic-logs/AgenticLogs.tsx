@@ -69,7 +69,7 @@ export function AgenticLogs({ className }: Readonly<Props>) {
           </Button>
           {logs.at(-1)?.is_error && <CircleAlert className={'ml-auto text-red-800 size-4'} />}
         </div>
-        {isFetching && <span className="text-xs text-gray-400">Fetching new logs...</span>}
+        {isFetching && <span className="text-xs text-gray-400 mr-10">Fetching new logs...</span>}
       </div>
 
       <div

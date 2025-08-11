@@ -10,25 +10,25 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/componen
 import { useLinkResizeRows } from '@/hooks/useLinkResizeRows';
 
 export default function Home() {
-  const register = useLinkResizeRows();
+  const { registerCell, registerRow } = useLinkResizeRows();
 
   return (
     <ResizablePanelGroup direction="vertical" className="size-full">
-      <ResizablePanel>
+      <ResizablePanel{...registerRow(0, 50)}>
         <ResizablePanelGroup direction={'horizontal'}>
-          <ResizablePanel {...register(0, 0)} className={'p-2'} defaultSize={40}>
+          <ResizablePanel {...registerCell(0, 0, 40)} className={'p-2'}>
             <RegulationFragments className={'size-full'} />
           </ResizablePanel>
 
           <ResizableHandle className={'bg-gray-700'} />
 
-          <ResizablePanel {...register(1, 0)} className={'p-2'} defaultSize={40}>
+          <ResizablePanel {...registerCell(1, 0, 40)} className={'p-2'}>
             <Explanations className={'size-full'} />
           </ResizablePanel>
 
           <ResizableHandle className={'bg-gray-700'} />
 
-          <ResizablePanel {...register(2, 0)} className={'p-2'} defaultSize={20}>
+          <ResizablePanel {...registerCell(2, 0, 20)} className={'p-2'}>
             <AgenticLogs className={'size-full'} />
           </ResizablePanel>
         </ResizablePanelGroup>
@@ -36,21 +36,21 @@ export default function Home() {
 
       <ResizableHandle className={'bg-gray-700'} />
 
-      <ResizablePanel>
+      <ResizablePanel {...registerRow(1, 50)}>
         <ResizablePanelGroup direction={'horizontal'}>
-          <ResizablePanel {...register(0, 1)} className={'p-2'} defaultSize={40}>
+          <ResizablePanel {...registerCell(0, 1, 40)} className={'p-2'}>
             <Atoms className={'size-full'} />
           </ResizablePanel>
 
           <ResizableHandle className={'bg-gray-700'} />
 
-          <ResizablePanel {...register(1, 1)} className={'p-2'} defaultSize={40}>
+          <ResizablePanel {...registerCell(1, 1, 40)} className={'p-2'}>
             <Rules className={'size-full'} />
           </ResizablePanel>
 
           <ResizableHandle className={'bg-gray-700'} />
 
-          <ResizablePanel {...register(2, 1)} className={'p-2'} defaultSize={20}>
+          <ResizablePanel {...registerCell(2, 1, 20)} className={'p-2'}>
             <Chat className={'size-full'} />
           </ResizablePanel>
         </ResizablePanelGroup>

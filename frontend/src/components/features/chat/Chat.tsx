@@ -75,7 +75,7 @@ export function Chat({ className }: Readonly<Props>) {
 
   if (!selectedFragmentId) {
     return (
-      <Box className={cn('shadow-violet-500 flex items-center justify-center p-4', className)}>
+      <Box className={cn('shadow-violet-500 flex items-center justify-center', className)}>
         Please select a regulation fragment first
       </Box>
     );
@@ -89,7 +89,7 @@ export function Chat({ className }: Readonly<Props>) {
     return (
       <Box
         className={cn(
-          'text-red-500 shadow-violet-500 p-4 flex flex-col items-center justify-center',
+          'text-red-500 shadow-violet-500 flex flex-col items-center justify-center',
           className
         )}
       >
@@ -102,13 +102,13 @@ export function Chat({ className }: Readonly<Props>) {
   }
 
   return (
-    <Box className={cn('shadow-violet-500 flex flex-col h-full p-4', className)}>
-      <div className="flex justify-between items-center mb-4">
+    <Box className={cn('shadow-violet-500 flex flex-col h-full', className)}>
+      <div className="flex justify-between items-center mb-4 p-4 pb-0">
         <h3 className="text-lg font-semibold">Chat</h3>
       </div>
 
       <ul
-        className="flex-1 overflow-y-auto mb-4 gap-2 flex flex-col-reverse"
+        className="flex-1 overflow-y-auto mb-4 gap-2 flex flex-col-reverse p-4 pt-0"
         ref={scrollContainerRef}
       >
         {messages.length === 0 ? (

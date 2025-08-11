@@ -14,13 +14,13 @@ from modules.atoms.application.dto.update_atom_dto import UpdateAtomDTO
 from modules.atoms.infra.atom_repository import AtomRepository
 from modules.models.application.dto.chat_agent_message_ingress_dto import ChatAgentMessageIngressDTO
 from modules.models.application.llm_adapter import LLMAdapter
-from modules.reasoning.prolog_reasoner import PrologReasoner
+from modules.reasoning.application.prolog_reasoner import PrologReasoner
 from modules.regulation_fragment.application.regulation_fragment_service import RegulationFragmentService
 
 
 class AtomService:
     def __init__(self, regulation_fragment_service: RegulationFragmentService, atom_repository: AtomRepository,
-                 chat_agent: LLMAdapter, prolog_reasoner: PrologReasoner = None):
+                 chat_agent: LLMAdapter, prolog_reasoner: PrologReasoner):
         self.atom_repository = atom_repository
         self.regulation_fragment_service = regulation_fragment_service
         self.chat_agent = chat_agent

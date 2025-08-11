@@ -1,5 +1,4 @@
 from itertools import chain
-from locale import windows_locale
 from typing import List, Optional, Tuple
 
 from modules.atoms.application.atom_service import AtomService
@@ -7,8 +6,8 @@ from modules.atoms.application.atom_util import mask_variables_in_atoms, create_
 from modules.atoms.application.dto.atom_dto import AtomDTO
 from modules.models.application.dto.chat_agent_message_ingress_dto import ChatAgentMessageIngressDTO
 from modules.models.application.llm_adapter import LLMAdapter
-from modules.reasoning import PrologReasoner
-from modules.reasoning.prolog_result_dto import PrologResultDTO, PrologAnswerDTO
+from modules.reasoning.application.dto.prolog_result_dto import PrologAnswerDTO
+from modules.reasoning.application.prolog_reasoner import PrologReasoner
 from modules.regulation_fragment.application.regulation_fragment_service import RegulationFragmentService
 from modules.rules.application.dto.create_rule_dto import CreateRuleDTO
 from modules.rules.application.dto.regenerate_rules_dto import RegenerateRulesDTO
@@ -318,7 +317,8 @@ class RuleService:
         self.delete_rules_for_regulation_fragment(regulation_fragment_id)
         self._save_extracted_rules(regenerated_result, regulation_fragment_id)
 
-    def _check_rule_syntax(self, result: RuleExtractionResultDTO, atoms: List[AtomDTO]) -> Tuple[bool, PrologAnswerDTO]:
+    def _check_rule_syntax(self, result: RuleExtractionResultDTO, atoms: List[AtomDTO]) -> Tuple[
+        bool, List[PrologAnswerDTO]]:
         """
         Check if a rule definition has valid Prolog syntax.
 
@@ -352,7 +352,11 @@ class RuleService:
             return result_status != "error", response
         except Exception as e:
             print(f"Error checking rule syntax: {str(e)}")
-            return False, str(e)
+            return False, [PrologAnswerDTO(
+                status='error',
+                message=str(e),
+                answers=[]
+            )]
 
     def _save_extracted_rules(self, parsed_result: RuleExtractionResultDTO, regulation_fragment_id: int) -> None:
         """
