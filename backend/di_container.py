@@ -10,6 +10,7 @@ from modules.models.application.llm_adapter import LLMAdapter
 from modules.models.infra.agentic_log_repository import AgenticLogRepository
 from modules.reasoning.application.prolog_reasoner import PrologReasoner
 from modules.reasoning.application.prolog_reasoning_service import PrologReasoningService
+from modules.reasoning.domain.prompt_strategy import PromptService
 from modules.regulation_fragment.application.regulation_fragment_service import RegulationFragmentService
 from modules.regulation_fragment.infra.regulation_fragment_repository import \
     RegulationFragmentRepository
@@ -21,6 +22,8 @@ class Container(containers.DeclarativeContainer):
     db = providers.Singleton(create_db)
 
     prolog_reasoner = providers.Singleton(PrologReasoner)
+
+    prompt_service = providers.Singleton(PromptService)
 
     agentic_log_repository = providers.Singleton(AgenticLogRepository, db=db)
     agentic_log_service = providers.Singleton(
@@ -47,6 +50,7 @@ class Container(containers.DeclarativeContainer):
         atom_repository=atom_repository,
         chat_agent=llm_adapter,
         prolog_reasoner=prolog_reasoner,
+        prompt_service=prompt_service,
     )
 
     rule_repository = providers.Singleton(RuleRepository, db=db)

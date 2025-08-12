@@ -38,6 +38,9 @@ const extractPredicates = (definition: string): string[] => {
   );
 };
 
+// A larger node size seems to reduce label overlap.
+const NODE_SIZE = 50;
+
 export function GraphVisualization({}: Readonly<Props>) {
   const [selectedFragmentId] = useSelectedRegulationFragmentId();
 
@@ -56,6 +59,7 @@ export function GraphVisualization({}: Readonly<Props>) {
     () =>
       atoms.map(it => {
         return {
+          size: NODE_SIZE,
           id: it.id.toString(),
           label: it.predicate,
           fill: '#4299e1',
@@ -74,6 +78,7 @@ export function GraphVisualization({}: Readonly<Props>) {
         return {
           ...acc,
           [head]: {
+            size: NODE_SIZE,
             id: el.id.toString(),
             label: head,
             fill: '#ed64a6',
@@ -173,7 +178,7 @@ export function GraphVisualization({}: Readonly<Props>) {
         // actives={actives}
         // onNodeClick={onNodeClick}
         // onCanvasClick={onCanvasClick}
-        layoutType="radialOut2d"
+        layoutType="treeTd2d"
         onNodePointerOver={(node: GraphNode) => {
           if (node.data?.type === 'atom') {
             return setHoveredAtomId(parseInt(node.id));
@@ -184,7 +189,12 @@ export function GraphVisualization({}: Readonly<Props>) {
         }}
         layoutOverrides={{
           type: 'treeTd2d',
-          linkDistance: 500,
+          // linkDistance: 500,
+          // nodeSeparation: 1e,
+          // nodeStrength: 2e4,
+          nodeLevelRatio: 2,
+          nodeSeparation: 0.3,
+          // nodeStrength: 1e5
         }}
         // labelType="all"
         // nodeLabelPosition="bottom"

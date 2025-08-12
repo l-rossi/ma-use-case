@@ -4,15 +4,60 @@ import { cn } from '@/lib/utils';
 import { Box } from '@/components/ui/Box';
 import { useAgenticLogs } from '@/hooks/useAgenticLogs';
 import { useSelectedRegulationFragmentId } from '@/hooks/useSelectedRegulationFragment';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, ReactNode } from 'react';
 import { CollapsibleText } from '@/components/ui/CollapsibleText';
 import { CircleAlert, Lock, LockOpen } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { FormattedMarkdown } from '@/components/ui/FormattedMarkdown';
+import { InfoDialog } from '@/components/ui/InfoDialog';
 
 interface Props {
   className?: string;
+}
+
+function AgenticLogsBox({
+  children,
+  className,
+  shouldFollow,
+  setShouldFollow,
+  hasError,
+  isFetching,
+}: {
+  children: ReactNode;
+  className?: string;
+  shouldFollow: boolean;
+  setShouldFollow: (value: boolean | ((prev: boolean) => boolean)) => void;
+  hasError?: boolean;
+  isFetching?: boolean;
+}) {
+  return (
+    <Box className={cn(className, 'shadow-emerald-500 flex-col h-full')}>
+      <div className="bg-gray-900 text-white p-2 font-mono flex justify-between items-center">
+        <div className={'flex flex-row items-center gap-1'}>
+          <h3 className="font-semibold">Agentic Logs</h3>
+          <Button
+            size={'icon'}
+            onClick={() => setShouldFollow(b => !b)}
+            variant={'ghost'}
+            title={shouldFollow ? 'Turn Auto Scroll On' : 'Turn Auto Scroll Off'}
+            className={' hover:bg-gray-500 hover:text-gray-100'}
+          >
+            {shouldFollow ? <Lock /> : <LockOpen />}
+          </Button>
+          <InfoDialog
+            title={'Agentic Logs'}
+            description={
+              "Agentic Logs display the system's internal processing and reasoning steps during operations."
+            }
+          />
+          {hasError && <CircleAlert className={'ml-auto text-red-800 size-4'} />}
+        </div>
+        {isFetching && <span className="text-xs text-gray-400 mr-10">Fetching new logs...</span>}
+      </div>
+      {children}
+    </Box>
+  );
 }
 
 export function AgenticLogs({ className }: Readonly<Props>) {
@@ -54,30 +99,19 @@ export function AgenticLogs({ className }: Readonly<Props>) {
   }, [lastLogId]);
 
   return (
-    <Box className={cn(className, 'shadow-emerald-500 flex flex-col h-full')}>
-      <div className="bg-gray-900 text-white p-2 font-mono flex justify-between items-center">
-        <div className={'flex flex-row items-center gap-1'}>
-          Agentic Logs
-          <Button
-            size={'icon'}
-            onClick={() => setShouldFollow(b => !b)}
-            variant={'ghost'}
-            title={'Toggle follow logs'}
-            className={' hover:bg-gray-500 hover:text-gray-100'}
-          >
-            {shouldFollow ? <Lock /> : <LockOpen />}
-          </Button>
-          {logs.at(-1)?.is_error && <CircleAlert className={'ml-auto text-red-800 size-4'} />}
-        </div>
-        {isFetching && <span className="text-xs text-gray-400 mr-10">Fetching new logs...</span>}
-      </div>
-
+    <AgenticLogsBox
+      className={className}
+      shouldFollow={shouldFollow}
+      setShouldFollow={setShouldFollow}
+      hasError={logs.at(-1)?.is_error}
+      isFetching={isFetching}
+    >
       <div
         className="flex-1 overflow-y-auto bg-gray-950 text-gray-50 p-4 pl-2 font-mono text-sm"
         ref={containerRef}
         onScroll={e => {
           if (e.currentTarget.scrollTop < 20 && !isFetchingPreviousPage) {
-            fetchPreviousPage();
+            void fetchPreviousPage();
           }
         }}
       >
@@ -96,7 +130,10 @@ export function AgenticLogs({ className }: Readonly<Props>) {
             {logs?.map(log => (
               <div
                 key={log.id}
-                className={cn('mb-2 pl-2 border-l-2 border-l-transparent', cn(log.is_error && 'border-l-red-500'))}
+                className={cn(
+                  'mb-2 pl-2 border-l-2 border-l-transparent',
+                  cn(log.is_error && 'border-l-red-500')
+                )}
               >
                 <span className="text-gray-500">[{new Date(log.created_at).toISOString()}]</span>
                 <span className="text-yellow-400 ml-2">[{log.message_source}]</span>
@@ -111,7 +148,6 @@ export function AgenticLogs({ className }: Readonly<Props>) {
           </div>
         )}
       </div>
-    </Box>
+    </AgenticLogsBox>
   );
 }
-

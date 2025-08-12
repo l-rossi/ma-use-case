@@ -1,7 +1,9 @@
 import re
-from typing import List, Tuple, Callable, Iterable
+from typing import List, Tuple, Callable, Iterable, Generator
 
 from modules.atoms.application.dto.atom_dto import AtomDTO
+from modules.atoms.application.dto.atom_span_dto import AtomSpanDTO
+from modules.atoms.application.dto.create_atom_span_dto import CreateAtomSpanDTO
 
 
 def create_wildcard_predicates(predicate_str: str, index: int = 1,
@@ -160,3 +162,44 @@ def determine_predicate_arity(predicate: str) -> int:
 
 def atoms_to_dynamic_statement(atom: AtomDTO) -> str:
     return f":- dynamic {atom.predicate.split('(')[0]}/{determine_predicate_arity(atom.predicate)}."
+
+
+def insert_atom_spans(text: str, atom_spans: list[AtomSpanDTO]) -> str:
+    """
+    Insert atom spans into the text at the specified positions.
+    This function assumes that the atom spans are sorted by their start position.
+    """
+    print("insert_atom_spans called with text:", text)
+    output_text = []
+    atom_spans.sort(key=lambda x: x.start)
+
+    last_end = 0
+    for span in atom_spans:
+        output_text.append(text[last_end:span.start])
+        output_text.append(f'<atom id="{span.atom_id}">{text[span.start:span.end]}</atom>')
+        last_end = span.end
+    output_text.append(text[last_end:])
+    print(output_text)
+    return ''.join(output_text)
+
+
+def find_atom_spans(text: str) -> Generator[CreateAtomSpanDTO, None]:
+    pattern = r'<atom id="(\d+)">(.*?)<\/atom>'
+    virtual_character_offset = 0
+
+    for match in re.finditer(pattern, text, re.DOTALL):
+        atom_id = int(match.group(1))
+
+        match_start, match_end = match.span()
+        content_start, content_end = match.span(2)
+
+        content_len = content_end - content_start
+        match_len = match_end - match_start
+
+        yield CreateAtomSpanDTO(
+            atom_id=atom_id,
+            start=match_start - virtual_character_offset,
+            end=match_start - virtual_character_offset + content_len,
+        )
+
+        virtual_character_offset += match_len - content_len

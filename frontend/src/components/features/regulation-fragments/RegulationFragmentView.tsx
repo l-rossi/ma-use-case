@@ -4,7 +4,7 @@ import { useAtoms } from '@/hooks/useAtoms';
 import { getHighlightColor } from '@/lib/getHighlightColor';
 import { cn } from '@/lib/utils';
 import { useHoveredAtom } from '@/hooks/useHoveredAtom';
-import { modelNames } from '@/lib/modelNames';
+import { llmIdentifierToName } from '@/lib/enumToName';
 
 interface Props {
   fragment: RegulationFragmentDTO;
@@ -14,12 +14,17 @@ export function RegulationFragmentView({ fragment }: Readonly<Props>) {
   const { data: atoms = [] } = useAtoms(fragment.id);
 
   return (
-    <div className={'size-full p-4 flex flex-col items-start'}>
+    <div className={'size-full py-4 flex flex-col items-start'}>
       <div className="flex items-center gap-2 mb-4">
-        <h3 className={'text-lg font-semibold'}>{fragment.title}</h3>
+        <h4 className={'text-lg font-medium'}>{fragment.title}</h4>
         <span className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded-full border border-gray-300">
-          {modelNames[fragment.llm_identifier]}
+          {llmIdentifierToName[fragment.llm_identifier]}
         </span>
+        {!!fragment.source && (
+          <span className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded-full border border-gray-300">
+            {fragment.source ? `${fragment.source}` : 'No source provided'}
+          </span>
+        )}
       </div>
       <hr />
       <p className={cn(!!atoms.length && 'leading-8')}>

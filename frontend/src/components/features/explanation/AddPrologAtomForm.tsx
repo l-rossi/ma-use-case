@@ -34,7 +34,7 @@ export function AddPrologAtomForm({ onAddAtom }: Readonly<AddPrologAtomFormProps
 
   return (
     <div className="mb-6 rounded-md">
-      <h4 className="font-medium mb-2">Create Atom</h4>
+      <h4 className="font-medium mb-2">Create Prolog Atom</h4>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(v => {

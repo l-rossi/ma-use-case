@@ -22,7 +22,7 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { LLMIdentifier, RegulationFragmentDTO } from '@dtos/dto-types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select';
-import { modelNames } from '@/lib/modelNames';
+import { llmIdentifierToName } from '@/lib/enumToName';
 
 const formSchema = z.object({
   title: z.string().min(1, {
@@ -31,6 +31,7 @@ const formSchema = z.object({
   content: z.string().min(1, {
     message: 'Content is required.',
   }),
+  source: z.string().optional(),
   llm_identifier: z.string(),
 });
 
@@ -48,6 +49,7 @@ export function CreateRegulationFragmentForm({ className, onSuccess }: Readonly<
     defaultValues: {
       title: '',
       content: '',
+      source: '',
       llm_identifier: 'GEMINI_2_5_FLASH' satisfies LLMIdentifier,
     },
   });
@@ -84,7 +86,7 @@ export function CreateRegulationFragmentForm({ className, onSuccess }: Readonly<
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
+              <FormLabel>Title *</FormLabel>
               <FormControl>
                 <Input placeholder="Enter regulation fragment title" {...field} />
               </FormControl>
@@ -97,7 +99,7 @@ export function CreateRegulationFragmentForm({ className, onSuccess }: Readonly<
           name="llm_identifier"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Use Model</FormLabel>
+              <FormLabel>Use Model *</FormLabel>
               <Select
                 onValueChange={field.onChange}
                 defaultValue={field.value}
@@ -108,7 +110,7 @@ export function CreateRegulationFragmentForm({ className, onSuccess }: Readonly<
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {Object.entries(modelNames).map(([value, label]) => (
+                  {Object.entries(llmIdentifierToName).map(([value, label]) => (
                     <SelectItem key={value} value={value}>
                       {label}
                     </SelectItem>
@@ -121,10 +123,23 @@ export function CreateRegulationFragmentForm({ className, onSuccess }: Readonly<
         />
         <FormField
           control={form.control}
+          name="source"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Source</FormLabel>
+              <FormControl>
+                <Input placeholder="Enter source (optional)" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
           name="content"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Content</FormLabel>
+              <FormLabel>Content *</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Enter regulation fragment content"

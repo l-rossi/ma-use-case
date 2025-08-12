@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { Box } from '@/components/ui/Box';
 import { useSelectedRegulationFragmentId } from '@/hooks/useSelectedRegulationFragment';
 import { useChat } from '@/hooks/useChat';
-import { FormEvent, Fragment, useRef, useState } from 'react';
+import { FormEvent, Fragment, useRef, useState, ReactNode } from 'react';
 import { Button } from '@/components/ui/Button';
 import { createChatMessage } from './chat.api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -13,9 +13,33 @@ import { ChatMessageDTO } from '@dtos/dto-types';
 import { SendIcon, Loader2Icon } from 'lucide-react';
 import { Message } from '@/components/features/chat/Message';
 import { getDay } from 'date-fns';
+import { InfoDialog } from '@/components/ui/InfoDialog';
 
 interface Props {
   className?: string;
+}
+
+function ChatBox({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <Box className={cn('shadow-violet-500 flex-col h-full', className)}>
+      <div className="flex justify items-center mb-2 gap-1 p-4 pb-0">
+        <h3 className="text-lg font-semibold">Chat</h3>
+        <InfoDialog
+          title={'Chat'}
+          description={
+            'Chat allows you to interact with the system and ask questions about the regulation fragments.'
+          }
+        />
+      </div>
+      {children}
+    </Box>
+  );
 }
 
 export function Chat({ className }: Readonly<Props>) {
@@ -73,47 +97,32 @@ export function Chat({ className }: Readonly<Props>) {
     setNewMessage('');
   };
 
-  if (!selectedFragmentId) {
-    return (
-      <Box className={cn('shadow-violet-500 flex items-center justify-center', className)}>
-        Please select a regulation fragment first
-      </Box>
-    );
-  }
-
   if (isPending) {
     return <Skeleton className={className} />;
   }
 
   if (isError) {
     return (
-      <Box
-        className={cn(
-          'text-red-500 shadow-violet-500 flex flex-col items-center justify-center',
-          className
-        )}
-      >
-        <p className="mb-4">Failed to load chat messages.</p>
-        <Button variant={'outline'} type={'button'} size={'lg'} onClick={() => refetch()}>
-          Retry
-        </Button>
-      </Box>
+      <ChatBox className={className}>
+        <div className={'flex flex-col items-center justify-center size-full text-red-500'}>
+          <p className="mb-4">Failed to load chat messages.</p>
+          <Button variant={'outline'} type={'button'} size={'lg'} onClick={() => refetch()}>
+            Retry
+          </Button>
+        </div>
+      </ChatBox>
     );
   }
 
   return (
-    <Box className={cn('shadow-violet-500 flex flex-col h-full', className)}>
-      <div className="flex justify-between items-center mb-4 p-4 pb-0">
-        <h3 className="text-lg font-semibold">Chat</h3>
-      </div>
-
+    <ChatBox className={className}>
       <ul
         className="flex-1 overflow-y-auto mb-4 gap-2 flex flex-col-reverse p-4 pt-0"
         ref={scrollContainerRef}
       >
         {messages.length === 0 ? (
           <p className="text-gray-500 text-center mb-auto mt-12">
-            No messages yet. Start the conversation!
+            No messages yet.
           </p>
         ) : (
           messages.map((message, index) => (
@@ -134,7 +143,7 @@ export function Chat({ className }: Readonly<Props>) {
         )}
       </ul>
 
-      <form onSubmit={handleSendMessage} className="flex gap-2">
+      <form onSubmit={handleSendMessage} className="flex gap-2 p-4">
         <textarea
           value={newMessage}
           onChange={e => setNewMessage(e.target.value)}
@@ -151,6 +160,6 @@ export function Chat({ className }: Readonly<Props>) {
           {sendMessageMutation.isPending ? <Loader2Icon className="animate-spin" /> : <SendIcon />}
         </Button>
       </form>
-    </Box>
+    </ChatBox>
   );
 }

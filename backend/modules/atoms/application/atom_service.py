@@ -1,9 +1,6 @@
-import re
-from typing import Generator
-
 from lxml import etree
 
-from modules.atoms.application.atom_util import create_wildcard_predicates
+from modules.atoms.application.atom_util import create_wildcard_predicates, insert_atom_spans, find_atom_spans
 from modules.atoms.application.dto.atom_dto import AtomDTO
 from modules.atoms.application.dto.atom_extraction_result_dto import AtomExtractionResultDTO, ExtractedAtomDTO
 from modules.atoms.application.dto.atom_span_dto import AtomSpanDTO
@@ -15,23 +12,18 @@ from modules.atoms.infra.atom_repository import AtomRepository
 from modules.models.application.dto.chat_agent_message_ingress_dto import ChatAgentMessageIngressDTO
 from modules.models.application.llm_adapter import LLMAdapter
 from modules.reasoning.application.prolog_reasoner import PrologReasoner
+from modules.reasoning.domain.prompt_strategy import PromptService
 from modules.regulation_fragment.application.regulation_fragment_service import RegulationFragmentService
 
 
 class AtomService:
     def __init__(self, regulation_fragment_service: RegulationFragmentService, atom_repository: AtomRepository,
-                 chat_agent: LLMAdapter, prolog_reasoner: PrologReasoner):
+                 chat_agent: LLMAdapter, prolog_reasoner: PrologReasoner, prompt_service: PromptService):
         self.atom_repository = atom_repository
         self.regulation_fragment_service = regulation_fragment_service
         self.chat_agent = chat_agent
         self.prolog_reasoner = prolog_reasoner
-
-        # TODO probably should make this configurable
-        with open("./prompts/atom_extraction/prolog_1.txt", "r") as file:
-            self.generation_prompt = file.read()
-
-        with open("./prompts/atom_regeneration/prolog_1.txt", "r") as file:
-            self.regeneration_prompt = file.read()
+        self.prompt_service = prompt_service
 
     def get_atoms_for_regulation_fragment(self, regulation_fragment_id: int):
         return [
@@ -82,7 +74,7 @@ class AtomService:
             description=created_atom.description,
             is_negated=created_atom.is_negated,
             is_fact=created_atom.is_fact,
-            spans=[], # New atoms don't have spans initially
+            spans=[],  # New atoms don't have spans initially
         )
 
     def update_atom(self, atom_id: int, update_atom_dto: UpdateAtomDTO) -> AtomDTO:
@@ -99,7 +91,8 @@ class AtomService:
 
             # Check if the response is an error
             if status == "error":
-                error_message = answers[0].message if answers and hasattr(answers[0], 'message') else "Invalid Prolog predicate"
+                error_message = answers[0].message if answers and hasattr(answers[0],
+                                                                          'message') else "Invalid Prolog predicate"
                 raise ValueError(f"Invalid Prolog predicate: {error_message}")
 
         updated_atom = self.atom_repository.update(atom_id, update_atom_dto)
@@ -141,33 +134,12 @@ class AtomService:
         if not atoms:
             raise ValueError(f"No atoms found for regulation fragment {regulation_fragment_id}.")
 
-        # I am guessing lower numbers are better for LLM performance, so we normalize IDs to start from 1 to reduce confusion.
-        db_id_to_normalized_id = {atom.id: idx for idx, atom in enumerate(atoms, start=1)}
-
-        previous_result = AtomExtractionResultDTO(
-            annotated_raw=etree.fromstring(f"""<annotated>{_insert_atom_spans(
-                fragment.content,
-                [AtomSpanDTO(
-                    id=span.id,
-                    atom_id=db_id_to_normalized_id[span.atom_id],
-                    start=span.start,
-                    end=span.end
-                ) for atom in atoms for span in atom.spans],
-            )}</annotated>"""),
-            atoms=[
-                ExtractedAtomDTO(
-                    # Use normalized IDs for atoms
-                    id=db_id_to_normalized_id[atom.id],
-                    predicate=atom.predicate,
-                    description=atom.description,
-                ) for atom in atoms
-            ]
-        ).to_xml().decode('utf-8')
-
-        regeneration_request = self.regeneration_prompt.format(
-            fragment.content,  # Original Statement
-            previous_result,  # Previous extraction result
-            regenerate_data.feedback  # Feedback for regeneration
+        regeneration_request = self.prompt_service.get(
+            fragment.formalism
+        ).atom_regeneration_prompt(
+            regulation_content=fragment.content,
+            atoms=atoms,
+            feedback=regenerate_data.feedback
         )
 
         response = self.chat_agent.send_message(
@@ -199,7 +171,7 @@ class AtomService:
 
         print(f"Generating atoms for regulation fragment {regulation_fragment_id}...")
 
-        input_message = self.generation_prompt.format(
+        input_message = self.prompt_service.get(regulation.formalism).atom_extraction_prompt(
             regulation.content,
         )
 
@@ -233,7 +205,7 @@ class AtomService:
             )
             local_id_to_global_id[atom.id] = persisted_atom.id
 
-        for atom_span in _find_atom_spans(parsed_result.annotated):
+        for atom_span in find_atom_spans(parsed_result.annotated):
             self.atom_repository.save_span(
                 CreateAtomSpanDTO(
                     atom_id=local_id_to_global_id[atom_span.atom_id],
@@ -241,44 +213,3 @@ class AtomService:
                     end=atom_span.end
                 )
             )
-
-
-def _insert_atom_spans(text: str, atom_spans: list[AtomSpanDTO]) -> str:
-    """
-    Insert atom spans into the text at the specified positions.
-    This function assumes that the atom spans are sorted by their start position.
-    """
-    print("insert_atom_spans called with text:", text)
-    output_text = []
-    atom_spans.sort(key=lambda x: x.start)
-
-    last_end = 0
-    for span in atom_spans:
-        output_text.append(text[last_end:span.start])
-        output_text.append(f'<atom id="{span.atom_id}">{text[span.start:span.end]}</atom>')
-        last_end = span.end
-    output_text.append(text[last_end:])
-    print(output_text)
-    return ''.join(output_text)
-
-
-def _find_atom_spans(text: str) -> Generator[CreateAtomSpanDTO, None]:
-    pattern = r'<atom id="(\d+)">(.*?)<\/atom>'
-    virtual_character_offset = 0
-
-    for match in re.finditer(pattern, text, re.DOTALL):
-        atom_id = int(match.group(1))
-
-        match_start, match_end = match.span()
-        content_start, content_end = match.span(2)
-
-        content_len = content_end - content_start
-        match_len = match_end - match_start
-
-        yield CreateAtomSpanDTO(
-            atom_id=atom_id,
-            start=match_start - virtual_character_offset,
-            end=match_start - virtual_character_offset + content_len,
-        )
-
-        virtual_character_offset += match_len - content_len

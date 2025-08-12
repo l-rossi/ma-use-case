@@ -16,7 +16,11 @@ def _dto_from_db(fragment: RegulationFragment) -> RegulationFragmentDTO:
         title=fragment.title,
         content=fragment.content,
         created_at=fragment.created_at,
-        llm_identifier=fragment.llm_identifier.value
+        source=fragment.source,
+        llm_identifier=fragment.llm_identifier.value,
+        formalism=fragment.formalism.value,
+        used_tokens_in=fragment.used_tokens_in,
+        used_tokens_out=fragment.used_tokens_out
     )
 
 
@@ -57,3 +61,22 @@ class RegulationFragmentService:
         Returns True if the fragment was deleted, False if it wasn't found.
         """
         return self.regulation_fragment_repository.delete_by_id(fragment_id)
+
+    def increment_tokens(self, fragment_id: int, delta_in: int, delta_out: int) -> Optional[RegulationFragmentDTO]:
+        """
+        Increment the token counts for a regulation fragment.
+
+        Args:
+            fragment_id: The ID of the regulation fragment
+            delta_in: The number of tokens to add to used_tokens_in
+            delta_out: The number of tokens to add to used_tokens_out
+
+        Returns:
+            The updated regulation fragment DTO, or None if it wasn't found
+        """
+        fragment = self.regulation_fragment_repository.increment_tokens(fragment_id, delta_in, delta_out)
+
+        if not fragment:
+            return None
+
+        return _dto_from_db(fragment)

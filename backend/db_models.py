@@ -7,6 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from modules.chat.domain.agent import Agent
 from modules.models.domain.llm_identifier import LLMIdentifier
 from modules.models.domain.message_source import MessageSource
+from modules.regulation_fragment.domain import Formalism
 
 from db import Base
 
@@ -19,8 +20,12 @@ class RegulationFragment(Base):
     title: Mapped[str] = mapped_column(nullable=False)
     content: Mapped[str] = mapped_column(nullable=False)
     created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
+    source: Mapped[str] = mapped_column(nullable=True)
 
     llm_identifier: Mapped[LLMIdentifier] = mapped_column(nullable=False, default=LLMIdentifier.GPT_3_5_TURBO)
+    formalism: Mapped[Formalism] = mapped_column(nullable=False, default=Formalism.PROLOG)
+    used_tokens_in: Mapped[int] = mapped_column(nullable=False, default=0)
+    used_tokens_out: Mapped[int] = mapped_column(nullable=False, default=0)
 
     agentic_logs: Mapped[List["AgenticLog"]] = relationship(back_populates="regulation_fragment",
                                                             cascade="all, delete-orphan")

@@ -24,7 +24,9 @@ class RegulationFragmentRepository:
         regulation_fragment = RegulationFragment(
             title=fragment_data.title,
             content=fragment_data.content,
+            source=fragment_data.source,
             llm_identifier=fragment_data.llm_identifier,
+            formalism=fragment_data.formalism,
         )
 
         self.db.session.add(regulation_fragment)
@@ -58,3 +60,27 @@ class RegulationFragmentRepository:
         self.db.session.commit()
 
         return True
+
+    def increment_tokens(self, fragment_id: int, delta_in: int, delta_out: int) -> Optional[RegulationFragment]:
+        """
+        Increment the token counts for a regulation fragment.
+
+        Args:
+            fragment_id: The ID of the regulation fragment
+            delta_in: The number of tokens to add to used_tokens_in
+            delta_out: The number of tokens to add to used_tokens_out
+
+        Returns:
+            The updated regulation fragment, or None if it wasn't found
+        """
+        fragment = self.find_by_id(fragment_id)
+
+        if not fragment:
+            return None
+
+        fragment.used_tokens_in += delta_in
+        fragment.used_tokens_out += delta_out
+
+        self.db.session.commit()
+
+        return fragment

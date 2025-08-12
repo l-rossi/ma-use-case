@@ -30,10 +30,10 @@ export function InfoDialog({
         <Button
           variant="ghost"
           size="icon"
-          className={cn("size-8 rounded-full p-0", triggerClassName)}
+          className={triggerClassName}
           aria-label={`Info about ${title}`}
         >
-          <HelpCircle className="size-5" />
+          <HelpCircle className="size-4 text-blue-700" />
         </Button>
       </DialogTrigger>
       <DialogContent className={cn("sm:max-w-md", className)}>

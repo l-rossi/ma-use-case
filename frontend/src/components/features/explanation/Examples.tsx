@@ -21,14 +21,11 @@ export function Examples({ className }: Readonly<Props>) {
   const [selectedFragmentId] = useSelectedRegulationFragmentId();
   const { data: atoms = [] } = useAtoms(selectedFragmentId);
 
-  // Helper function to check if a predicate is unary (only has one variable)
   const isUnaryPredicate = (predicate: string): boolean => {
-    // Check if the predicate contains parentheses
     if (!predicate.includes('(') || !predicate.includes(')')) {
       return false;
     }
 
-    // Extract the arguments part between parentheses
     const argsMatch = predicate.match(/\((.*)\)/);
     if (!argsMatch) {
       return false;
@@ -36,17 +33,14 @@ export function Examples({ className }: Readonly<Props>) {
 
     const args = argsMatch[1].split(',').map(arg => arg.trim());
 
-    // Check if there's exactly one argument
     return args.length === 1;
   };
 
-  // Filter atoms that are facts and have unary predicates
   const factAtoms = useMemo(
     () => atoms.filter(atom => atom.is_fact && isUnaryPredicate(atom.predicate)),
     [atoms]
   );
 
-  // Use the Zustand store for state management with the selected fragment ID as key
   const { atomValues, addAtomValue, removeAtomValue, togglePredicate } = useExamples(
     selectedFragmentId || -1
   );
@@ -84,12 +78,11 @@ export function Examples({ className }: Readonly<Props>) {
     },
   });
 
-  // Prepare data for ResultsDisplay
   const status = isError ? 'error' : data?.status || null;
 
   if (!selectedFragmentId) {
     return (
-      <div className={cn('p-4', className)}>
+      <div className={cn('', className)}>
         <p className="text-gray-500">Please select a regulation fragment to view examples.</p>
       </div>
     );

@@ -3,10 +3,11 @@ import { getHighlightColor } from '@/lib/getHighlightColor';
 import { CSSProperties, Dispatch, SetStateAction } from 'react';
 import { useHoveredAtom } from '@/hooks/useHoveredAtom';
 import { cn } from '@/lib/utils';
-import { ArrowRight, LoaderCircle, Trash2, CircleX } from 'lucide-react';
+import { ArrowRight, LoaderCircle, CircleX } from 'lucide-react';
 import { useDeleteAtom } from '@/hooks/useDeleteAtom';
 import { AtomInfoModal } from './AtomInfoModal';
 import { FactFlag } from '@/components/features/atoms/FactFlag';
+import { ConfirmDeleteDialog } from '@/components/ui/ConfirmDeleteDialog';
 
 interface AtomCardProps {
   atom: AtomDTO;
@@ -44,20 +45,15 @@ export function AtomView({ atom, textarea, setFeedback, feedbackFocused }: AtomC
         <FactFlag className={'mr-auto'} isFact={atom.is_fact} />
         <div className="flex items-center shrink-0">
           <AtomInfoModal atom={atom} />
-          <button
-            onClick={() => deleteAtom(atom.id)}
-            className="ml-2 p-1 hover:bg-gray-300 rounded"
-            title="Delete atom"
-            disabled={isPending}
-          >
-            {isPending ? (
-              <LoaderCircle className={'animate-spin size-4'} />
-            ) : isError ? (
-              <CircleX className={'size-4 text-red-500'} />
-            ) : (
-              <Trash2 className="size-4 text-red-500" />
-            )}
-          </button>
+          <ConfirmDeleteDialog
+            title="Atom"
+            description={`Are you sure you want to delete the atom "${atom.predicate}"?`}
+            isPending={isPending}
+            isError={isError}
+            onDelete={() => deleteAtom(atom.id)}
+            triggerClassName="ml-2"
+            errorMessage="Failed to delete the atom. Please try again."
+          />
         </div>
       </div>
     );

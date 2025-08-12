@@ -8,6 +8,10 @@
 export type MessageSource = "SYSTEM" | "USER" | "MODEL";
 export type Agent = "USER" | "AI";
 /**
+ * Enum representing different formalisms for regulation fragments.
+ */
+export type Formalism = "PROLOG";
+/**
  * Enum representing different LLM identifiers.
  */
 export type LLMIdentifier =
@@ -18,6 +22,10 @@ export type LLMIdentifier =
   | "GPT_5_NANO"
   | "SONNET_4"
   | "GEMINI_2_5_FLASH";
+/**
+ * Enum representing different formalisms for regulation fragments.
+ */
+export type Formalism1 = "PROLOG";
 
 /**
  * Data Transfer Object for an agentic log.
@@ -73,7 +81,11 @@ export interface CreateChatMessageDTO {
 export interface CreateRegulationFragmentDTO {
   title: string;
   content: string;
+  source?: string | null;
   llm_identifier: string;
+  formalism?: Formalism;
+  used_tokens_in?: number;
+  used_tokens_out?: number;
 }
 export interface CreateRuleDTO {
   regulation_fragment_id: number;
@@ -108,7 +120,11 @@ export interface RegulationFragmentDTO {
   title: string;
   content: string;
   created_at: string;
+  source?: string | null;
   llm_identifier: LLMIdentifier;
+  formalism?: Formalism1;
+  used_tokens_in?: number;
+  used_tokens_out?: number;
 }
 export interface RuleDTO {
   id: number;

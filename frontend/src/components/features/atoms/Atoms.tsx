@@ -8,7 +8,6 @@ import { useAtoms } from '@/hooks/useAtoms';
 import { deleteAtomsForFragment, generateAtomsForFragment } from './atoms.api';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { Button } from '@/components/ui/Button';
-import { Trash2 } from 'lucide-react';
 import { AtomView } from '@/components/features/atoms/AtomView';
 import { CSSProperties, ReactNode, useEffect, useRef, useState } from 'react';
 import { AtomDTO } from '@dtos/dto-types';
@@ -16,12 +15,10 @@ import { RegenerationForm } from './RegenerationForm';
 import { getHighlightColor } from '@/lib/getHighlightColor';
 import { useHoveredAtom } from '@/hooks/useHoveredAtom';
 import { CreateAtomModal } from '@/components/features/atoms/CreateAtomModal';
+import { InfoDialog } from '@/components/ui/InfoDialog';
+import { ConfirmDeleteDialog } from '@/components/ui/ConfirmDeleteDialog';
 
-interface Props {
-  className?: string;
-}
-
-export function Atoms({ className }: Readonly<Props>) {
+export function Atoms() {
   const [selectedFragmentId] = useSelectedRegulationFragmentId();
 
   const { data: atoms = [], isPending, isError, refetch } = useAtoms(selectedFragmentId);
@@ -29,14 +26,6 @@ export function Atoms({ className }: Readonly<Props>) {
   const queryClient = useQueryClient();
   const generateAtomsMutation = useMutation({
     mutationFn: () => generateAtomsForFragment(selectedFragmentId!),
-    onSettled: () =>
-      queryClient.invalidateQueries({
-        queryKey: ['atoms', selectedFragmentId],
-      }),
-  });
-
-  const deleteAtomsMutation = useMutation({
-    mutationFn: () => deleteAtomsForFragment(selectedFragmentId!),
     onSettled: () =>
       queryClient.invalidateQueries({
         queryKey: ['atoms', selectedFragmentId],
@@ -58,63 +47,51 @@ export function Atoms({ className }: Readonly<Props>) {
 
   if (!selectedFragmentId) {
     return (
-      <Box className={cn('shadow-sky-500 flex items-center justify-center p-4', className)}>
-        Please select a fragment first
-      </Box>
+      <AtomBox>
+        <div className={'flex flex-col items-center justify-center size-full'}>
+          Please select a fragment first
+        </div>
+      </AtomBox>
     );
   }
 
   if (isPending) {
-    return <Skeleton className={className} />;
+    return <Skeleton className={'size-full'} />;
   }
 
   if (isError) {
     return (
-      <Box
-        className={cn(
-          'text-red-500 shadow-sky-500 flex flex-col items-center justify-center',
-          className
-        )}
-      >
-        <p className="mb-4">Failed to load atoms.</p>
-        <Button variant={'outline'} type={'button'} size={'lg'} onClick={() => refetch()}>
-          Retry
-        </Button>
-      </Box>
+      <AtomBox>
+        <div className={'flex flex-col items-center justify-center size-full'}>
+          <p className="mb-4">Failed to load atoms.</p>
+          <Button variant={'outline'} type={'button'} size={'lg'} onClick={() => refetch()}>
+            Retry
+          </Button>
+        </div>
+      </AtomBox>
     );
   }
 
   if (atoms.length === 0) {
     return (
-      <Box className={cn('shadow-sky-500 flex flex-col items-center justify-center', className)}>
-        <p className="mb-4">No atoms found for this fragment</p>
-        <Button
-          variant={'outline'}
-          type={'button'}
-          onClick={() => generateAtomsMutation.mutate()}
-          disabled={generateAtomsMutation.isPending}
-        >
-          {generateAtomsMutation.isPending ? 'Generating...' : 'Generate Atoms'}
-        </Button>
-      </Box>
+      <AtomBox>
+        <div className={'flex flex-col items-center justify-center size-full'}>
+          <p className="mb-4">No atoms found for this fragment</p>
+          <Button
+            variant={'outline'}
+            type={'button'}
+            onClick={() => generateAtomsMutation.mutate()}
+            disabled={generateAtomsMutation.isPending}
+          >
+            {generateAtomsMutation.isPending ? 'Generating...' : 'Generate Atoms'}
+          </Button>
+        </div>
+      </AtomBox>
     );
   }
 
   return (
-    <Box className={cn('shadow-sky-500 flex-col overflow-hidden', className)}>
-      <div className="flex justify items-center mb-2 gap-1 p-4 pb-0">
-        <h3 className="text-lg font-semibold">Atoms</h3>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => deleteAtomsMutation.mutate()}
-          disabled={deleteAtomsMutation.isPending}
-          title="Delete all atoms for this fragment"
-        >
-          <Trash2 className="size-4" />
-        </Button>
-      </div>
-
+    <AtomBox canDelete>
       <div className={'grid grid-cols-2 overflow-hidden gap-2 grow p-4 pt-0'}>
         <div className={'h-full overflow-hidden flex flex-col justify-between grow'}>
           <ul className="flex flex-col gap-3 overflow-y-auto">
@@ -153,7 +130,7 @@ export function Atoms({ className }: Readonly<Props>) {
           />
         </div>
       </div>
-    </Box>
+    </AtomBox>
   );
 }
 
@@ -184,6 +161,51 @@ function highlightAtomsInFeedback(
     }
     return part;
   });
+}
+
+function AtomBox({
+  children,
+  canDelete = false,
+  className,
+}: {
+  children: ReactNode;
+  canDelete?: boolean;
+  className?: string;
+}) {
+  const [selectedFragmentId] = useSelectedRegulationFragmentId();
+  const queryClient = useQueryClient();
+  const deleteAtomsMutation = useMutation({
+    mutationFn: () => deleteAtomsForFragment(selectedFragmentId!),
+    onSettled: () =>
+      queryClient.invalidateQueries({
+        queryKey: ['atoms', selectedFragmentId],
+      }),
+  });
+
+  return (
+    <Box className={cn('shadow-sky-500 flex-col overflow-hidden size-full')}>
+      <div className="flex justify items-center mb-2 gap-1 p-4 pb-0">
+        <h3 className="text-lg font-semibold">Atoms</h3>
+        {canDelete && (
+          <ConfirmDeleteDialog
+            title="Atoms"
+            description="Are you sure you want to delete all atoms for this fragment? This action cannot be undone."
+            isPending={deleteAtomsMutation.isPending}
+            isError={deleteAtomsMutation.isError}
+            onDelete={() => deleteAtomsMutation.mutate()}
+            errorMessage="Failed to delete atoms. Please try again."
+          />
+        )}
+        <InfoDialog
+          title={'Atoms'}
+          description={
+            'Atoms are the basic building blocks of the formalisation. They represent predicates and can be used to generate rules. These atoms are different from Prolog atoms as they represent an entire predicate, not just a single value.'
+          }
+        />
+      </div>
+      {children}
+    </Box>
+  );
 }
 
 function InlineHighlight({

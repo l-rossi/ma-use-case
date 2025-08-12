@@ -52,6 +52,7 @@ export function RegulationFragments({ className }: Readonly<Props>) {
   if (isError) {
     return (
       <Box
+        title={'Regulation Fragments'}
         className={cn(
           'text-red-500 shadow-red-500 flex flex-col items-center justify-center gap-4',
           className
@@ -66,7 +67,7 @@ export function RegulationFragments({ className }: Readonly<Props>) {
   }
 
   return (
-    <Box className={cn('shadow-orange-500', className)} ref={containerRef}>
+    <Box className={cn('shadow-orange-500 flex flex-row', className)} ref={containerRef}>
       <RegulationFragmentSelectionDrawer
         onSelect={id => {
           setSelectedFragmentId(id);
@@ -105,10 +106,11 @@ export function RegulationFragments({ className }: Readonly<Props>) {
         </DialogContent>
       </Dialog>
 
-      <div className={'flex-grow grid place-items-center size-full overflow-auto'}>
+      <div className={'flex-grow flex flex-col size-full overflow-auto p-4'}>
+        <h3 className="text-lg font-semibold">Regulation Fragments</h3>
         {fragments?.length === 0 && (
           <CreateRegulationFragmentForm
-            className={'size-full px-12 py-20'}
+            className={'size-full mt-8'}
             onSuccess={async f => {
               await setSelectedFragmentId(f.id);
             }}
