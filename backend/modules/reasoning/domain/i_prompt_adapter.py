@@ -14,24 +14,25 @@ class IPromptAdapter(ABC):
 
     @abstractmethod
     def chat_prompt(self,
+                    regulation_content: str,
                     atoms: List[AtomDTO],
                     rules: List[RuleDTO],
-                    ):
+                    ) -> str:
         raise NotImplementedError()
 
     @abstractmethod
     def rule_extraction_prompt(self,
                                regulation_content: str,
-                               atom_string: str,
+                               atoms: List[AtomDTO]
                                ) -> str:
         raise NotImplementedError()
 
     @abstractmethod
     def rule_regeneration_prompt(self,
                                  regulation_content: str,
-                                 atom_string: str,
-                                 previous_extraction_result: RuleExtractionResultDTO,
-                                 feedback: Optional[str] = None,
+                                 atoms: List[AtomDTO],
+                                 rules: List[RuleDTO],
+                                 feedback: Optional[str]
                                  ) -> str:
         raise NotImplementedError()
 
@@ -83,3 +84,21 @@ class IPromptAdapter(ABC):
                 ) for atom in atoms
             ]
         ).to_xml().decode('utf-8')
+
+    @staticmethod
+    def _atom_predicates_as_list(atoms: List[AtomDTO]) -> str:
+        return "\n".join(
+            map(lambda atom: "-" + atom.predicate, atoms)
+        )
+
+    @staticmethod
+    def _atoms_predicates_as_verbose_list(atoms: List[AtomDTO]) -> str:
+        return "\n".join(
+            map(lambda atom: f"- {atom.predicate}: {atom.description} ({'fact' if atom.is_fact else 'derived'})", atoms)
+        )
+
+    @staticmethod
+    def _rules_as_list(rules: List[RuleDTO]) -> str:
+        return "\n".join(
+            map(lambda rule: f"- {rule.definition}\n  Description: {rule.description}", rules)
+        )

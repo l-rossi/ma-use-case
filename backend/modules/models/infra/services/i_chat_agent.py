@@ -23,7 +23,8 @@ class IChatAgent(ABC):
         """
         Process a message to a model and return a response. This method logs the message and then calls the internal
         `_send_message` method to handle the actual message sending.
-        :param message:
+        :param context_messages: Additional previous messages, e.g., previous messages in a chat.
+        :param message: The message to be sent to the LLM.
         :return:
         """
         regulation_fragment_id = message.regulation_fragment_id
@@ -38,7 +39,6 @@ class IChatAgent(ABC):
         )
 
         response = self._send_message(message, context_messages=context_messages or [])
-        # Log the model response with the new field structure
         self.agentic_log_service.create(
             CreateAgenticLogDTO(
                 user_prompt=response.message if not response.is_error else f"[ERROR] {response.message}",

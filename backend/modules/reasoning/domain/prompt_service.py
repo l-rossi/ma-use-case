@@ -11,7 +11,7 @@ class PromptService:
     """
 
     def __init__(self):
-        self.adapters: Dict[Formalism, IPromptAdapter] = {
+        self._adapters: Dict[Formalism, IPromptAdapter] = {
             Formalism.PROLOG: PrologPromptAdapter()
         }
 
@@ -22,7 +22,7 @@ class PromptService:
         :param formalism: The formalism for which to retrieve the prompt adapter.
         :return:
         """
-        if formalism not in self.adapters:
+        if formalism not in self._adapters:
             raise ValueError(f"No prompt adapter found for formalism: {formalism}")
 
-        return self.adapters[formalism]
+        return self._adapters[formalism]

@@ -7,13 +7,13 @@ from modules.models.infra.agentic_log_repository import AgenticLogRepository
 
 class AgenticLogService:
     def __init__(self, agentic_log_repository: AgenticLogRepository):
-        self.agentic_log_repository = agentic_log_repository
+        self._agentic_log_repository = agentic_log_repository
 
     def create(self, log_data: CreateAgenticLogDTO) -> AgenticLogDTO:
         """
         Create a new agentic log.
         """
-        created_log = self.agentic_log_repository.save(log_data)
+        created_log = self._agentic_log_repository.save(log_data)
 
         return AgenticLogDTO(
             id=created_log.id,
@@ -40,7 +40,7 @@ class AgenticLogService:
         Returns:
             List of agentic logs
         """
-        logs = self.agentic_log_repository.find_by_regulation_fragment_id(
+        logs = self._agentic_log_repository.find_by_regulation_fragment_id(
             regulation_fragment_id=regulation_fragment_id,
             cursor=cursor,
             limit=limit,

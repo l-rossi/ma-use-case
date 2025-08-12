@@ -81,6 +81,7 @@ class RegulationFragmentRepository:
         fragment.used_tokens_in += delta_in
         fragment.used_tokens_out += delta_out
 
+        self.db.session.add(fragment)
         self.db.session.commit()
 
         return fragment

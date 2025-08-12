@@ -11,6 +11,27 @@ Take more notes:
 -	Talk about UI/UX 
 
 
+Gold standard:
+5-10 cases.
+	Completely artificial is fine.
+	Maybe convert from LTL or DOL to Prolog
+	No need to focus on DDL
+
+
+
+Suggest possible errors (in the regulation) if LLM output format is wrong.
+	Add Retry on Atom extraction
+
+
+Atoms
+	Mention mismatch in thesis the mismatch, potential problem 
+
+
+Is the user recommended using one LLM model for some types of regulation fragments? (e.g., GPT-4o Mini achieves higher quality with more complex regulatory fragments)
+	Focus on one
+
+
+
 ## How to Run
 
 ### Using Docker Compose

@@ -62,10 +62,21 @@ class GoogleChatAgent(IChatAgent):
                     system_instruction=message.system_prompt if message.system_prompt else None
                 )
             )
-            return ChatAgentMessageEgressDTO(message=response.text)
+
+            input_tokens = getattr(response, 'usage', {}).get('prompt_tokens', 0)
+            output_tokens = getattr(response, 'usage', {}).get('completion_tokens', 0)
+
+            return ChatAgentMessageEgressDTO(
+                message=response.text,
+                input_tokens=input_tokens,
+                output_tokens=output_tokens
+            )
 
         except Exception as e:
             # In a production environment, you might want to handle different types of exceptions differently
             # For now, we'll just return the error message
             print(f"Error calling Google Generative AI API: {str(e)}")
-            return ChatAgentMessageEgressDTO(message=str(e), is_error=True)
+            return ChatAgentMessageEgressDTO(
+                message=str(e), 
+                is_error=True,
+            )

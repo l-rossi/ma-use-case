@@ -57,10 +57,21 @@ class AnthropicAIChatAgent(IChatAgent):
                 max_tokens=1024,
                 system=message.system_prompt,
             )
-            return ChatAgentMessageEgressDTO(message=response.content[0].text)
+
+            input_tokens = response.usage.input_tokens
+            output_tokens = response.usage.output_tokens
+
+            return ChatAgentMessageEgressDTO(
+                message=response.content[0].text,
+                input_tokens=input_tokens,
+                output_tokens=output_tokens
+            )
 
         except Exception as e:
             # In a production environment, you might want to handle different types of exceptions differently
             # For now, we'll just return the error message
-            print(f"Error calling OpenAI API: {str(e)}")
-            return ChatAgentMessageEgressDTO(message=str(e), is_error=True)
+            print(f"Error calling Anthropic API: {str(e)}")
+            return ChatAgentMessageEgressDTO(
+                message=str(e), 
+                is_error=True,
+            )

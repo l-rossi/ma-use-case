@@ -12,18 +12,18 @@ from modules.atoms.infra.atom_repository import AtomRepository
 from modules.models.application.dto.chat_agent_message_ingress_dto import ChatAgentMessageIngressDTO
 from modules.models.application.llm_adapter import LLMAdapter
 from modules.reasoning.application.prolog_reasoner import PrologReasoner
-from modules.reasoning.domain.prompt_strategy import PromptService
+from modules.reasoning.domain.prompt_service import PromptService
 from modules.regulation_fragment.application.regulation_fragment_service import RegulationFragmentService
 
 
 class AtomService:
     def __init__(self, regulation_fragment_service: RegulationFragmentService, atom_repository: AtomRepository,
                  chat_agent: LLMAdapter, prolog_reasoner: PrologReasoner, prompt_service: PromptService):
-        self.atom_repository = atom_repository
-        self.regulation_fragment_service = regulation_fragment_service
-        self.chat_agent = chat_agent
-        self.prolog_reasoner = prolog_reasoner
-        self.prompt_service = prompt_service
+        self._atom_repository = atom_repository
+        self._regulation_fragment_service = regulation_fragment_service
+        self._chat_agent = chat_agent
+        self._prolog_reasoner = prolog_reasoner
+        self._prompt_service = prompt_service
 
     def get_atoms_for_regulation_fragment(self, regulation_fragment_id: int):
         return [
@@ -42,7 +42,7 @@ class AtomService:
                         end=span.end
                     ) for span in atom.spans
                 ],
-            ) for atom in self.atom_repository.find_by_regulation_fragment_id(regulation_fragment_id)
+            ) for atom in self._atom_repository.find_by_regulation_fragment_id(regulation_fragment_id)
         ]
 
     def delete_atoms_for_regulation_fragment(self, regulation_fragment_id: int) -> int:
@@ -50,21 +50,21 @@ class AtomService:
         Delete all atoms for a specific regulation fragment.
         Returns the number of atoms deleted.
         """
-        return self.atom_repository.delete_by_regulation_fragment_id(regulation_fragment_id)
+        return self._atom_repository.delete_by_regulation_fragment_id(regulation_fragment_id)
 
     def delete_atom_by_id(self, atom_id: int) -> bool:
         """
         Delete an atom by its ID.
         Returns True if the atom was deleted, False if it wasn't found.
         """
-        return self.atom_repository.delete_by_id(atom_id)
+        return self._atom_repository.delete_by_id(atom_id)
 
     def create_atom(self, create_atom_dto: CreateAtomDTO) -> AtomDTO:
         """
         Create a new atom with the provided data.
         Returns the created atom as an AtomDTO.
         """
-        created_atom = self.atom_repository.save(create_atom_dto)
+        created_atom = self._atom_repository.save(create_atom_dto)
 
         # Convert to DTO
         return AtomDTO(
@@ -87,7 +87,7 @@ class AtomService:
         """
         if update_atom_dto.predicate is not None:
             wildcard_predicate, _ = create_wildcard_predicates(update_atom_dto.predicate)
-            status, answers = self.prolog_reasoner.execute_prolog(f"{wildcard_predicate}.", wildcard_predicate)
+            status, answers = self._prolog_reasoner.execute_prolog(f"{wildcard_predicate}.", wildcard_predicate)
 
             # Check if the response is an error
             if status == "error":
@@ -95,7 +95,7 @@ class AtomService:
                                                                           'message') else "Invalid Prolog predicate"
                 raise ValueError(f"Invalid Prolog predicate: {error_message}")
 
-        updated_atom = self.atom_repository.update(atom_id, update_atom_dto)
+        updated_atom = self._atom_repository.update(atom_id, update_atom_dto)
 
         return AtomDTO(
             id=updated_atom.id,
@@ -126,7 +126,7 @@ class AtomService:
         """
         print(f"Regenerating atoms for regulation fragment {regulation_fragment_id}...")
 
-        fragment = self.regulation_fragment_service.find_by_id(regulation_fragment_id)
+        fragment = self._regulation_fragment_service.find_by_id(regulation_fragment_id)
         if not fragment:
             raise ValueError(f"Regulation fragment with ID {regulation_fragment_id} not found.")
 
@@ -134,7 +134,7 @@ class AtomService:
         if not atoms:
             raise ValueError(f"No atoms found for regulation fragment {regulation_fragment_id}.")
 
-        regeneration_request = self.prompt_service.get(
+        regeneration_request = self._prompt_service.get(
             fragment.formalism
         ).atom_regeneration_prompt(
             regulation_content=fragment.content,
@@ -142,7 +142,7 @@ class AtomService:
             feedback=regenerate_data.feedback
         )
 
-        response = self.chat_agent.send_message(
+        response = self._chat_agent.send_message(
             ChatAgentMessageIngressDTO(
                 user_prompt=regeneration_request,
                 regulation_fragment_id=regulation_fragment_id,
@@ -160,7 +160,7 @@ class AtomService:
         Generate atoms for a specific regulation fragment.
         This method should implement the logic to generate atoms based on the regulation fragment.
         """
-        regulation = self.regulation_fragment_service.find_by_id(regulation_fragment_id)
+        regulation = self._regulation_fragment_service.find_by_id(regulation_fragment_id)
         if not regulation:
             raise ValueError(f"Regulation fragment with ID {regulation_fragment_id} not found.")
 
@@ -171,11 +171,11 @@ class AtomService:
 
         print(f"Generating atoms for regulation fragment {regulation_fragment_id}...")
 
-        input_message = self.prompt_service.get(regulation.formalism).atom_extraction_prompt(
+        input_message = self._prompt_service.get(regulation.formalism).atom_extraction_prompt(
             regulation.content,
         )
 
-        returned_message = self.chat_agent.send_message(
+        returned_message = self._chat_agent.send_message(
             ChatAgentMessageIngressDTO(
                 user_prompt=input_message,
                 system_prompt='',
@@ -194,7 +194,7 @@ class AtomService:
 
         # TODO error handling and retry logic.
         for atom in parsed_result.atoms:
-            persisted_atom = self.atom_repository.save(
+            persisted_atom = self._atom_repository.save(
                 CreateAtomDTO(
                     regulation_fragment_id=regulation_fragment_id,
                     predicate=atom.predicate,
@@ -206,7 +206,7 @@ class AtomService:
             local_id_to_global_id[atom.id] = persisted_atom.id
 
         for atom_span in find_atom_spans(parsed_result.annotated):
-            self.atom_repository.save_span(
+            self._atom_repository.save_span(
                 CreateAtomSpanDTO(
                     atom_id=local_id_to_global_id[atom_span.atom_id],
                     start=atom_span.start,

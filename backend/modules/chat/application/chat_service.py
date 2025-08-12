@@ -9,6 +9,7 @@ from modules.chat.domain.context_message_type import ContextMessageType
 from modules.chat.infra.repositories.chat_repository import ChatRepository
 from modules.models.application.dto.chat_agent_message_ingress_dto import ChatAgentMessageIngressDTO
 from modules.models.application.llm_adapter import LLMAdapter
+from modules.reasoning.domain.prompt_service import PromptService
 from modules.regulation_fragment.application.regulation_fragment_service import RegulationFragmentService
 from modules.rules.application.rule_service import RuleService
 
@@ -19,15 +20,15 @@ class ChatService:
                  regulation_fragment_service: RegulationFragmentService,
                  chat_repository: ChatRepository,
                  chat_agent: LLMAdapter,
-                 rule_service: RuleService):
+                 rule_service: RuleService,
+                 prompt_service: PromptService,
+                 ):
         self.chat_repository = chat_repository
         self.chat_agent = chat_agent
         self.atom_service = atom_service
         self.regulation_fragment_service = regulation_fragment_service
         self.rules_service = rule_service
-
-        with open("./prompts/chat/prolog_1.txt", "r") as file:
-            self.system_prompt = file.read()
+        self.prompt_service = prompt_service
 
     def get_by_regulation_id(self, regulation_id: int) -> List[ChatMessageDTO]:
         """
@@ -57,17 +58,12 @@ class ChatService:
 
         regulation = self.regulation_fragment_service.find_by_id(regulation_id)
 
-        formatted_atoms = "\n".join(
-            f"{atom.predicate}: {atom.description}" for atom in atoms
-        )
-        formatted_rules = "\n".join(
-            f"{rule.definition}: {rule.description}" for rule in rules
-        )
-
-        system_prompt = self.system_prompt.format(
+        system_prompt = self.prompt_service.get(
+            regulation.formalism,
+        ).chat_prompt(
             regulation.content,
-            formatted_atoms,
-            formatted_rules,
+            atoms,
+            rules,
         )
 
         context_messages = [

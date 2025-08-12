@@ -49,7 +49,7 @@ Access to confidential files requires both security clearance and supervisor app
 - approved_by(Supervisor, Person, File)
 
 **Previous Extraction:**
-<r>
+<result>
 <rules>
 <rule>
 <definition>authorized_access(Person, File) :- confidential_file(File), has_clearance(Person, security), supervisor(Supervisor, Person), approved_by(Supervisor, Person, File).</definition>
@@ -62,13 +62,13 @@ Access to confidential files requires both security clearance and supervisor app
 <description>Identifies unauthorized access to confidential files without proper clearance and approval</description>
 </rule>
 </goals>
-</r>
+</result>
 
 **Feedback:**
 Split the authorized_access rule into two separate rules: one for having security clearance and one for having supervisor approval.
 
 **Regenerated Output:**
-<r>
+<result>
 <rules>
 <rule>
 <definition>has_security_clearance(Person) :- has_clearance(Person, security).</definition>
@@ -89,7 +89,7 @@ Split the authorized_access rule into two separate rules: one for having securit
 <description>Identifies unauthorized access to confidential files without proper clearance and approval</description>
 </rule>
 </goals>
-</r>
+</result>
 
 ---
 

@@ -64,10 +64,21 @@ class OpenAIChatAgent(IChatAgent):
             )
 
             assistant_message = response.choices[0].message.content
-            return ChatAgentMessageEgressDTO(message=assistant_message)
+
+            input_tokens = response.usage.prompt_tokens
+            output_tokens = response.usage.completion_tokens
+
+            return ChatAgentMessageEgressDTO(
+                message=assistant_message,
+                input_tokens=input_tokens,
+                output_tokens=output_tokens
+            )
 
         except Exception as e:
             # In a production environment, you might want to handle different types of exceptions differently
             # For now, we'll just return the error message
             print(f"Error calling OpenAI API: {str(e)}")
-            return ChatAgentMessageEgressDTO(message=str(e), is_error=True)
+            return ChatAgentMessageEgressDTO(
+                message=str(e), 
+                is_error=True,
+            )

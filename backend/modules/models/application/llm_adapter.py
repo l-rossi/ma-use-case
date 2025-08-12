@@ -48,9 +48,11 @@ class LLMAdapter:
                      context_messages: Optional[List[ContextMessageDTO]] = None) -> ChatAgentMessageEgressDTO:
         """
         Delegates the message to the appropriate agent based on the regulation fragment's LLM identifier.
+        Intercepts the response to save token usage information to the database.
+
         :param context_messages: Optional list of context messages to include in the request.
         :param message: The message to be sent to the LLM.
-        :return:
+        :return: The response from the LLM with token usage information.
         """
         regulation = self.regulation_fragment_service.find_by_id(
             message.regulation_fragment_id
@@ -63,4 +65,11 @@ class LLMAdapter:
         if agent is None:
             raise ValueError(f"No agent found for LLM identifier {regulation.llm_identifier}.")
 
-        return agent.send_message(message, context_messages)
+        response = agent.send_message(message, context_messages)
+        self.regulation_fragment_service.increment_tokens(
+            message.regulation_fragment_id,
+            response.input_tokens,
+            response.output_tokens
+        )
+
+        return response

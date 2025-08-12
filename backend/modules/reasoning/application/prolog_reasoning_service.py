@@ -16,9 +16,9 @@ class PrologReasoningService:
                  atom_service: AtomService,
                  prolog_reasoner: PrologReasoner,
                  ):
-        self.rule_service = rule_service
-        self.prolog_reasoner = prolog_reasoner
-        self.atom_service = atom_service
+        self._rule_service = rule_service
+        self._prolog_reasoner = prolog_reasoner
+        self._atom_service = atom_service
 
     def run_example(self,
                     regulation_fragment_id: int,
@@ -31,28 +31,28 @@ class PrologReasoningService:
         :return:
         """
 
-        atoms = self.atom_service.get_atoms_for_regulation_fragment(regulation_fragment_id)
+        atoms = self._atom_service.get_atoms_for_regulation_fragment(regulation_fragment_id)
 
         # To make sure everything is defined at least once using dynamic:
         # :- dynamic atom/arity.
-        rule_definitions = "\n".join(
+        knowledge_base = "\n".join(sorted(
             atoms_to_dynamic_statement(atom) for atom in atoms
-        )
+        ))
 
-        # Get rules for the regulation fragment
-        rules = self.rule_service.get_rules_by_regulation_id(regulation_fragment_id)
-        rule_definitions += "\n"
-        rule_definitions += "\n".join(rule.definition for rule in rules) + "\n" + facts
+        rules = self._rule_service.get_rules_by_regulation_id(regulation_fragment_id)
+        knowledge_base += "\n"
+        sorted_facts = "\n".join(sorted(facts.split("\n")))
+        knowledge_base += "\n".join(sorted(rule.definition for rule in rules)) + "\n" + sorted_facts
 
         # TODO this raises if no rules are found, should handle this case
         goal, _ = create_wildcard_predicates(
             next(rule for rule in rules if rule.is_goal).definition.split(":-")[0].strip(),
             wildcard_factory=lambda x: f"X{x}")
 
-        print(rule_definitions)
+        print(knowledge_base)
         print(goal)
 
-        return self.prolog_reasoner.execute_prolog(
-            knowledge_base=rule_definitions,
+        return self._prolog_reasoner.execute_prolog(
+            knowledge_base=knowledge_base,
             goal=goal
         )
