@@ -12,9 +12,6 @@ export function useDeleteAtom() {
 
   return useMutation({
     mutationFn: (atomId: number) => deleteAtomById(atomId),
-    onSettled: () => {
-      // Invalidate all atoms queries to refresh data after deletion
-      queryClient.invalidateQueries({ queryKey: ['atoms'] });
-    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['atoms'] }),
   });
 }

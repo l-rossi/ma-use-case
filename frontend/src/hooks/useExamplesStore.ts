@@ -18,7 +18,6 @@ interface ExamplesState {
 
 export const useExamplesStore = create<ExamplesState>(set => ({
   atomValuesByFragmentId: {},
-  newAtomValueByFragmentId: {},
 
   setAtomValues: (fragmentId, atomValues) =>
     set(state => ({

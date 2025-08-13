@@ -1,4 +1,4 @@
-import { CreateRegulationFragmentDTO, RegulationFragmentDTO } from '@dtos/dto-types';
+import { CreateRegulationFragmentDTO, PriceDTO, RegulationFragmentDTO } from '@dtos/dto-types';
 
 export async function createRegulationFragment(
   fragment: CreateRegulationFragmentDTO
@@ -36,4 +36,14 @@ export async function deleteRegulationFragment(id: number): Promise<void> {
   if (!res.ok) {
     throw new Error('Failed to delete regulation fragment');
   }
+}
+
+export async function getRegulationFragmentCost(id: number): Promise<PriceDTO> {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/regulation-fragments/${id}/cost`);
+
+  if (!res.ok) {
+    throw new Error('Failed to get regulation fragment cost');
+  }
+
+  return await res.json();
 }

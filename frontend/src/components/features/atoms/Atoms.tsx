@@ -17,6 +17,7 @@ import { useHoveredAtom } from '@/hooks/useHoveredAtom';
 import { CreateAtomModal } from '@/components/features/atoms/CreateAtomModal';
 import { InfoDialog } from '@/components/ui/InfoDialog';
 import { ConfirmDeleteDialog } from '@/components/ui/ConfirmDeleteDialog';
+import { useResetExamples } from '@/hooks/useExamplesStore2';
 
 export function Atoms() {
   const [selectedFragmentId] = useSelectedRegulationFragmentId();
@@ -174,12 +175,19 @@ function AtomBox({
 }) {
   const [selectedFragmentId] = useSelectedRegulationFragmentId();
   const queryClient = useQueryClient();
+  const resetExamples = useResetExamples(selectedFragmentId);
   const deleteAtomsMutation = useMutation({
     mutationFn: () => deleteAtomsForFragment(selectedFragmentId!),
     onSettled: () =>
-      queryClient.invalidateQueries({
-        queryKey: ['atoms', selectedFragmentId],
-      }),
+      Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ['atoms', selectedFragmentId],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ['rules', selectedFragmentId],
+        }),
+      ]),
+    onSuccess: () => resetExamples(),
   });
 
   return (

@@ -30,3 +30,12 @@ def delete_by_id(fragment_id: str):
         return '', 204
     else:
         return jsonify({"error": "Regulation fragment not found"}), 404
+
+
+@regulation_fragment_controller.get('/regulation-fragments/<fragment_id>/cost')
+def get_cost(fragment_id: str):
+    price_dto = container.regulation_fragment_service().estimate_cost(int(fragment_id))
+    if price_dto:
+        return price_dto.model_dump()
+    else:
+        return jsonify({"error": "Regulation fragment not found"}), 404

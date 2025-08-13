@@ -72,6 +72,7 @@ class Container(containers.DeclarativeContainer):
         chat_repository=chat_repository,
         chat_agent=llm_adapter,
         rule_service=rule_service,
+        prompt_service=prompt_service,
     )
 
     prolog_reasoning_service = providers.Singleton(

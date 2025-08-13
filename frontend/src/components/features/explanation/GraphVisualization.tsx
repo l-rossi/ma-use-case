@@ -21,7 +21,7 @@ const theme: Theme = {
 
 // Helper function to extract predicate name from a predicate string
 const extractPredicateName = (predicate: string): string => {
-  const match = predicate.match(/^[a-z_]+/);
+  const match = predicate.match(/^[a-z0-9_]+/);
   // We want the first match here, anything before ( starts
   return match ? match[0] : predicate;
 };
@@ -33,7 +33,7 @@ const extractPredicates = (definition: string): string[] => {
     definition
       .split(':-')
       .at(-1)!
-      .matchAll(/[a-z_]+/g)
+      .matchAll(/[a-z0-9_]+/g)
       .map(it => it[0])
   );
 };

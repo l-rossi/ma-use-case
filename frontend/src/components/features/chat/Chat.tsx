@@ -19,13 +19,7 @@ interface Props {
   className?: string;
 }
 
-function ChatBox({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
+function ChatBox({ children, className }: { children: ReactNode; className?: string }) {
   return (
     <Box className={cn('shadow-violet-500 flex-col h-full', className)}>
       <div className="flex justify items-center mb-2 gap-1 p-4 pb-0">
@@ -97,6 +91,16 @@ export function Chat({ className }: Readonly<Props>) {
     setNewMessage('');
   };
 
+  if (!selectedFragmentId) {
+    return (
+      <ChatBox className={className}>
+        <div className={'flex flex-col items-center justify-center size-full text-center'}>
+          Please select a fragment first
+        </div>
+      </ChatBox>
+    );
+  }
+
   if (isPending) {
     return <Skeleton className={className} />;
   }
@@ -121,9 +125,7 @@ export function Chat({ className }: Readonly<Props>) {
         ref={scrollContainerRef}
       >
         {messages.length === 0 ? (
-          <p className="text-gray-500 text-center mb-auto mt-12">
-            No messages yet.
-          </p>
+          <p className="text-gray-500 text-center mb-auto mt-12">No messages yet.</p>
         ) : (
           messages.map((message, index) => (
             <Fragment key={message.id}>

@@ -57,10 +57,9 @@ export const RegenerationForm = forwardRef<HTMLTextAreaElement, Readonly<Regener
               ref={ref}
             />
             <div
-              onMouseEnter={() => console.log('Hi')}
               aria-hidden="true"
               className={cn(
-                'rounded-md border border-transparent px-3 py-2 text-base md:text-sm whitespace-pre-wrap',
+                'rounded-md border border-transparent px-3 py-2 text-base md:text-sm whitespace-pre-wrap break-words',
                 'absolute inset-0 pointer-events-none'
               )}
             >

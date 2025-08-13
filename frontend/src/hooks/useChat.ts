@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { getChatForRegulation } from '@/components/features/chat/chat.api';
-import { ChatMessageDTO } from '../../generated/dto-types';
+import { ChatMessageDTO } from '@dtos/dto-types';
 
 /**
  * Hook to fetch chat messages for a specific regulation

@@ -40,7 +40,7 @@ function AgenticLogsBox({
             size={'icon'}
             onClick={() => setShouldFollow(b => !b)}
             variant={'ghost'}
-            title={shouldFollow ? 'Turn Auto Scroll On' : 'Turn Auto Scroll Off'}
+            title={shouldFollow ? 'Turn Auto Scroll Off' : 'Turn Auto Scroll On'}
             className={' hover:bg-gray-500 hover:text-gray-100'}
           >
             {shouldFollow ? <Lock /> : <LockOpen />}

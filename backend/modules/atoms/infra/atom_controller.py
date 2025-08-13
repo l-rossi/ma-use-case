@@ -34,6 +34,8 @@ def delete_atoms_for_fragment(fragment_id: str):
     """
     atom_service = container.atom_service()
     count = atom_service.delete_atoms_for_regulation_fragment(fragment_id)
+    rule_service = container.rule_service()
+    rule_service.delete_rules_for_regulation_fragment(fragment_id)
     return {'deleted': count}, 200
 
 

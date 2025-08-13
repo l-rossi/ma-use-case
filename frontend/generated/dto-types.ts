@@ -93,6 +93,9 @@ export interface CreateRuleDTO {
   definition: string;
   is_goal?: boolean;
 }
+export interface PriceDTO {
+  price: number;
+}
 export interface PrologAnswerDTO {
   status: "success" | "failure" | "error";
   answers: PrologResultDTO[];

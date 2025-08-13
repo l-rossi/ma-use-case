@@ -5,6 +5,7 @@ import { getHighlightColor } from '@/lib/getHighlightColor';
 import { cn } from '@/lib/utils';
 import { useHoveredAtom } from '@/hooks/useHoveredAtom';
 import { llmIdentifierToName } from '@/lib/enumToName';
+import { PriceModal } from './PriceModal';
 
 interface Props {
   fragment: RegulationFragmentDTO;
@@ -25,6 +26,7 @@ export function RegulationFragmentView({ fragment }: Readonly<Props>) {
             {fragment.source ? `${fragment.source}` : 'No source provided'}
           </span>
         )}
+        <PriceModal fragmentId={fragment.id} />
       </div>
       <hr />
       <p className={cn(!!atoms.length && 'leading-8')}>

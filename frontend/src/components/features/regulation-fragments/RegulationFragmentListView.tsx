@@ -2,7 +2,7 @@
 
 import { RegulationFragmentDTO } from '@dtos/dto-types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { deleteRegulationFragment } from '@/components/features/regulation-fragments/regulation_fragments.api';
+import { deleteRegulationFragment } from '@/components/features/regulation-fragments/regulation-fragments.api';
 import { LoaderCircle, Trash } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useSelectedRegulationFragmentId } from '@/hooks/useSelectedRegulationFragment';

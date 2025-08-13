@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { getRegulationFragments } from '@/components/features/regulation-fragments/regulation_fragments.api';
+import { getRegulationFragments } from '@/components/features/regulation-fragments/regulation-fragments.api';
 import { cn } from '@/lib/utils';
 import { useMemo, useRef, useState } from 'react';
 import { Skeleton } from '@/components/ui/Skeleton';

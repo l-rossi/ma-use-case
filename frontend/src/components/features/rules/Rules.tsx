@@ -17,32 +17,27 @@ import { RegenerationForm } from '@/components/features/rules/RegenerationForm';
 import { useState, ReactNode } from 'react';
 import { InfoDialog } from '@/components/ui/InfoDialog';
 import { ConfirmDeleteDialog } from '@/components/ui/ConfirmDeleteDialog';
+import { useResetExamples } from '@/hooks/useExamplesStore2';
 
 interface Props {
   className?: string;
 }
 
-function RuleBox({
-  children,
-  canDelete = false,
-  className,
-}: {
-  children: ReactNode;
-  canDelete?: boolean;
-  className?: string;
-}) {
+function RuleBox({ children, canDelete = false }: { children: ReactNode; canDelete?: boolean }) {
   const [selectedFragmentId] = useSelectedRegulationFragmentId();
   const queryClient = useQueryClient();
+  const resetExamples = useResetExamples(selectedFragmentId);
   const deleteRulesMutation = useMutation({
     mutationFn: () => deleteRulesForFragment(selectedFragmentId!),
     onSettled: () =>
       queryClient.invalidateQueries({
         queryKey: ['rules', selectedFragmentId],
       }),
+    onSuccess: () => resetExamples(),
   });
 
   return (
-    <Box className={cn('shadow-rose-500 flex-col overflow-hidden size-full', className)}>
+    <Box className="shadow-rose-500 flex-col overflow-hidden size-full">
       <div className="flex justify items-center mb-2 gap-1 p-4 pb-0">
         <h3 className="text-lg font-semibold">Rules</h3>
         {canDelete && (
@@ -67,7 +62,7 @@ function RuleBox({
   );
 }
 
-export function Rules({ className }: Readonly<Props>) {
+export function Rules({}: Readonly<Props>) {
   const [selectedFragmentId] = useSelectedRegulationFragmentId();
 
   const { data: atoms = [] } = useAtoms(selectedFragmentId);
@@ -84,29 +79,31 @@ export function Rules({ className }: Readonly<Props>) {
       }),
   });
 
+  if (isPending) {
+    return <Skeleton className={'size-full'} />;
+  }
+
   if (!selectedFragmentId) {
     return (
-      <RuleBox className={className}>
-        <div className={'flex items-center justify-center size-full'}>Please select a fragment first</div>
+      <RuleBox>
+        <div className={'flex items-center justify-center size-full'}>
+          Please select a fragment first
+        </div>
       </RuleBox>
     );
   }
 
   if (atoms.length === 0) {
     return (
-      <RuleBox className={className}>
+      <RuleBox>
         <div className={'flex items-center justify-center size-full'}>Generate atoms first</div>
       </RuleBox>
     );
   }
 
-  if (isPending) {
-    return <Skeleton className={className} />;
-  }
-
   if (isError) {
     return (
-      <RuleBox className={className}>
+      <RuleBox>
         <div className={'flex flex-col items-center justify-center size-full'}>
           <p className="mb-4">Failed to load rules.</p>
           <Button variant={'outline'} type={'button'} size={'lg'} onClick={() => refetch()}>
@@ -119,7 +116,7 @@ export function Rules({ className }: Readonly<Props>) {
 
   if (rules.length === 0) {
     return (
-      <RuleBox className={className}>
+      <RuleBox>
         <div className={'flex flex-col items-center justify-center size-full'}>
           <p className="mb-4">No rules found for this fragment</p>
           <Button
@@ -136,7 +133,7 @@ export function Rules({ className }: Readonly<Props>) {
   }
 
   return (
-    <RuleBox className={className} canDelete>
+    <RuleBox canDelete>
       <div className={'grid grid-cols-2 overflow-hidden gap-2 grow p-4 pt-0'}>
         <div className={'h-full overflow-hidden flex flex-col'}>
           <div className={'flex flex-col overflow-y-auto'}>

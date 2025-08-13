@@ -1,8 +1,10 @@
 from typing import Optional
 
 from db_models import RegulationFragment
+from modules.models.domain.llm_identifier import llm_costs
 from modules.regulation_fragment.application.dto.create_regulation_fragment_dto import \
     CreateRegulationFragmentDTO
+from modules.regulation_fragment.application.dto.price_dto import PriceDTO
 from modules.regulation_fragment.application.dto.regulation_fragment_dto import RegulationFragmentDTO
 from modules.regulation_fragment.infra.regulation_fragment_repository import RegulationFragmentRepository
 
@@ -80,3 +82,30 @@ class RegulationFragmentService:
             return None
 
         return _dto_from_db(fragment)
+
+    def estimate_cost(self, fragment_id: int) -> Optional[PriceDTO]:
+        """
+        Estimate the cost of a regulation fragment based on its LLM identifier and token usage.
+
+        Args:
+            fragment_id: The ID of the regulation fragment
+
+        Returns:
+            A PriceDTO with the estimated cost in cents, or None if the fragment wasn't found
+        """
+        fragment_dto = self.find_by_id(fragment_id)
+
+        if not fragment_dto:
+            return None
+
+        llm_cost = llm_costs.get(fragment_dto.llm_identifier)
+
+        if not llm_cost:
+            return None
+
+        input_cost_dollars = llm_cost.input_cost * fragment_dto.used_tokens_in / 1_000_000
+        output_cost_dollars = llm_cost.output_cost * fragment_dto.used_tokens_out / 1_000_000
+
+        total_cost_dollars = input_cost_dollars + output_cost_dollars
+        total_cost_cents = round(total_cost_dollars * 100)
+        return PriceDTO(price=total_cost_cents)

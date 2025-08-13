@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createRegulationFragment } from '@/components/features/regulation-fragments/regulation_fragments.api';
+import { createRegulationFragment } from '@/components/features/regulation-fragments/regulation-fragments.api';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/Button';
