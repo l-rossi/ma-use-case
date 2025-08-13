@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { original } from 'immer';
 
 export interface PrologAtom {
   id: string;
@@ -10,7 +9,8 @@ export interface PrologAtom {
 export interface PrologFact {
   id: string;
   predicateId: number;
-  prologAtomIds: string[];
+  // Variable (literal) to atom ID mapping
+  prologAtoms: Record<string, string>;
 }
 
 interface ExamplesStateEntry {
@@ -20,7 +20,7 @@ interface ExamplesStateEntry {
   removePrologAtom: (atomId: string) => void;
   addFact: (predicateId: number) => PrologFact;
   removeFact: (factId: string) => void;
-  setAtomIdForFact: (factId: string, atomId: string | null, index: number) => void;
+  setAtomIdForFact: (factId: string, atomId: string | null, variable: string) => void;
 }
 
 type ExamplesState = {
@@ -67,7 +67,7 @@ const useExampleSture = create<ExamplesState>()(
           const newFact = {
             id: Date.now().toString(),
             predicateId,
-            prologAtomIds: [],
+            prologAtoms: {},
           };
           set(state => {
             state.data[fragmentId].prologFacts.push(newFact);
@@ -81,14 +81,14 @@ const useExampleSture = create<ExamplesState>()(
             );
           });
         },
-        setAtomIdForFact: (factId, atomId, index) => {
+        setAtomIdForFact: (factId, atomId, variable) => {
           set(state => {
             const fact = state.data[fragmentId].prologFacts.find(f => f.id === factId);
             if (fact) {
               if (atomId === null) {
-                fact.prologAtomIds.splice(index, 1);
+                delete fact.prologAtoms[variable];
               } else {
-                fact.prologAtomIds[index] = atomId;
+                fact.prologAtoms[variable] = atomId;
               }
             }
           });
@@ -102,7 +102,7 @@ const useExampleSture = create<ExamplesState>()(
   }))
 );
 
-export function useExamples2(fragmentId: number): ExamplesStateEntry {
+export function useExamples(fragmentId: number): ExamplesStateEntry {
   const state = useExampleSture(state => state);
   return state.get(fragmentId);
 }

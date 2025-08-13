@@ -79,9 +79,6 @@ export function Rules({}: Readonly<Props>) {
       }),
   });
 
-  if (isPending) {
-    return <Skeleton className={'size-full'} />;
-  }
 
   if (!selectedFragmentId) {
     return (
@@ -92,6 +89,11 @@ export function Rules({}: Readonly<Props>) {
       </RuleBox>
     );
   }
+
+   if (isPending) {
+    return <Skeleton className={'size-full'} />;
+  }
+
 
   if (atoms.length === 0) {
     return (
