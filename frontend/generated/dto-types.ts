@@ -93,6 +93,21 @@ export interface CreateRuleDTO {
   definition: string;
   is_goal?: boolean;
 }
+export interface ExamplesDTO {
+  examples?: Example[];
+}
+export interface Example {
+  description: string;
+  facts?: Fact[];
+}
+export interface Fact {
+  predicate: string;
+  arguments?: Argument[];
+}
+export interface Argument {
+  variable: string;
+  value: string;
+}
 export interface PriceDTO {
   price: number;
 }

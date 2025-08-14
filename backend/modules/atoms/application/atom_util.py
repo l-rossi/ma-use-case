@@ -161,7 +161,8 @@ def determine_predicate_arity(predicate: str) -> int:
 
 
 def atoms_to_dynamic_statement(atom: AtomDTO) -> str:
-    return f":- dynamic {atom.predicate.split('(')[0]}/{determine_predicate_arity(atom.predicate)}."
+    # We add the full
+    return f":- dynamic {atom.predicate.split('(')[0]}/{determine_predicate_arity(atom.predicate)}. % {atom.predicate}"
 
 
 def insert_atom_spans(text: str, atom_spans: list[AtomSpanDTO]) -> str:

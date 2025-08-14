@@ -3,7 +3,7 @@ import { getHighlightColor } from '@/lib/getHighlightColor';
 import { CSSProperties, Dispatch, SetStateAction } from 'react';
 import { useHoveredAtom } from '@/hooks/useHoveredAtom';
 import { cn } from '@/lib/utils';
-import { ArrowRight, LoaderCircle, CircleX } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useDeleteAtom } from '@/hooks/useDeleteAtom';
 import { AtomInfoModal } from './AtomInfoModal';
 import { FactFlag } from '@/components/features/atoms/FactFlag';

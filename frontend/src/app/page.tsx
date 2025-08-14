@@ -39,7 +39,7 @@ export default function Home() {
       <ResizablePanel {...registerRow(1, 50)}>
         <ResizablePanelGroup direction={'horizontal'}>
           <ResizablePanel {...registerCell(0, 1, 40)} className={'p-2'}>
-            <Atoms className={'size-full'} />
+            <Atoms />
           </ResizablePanel>
 
           <ResizableHandle className={'bg-gray-700'} />

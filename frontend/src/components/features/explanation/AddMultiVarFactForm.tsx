@@ -22,7 +22,7 @@ import { useMemo } from 'react';
 import { AtomDTO } from '@dtos/dto-types';
 import { variableRegex } from '@/lib/utils';
 import { Label } from '@/components/ui/Label';
-import { PrologAtom } from '@/hooks/useExamplesStore2';
+import { PrologAtom } from '@/hooks/useExamplesStore';
 
 interface Props {
   predicates: AtomDTO[];
@@ -47,7 +47,7 @@ export function AddMultiVarFactForm({ predicates, atoms, onAddFact }: Readonly<P
   const assignments = form.watch('assignments');
   const selectedPredicate = useMemo(
     () => predicates.find(p => p.id.toString() === predicateId),
-    [predicateId]
+    [predicateId, predicates]
   );
   const variables = useMemo(() => {
     if (!selectedPredicate) return [];

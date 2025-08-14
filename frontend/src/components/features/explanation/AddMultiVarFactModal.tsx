@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/Dialog';
 import { AddMultiVarFactForm } from './AddMultiVarFactForm';
 import { AtomDTO } from '@dtos/dto-types';
-import { PrologAtom } from '@/hooks/useExamplesStore2';
+import { PrologAtom } from '@/hooks/useExamplesStore';
 
 
 interface Props {

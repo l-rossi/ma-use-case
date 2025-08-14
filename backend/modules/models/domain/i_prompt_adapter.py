@@ -58,6 +58,19 @@ class IPromptAdapter(ABC):
                                  ) -> str:
         raise NotImplementedError()
 
+    @abstractmethod
+    def example_generation_prompt(self,
+                                  atoms: List[AtomDTO],
+                                  rules: List[RuleDTO],
+                                  ) -> str:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def example_generation_retry_prompt(self,
+                                        error_message: str,
+                                        ) -> str:
+        raise NotImplementedError()
+
     @staticmethod
     def _atoms_to_xml(
             fragment_content: str,

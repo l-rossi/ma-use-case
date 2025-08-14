@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { PrologAtom, PrologFact } from '@/hooks/useExamplesStore2';
+import { PrologAtom, PrologFact } from '@/hooks/useExamplesStore';
 import { AtomDTO } from '@dtos/dto-types';
 
 export function cn(...inputs: ClassValue[]) {

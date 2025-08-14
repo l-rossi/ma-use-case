@@ -9,7 +9,7 @@ from modules.chat.domain.context_message_type import ContextMessageType
 from modules.chat.infra.repositories.chat_repository import ChatRepository
 from modules.models.application.dto.chat_agent_message_ingress_dto import ChatAgentMessageIngressDTO
 from modules.models.application.llm_adapter import LLMAdapter
-from modules.reasoning.domain.prompt_service import PromptService
+from modules.models.domain.prompt_service import PromptService
 from modules.regulation_fragment.application.regulation_fragment_service import RegulationFragmentService
 from modules.rules.application.rule_service import RuleService
 
@@ -54,7 +54,7 @@ class ChatService:
         history = self.get_by_regulation_id(regulation_id)
 
         atoms = self.atom_service.get_atoms_for_regulation_fragment(regulation_fragment_id=regulation_id)
-        rules = self.rules_service.get_rules_by_regulation_id(regulation_fragment_id=regulation_id)
+        rules = self.rules_service.get_rules_for_regulation_fragment(regulation_fragment_id=regulation_id)
 
         regulation = self.regulation_fragment_service.find_by_id(regulation_id)
 

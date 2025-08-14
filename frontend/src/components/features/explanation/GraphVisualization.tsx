@@ -134,7 +134,7 @@ export function GraphVisualization({}: Readonly<Props>) {
           })
           .filter(it => it !== null);
       }),
-    [rules, headPredicateNameToRuleNodes, atomPredicatesToNodeId, headPredicateToRuleNodes]
+    [rules, atomPredicatesToNodeId, headPredicateToRuleNodes]
   );
 
   const rulesToRules: GraphEdge[] = useMemo(

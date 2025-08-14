@@ -63,13 +63,15 @@ class GoogleChatAgent(IChatAgent):
                 )
             )
 
-            input_tokens = getattr(response, 'usage', {}).get('prompt_tokens', 0)
-            output_tokens = getattr(response, 'usage', {}).get('completion_tokens', 0)
+            input_tokens = response.usage_metadata.prompt_token_count
+            # Thoughts tokens are billed as output tokens.
+            output_tokens = response.usage_metadata.candidates_token_count
+            thought_tokens = response.usage_metadata.thoughts_token_count
 
             return ChatAgentMessageEgressDTO(
                 message=response.text,
                 input_tokens=input_tokens,
-                output_tokens=output_tokens
+                output_tokens=output_tokens + thought_tokens,
             )
 
         except Exception as e:
@@ -77,6 +79,6 @@ class GoogleChatAgent(IChatAgent):
             # For now, we'll just return the error message
             print(f"Error calling Google Generative AI API: {str(e)}")
             return ChatAgentMessageEgressDTO(
-                message=str(e), 
+                message=str(e),
                 is_error=True,
             )

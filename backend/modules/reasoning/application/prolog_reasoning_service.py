@@ -1,6 +1,5 @@
 from modules.atoms.application.atom_service import AtomService
-from modules.atoms.application.atom_util import create_wildcard_predicates, mask_variables_in_atoms, \
-    atoms_to_dynamic_statement
+from modules.atoms.application.atom_util import create_wildcard_predicates, atoms_to_dynamic_statement
 from modules.reasoning.application.prolog_reasoner import PrologReasoner
 from modules.rules.application.rule_service import RuleService
 
@@ -39,7 +38,7 @@ class PrologReasoningService:
             atoms_to_dynamic_statement(atom) for atom in atoms
         ))
 
-        rules = self._rule_service.get_rules_by_regulation_id(regulation_fragment_id)
+        rules = self._rule_service.get_rules_for_regulation_fragment(regulation_fragment_id)
         knowledge_base += "\n"
         sorted_facts = "\n".join(sorted(facts.split("\n")))
         knowledge_base += "\n".join(sorted(rule.definition for rule in rules)) + "\n" + sorted_facts

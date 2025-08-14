@@ -17,7 +17,7 @@ import { useHoveredAtom } from '@/hooks/useHoveredAtom';
 import { CreateAtomModal } from '@/components/features/atoms/CreateAtomModal';
 import { InfoDialog } from '@/components/ui/InfoDialog';
 import { ConfirmDeleteDialog } from '@/components/ui/ConfirmDeleteDialog';
-import { useResetExamples } from '@/hooks/useExamplesStore2';
+import { useResetExamples } from '@/hooks/useExamplesStore';
 
 export function Atoms() {
   const [selectedFragmentId] = useSelectedRegulationFragmentId();
@@ -167,11 +167,9 @@ function highlightAtomsInFeedback(
 function AtomBox({
   children,
   canDelete = false,
-  className,
 }: {
   children: ReactNode;
   canDelete?: boolean;
-  className?: string;
 }) {
   const [selectedFragmentId] = useSelectedRegulationFragmentId();
   const queryClient = useQueryClient();

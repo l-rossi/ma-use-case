@@ -1,7 +1,7 @@
 from typing import Dict
 
-from modules.reasoning.domain.i_prompt_adapter import IPromptAdapter
-from modules.reasoning.domain.prolog_prompt_adapter import PrologPromptAdapter
+from modules.models.domain.i_prompt_adapter import IPromptAdapter
+from modules.models.domain.prolog_prompt_adapter import PrologPromptAdapter
 from modules.regulation_fragment.domain import Formalism
 
 

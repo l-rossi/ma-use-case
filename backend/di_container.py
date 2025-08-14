@@ -5,12 +5,13 @@ from modules.atoms.application.atom_service import AtomService
 from modules.atoms.infra.atom_repository import AtomRepository
 from modules.chat.application.chat_service import ChatService
 from modules.chat.infra.repositories.chat_repository import ChatRepository
+from modules.explanations.application.explanation_service import ExplanationService
 from modules.models.application.agentic_log_service import AgenticLogService
 from modules.models.application.llm_adapter import LLMAdapter
 from modules.models.infra.agentic_log_repository import AgenticLogRepository
 from modules.reasoning.application.prolog_reasoner import PrologReasoner
 from modules.reasoning.application.prolog_reasoning_service import PrologReasoningService
-from modules.reasoning.domain.prompt_service import PromptService
+from modules.models.domain.prompt_service import PromptService
 from modules.regulation_fragment.application.regulation_fragment_service import RegulationFragmentService
 from modules.regulation_fragment.infra.regulation_fragment_repository import \
     RegulationFragmentRepository
@@ -80,6 +81,14 @@ class Container(containers.DeclarativeContainer):
         rule_service=rule_service,
         atom_service=atom_service,
         prolog_reasoner=prolog_reasoner,
+    )
+
+    explanation_service = providers.Singleton(
+        ExplanationService,
+        rule_service=rule_service,
+        atom_service=atom_service,
+        prompt_service=prompt_service,
+        llm_adapter=llm_adapter,
     )
 
 

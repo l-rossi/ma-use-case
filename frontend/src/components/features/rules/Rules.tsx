@@ -1,6 +1,5 @@
 'use client';
 
-import { cn } from '@/lib/utils';
 import { Box } from '@/components/ui/Box';
 import { useRules } from '@/hooks/useRules';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -14,10 +13,10 @@ import { Button } from '@/components/ui/Button';
 import { useAtoms } from '@/hooks/useAtoms';
 import { RuleView } from '@/components/features/rules/RuleView';
 import { RegenerationForm } from '@/components/features/rules/RegenerationForm';
-import { useState, ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { InfoDialog } from '@/components/ui/InfoDialog';
 import { ConfirmDeleteDialog } from '@/components/ui/ConfirmDeleteDialog';
-import { useResetExamples } from '@/hooks/useExamplesStore2';
+import { useResetExamples } from '@/hooks/useExamplesStore';
 
 interface Props {
   className?: string;
@@ -79,7 +78,6 @@ export function Rules({}: Readonly<Props>) {
       }),
   });
 
-
   if (!selectedFragmentId) {
     return (
       <RuleBox>
@@ -90,10 +88,9 @@ export function Rules({}: Readonly<Props>) {
     );
   }
 
-   if (isPending) {
+  if (isPending) {
     return <Skeleton className={'size-full'} />;
   }
-
 
   if (atoms.length === 0) {
     return (

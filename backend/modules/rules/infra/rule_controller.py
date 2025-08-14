@@ -13,7 +13,7 @@ def get_rules_for_fragment(fragment_id: str):
     Get all rules for a specific regulation fragment.
     """
     rule_service = container.rule_service()
-    rules = rule_service.get_rules_by_regulation_id(fragment_id)
+    rules = rule_service.get_rules_for_regulation_fragment(fragment_id)
     return [rule.model_dump() for rule in rules], 200
 
 

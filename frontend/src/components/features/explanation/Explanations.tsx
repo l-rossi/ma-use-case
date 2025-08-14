@@ -1,7 +1,6 @@
 import { cn } from '@/lib/utils';
 import { Box } from '@/components/ui/Box';
 import { GraphVisualization } from './GraphVisualization';
-import { Examples } from './Examples';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/Tabs';
 import { useSelectedRegulationFragmentId } from '@/hooks/useSelectedRegulationFragment';
 import { useAtoms } from '@/hooks/useAtoms';
@@ -10,18 +9,13 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { Button } from '@/components/ui/Button';
 import { InfoDialog } from '@/components/ui/InfoDialog';
 import { ReactNode } from 'react';
+import { Examples } from '@/components/features/explanation/Examples';
 
 interface Props {
   className?: string;
 }
 
-function ExplanationBox({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
+function ExplanationBox({ children, className }: { children: ReactNode; className?: string }) {
   return (
     <Box className={cn('shadow-fuchsia-500 flex-col overflow-hidden size-full', className)}>
       <div className="flex justify items-center mb-2 gap-1 p-4 pb-0">
@@ -94,7 +88,6 @@ export function Explanations({ className }: Readonly<Props>) {
     );
   }
 
-  // If there are no atoms or rules
   if (isEmpty) {
     return (
       <ExplanationBox className={className}>
@@ -112,7 +105,6 @@ export function Explanations({ className }: Readonly<Props>) {
     );
   }
 
-  // Normal rendering with data
   return (
     <ExplanationBox className={className}>
       <Tabs defaultValue="examples" className={'size-full overflow-hidden'}>
@@ -124,7 +116,7 @@ export function Explanations({ className }: Readonly<Props>) {
           <GraphVisualization className="size-full" />
         </TabsContent>
         <TabsContent value="examples" className={'size-full flex overflow-hidden'}>
-          <Examples className="size-full" />
+          <Examples />
         </TabsContent>
       </Tabs>
     </ExplanationBox>

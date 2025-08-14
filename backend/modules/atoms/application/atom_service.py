@@ -1,8 +1,6 @@
-from lxml import etree
-
-from modules.atoms.application.atom_util import create_wildcard_predicates, insert_atom_spans, find_atom_spans
+from modules.atoms.application.atom_util import create_wildcard_predicates, find_atom_spans
 from modules.atoms.application.dto.atom_dto import AtomDTO
-from modules.atoms.application.dto.atom_extraction_result_dto import AtomExtractionResultDTO, ExtractedAtomDTO
+from modules.atoms.application.dto.atom_extraction_result_dto import AtomExtractionResultDTO
 from modules.atoms.application.dto.atom_span_dto import AtomSpanDTO
 from modules.atoms.application.dto.create_atom_dto import CreateAtomDTO
 from modules.atoms.application.dto.create_atom_span_dto import CreateAtomSpanDTO
@@ -12,7 +10,7 @@ from modules.atoms.infra.atom_repository import AtomRepository
 from modules.models.application.dto.chat_agent_message_ingress_dto import ChatAgentMessageIngressDTO
 from modules.models.application.llm_adapter import LLMAdapter
 from modules.reasoning.application.prolog_reasoner import PrologReasoner
-from modules.reasoning.domain.prompt_service import PromptService
+from modules.models.domain.prompt_service import PromptService
 from modules.regulation_fragment.application.regulation_fragment_service import RegulationFragmentService
 
 

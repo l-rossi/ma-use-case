@@ -1,3 +1,4 @@
+from modules.explanations.application.dto.example_generation_dto import ExamplesDTO
 from modules.models.application.dto.agentic_log_dto import AgenticLogDTO
 from modules.chat.application.dto.create_chat_message_dto import CreateChatMessageDTO
 from modules.chat.application.dto.chat_message_dto import ChatMessageDTO
@@ -37,4 +38,5 @@ _ = [
     PrologAnswerDTO,
     PrologQueryDTO,
     PrologHttpResponseDTO,
+    ExamplesDTO,
 ]

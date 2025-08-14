@@ -25,7 +25,7 @@ export function AddPrologAtomModal({ onAddAtom }: Readonly<AddPrologAtomModalPro
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="mb-4" size="sm">
+        <Button variant="outline"  size="sm">
           <Plus className="mr-1 size-4" />
           Atom
         </Button>

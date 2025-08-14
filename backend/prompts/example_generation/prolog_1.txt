@@ -1,0 +1,75 @@
+# Generating Prolog Examples with Explanations
+
+You are an expert at generating illustrative examples for Prolog knowledge bases and rules. Your task is to create 3 distinct fact bases that demonstrate different aspects of the provided Prolog knowledge base: successful cases (green path), failure cases, and edge cases. Each example should include a brief textual description explaining what it demonstrates.
+
+## Instructions:
+1. Analyze the provided Prolog knowledge base and rules carefully
+2. Create 3 different fact bases that illustrate:
+   - A "green path" example where rules work as intended
+   - A failure case that demonstrates how violations can occur
+   - An edge case that tests boundary conditions or special scenarios
+3. For each example:
+   - Provide a clear, concise description of what the example demonstrates
+   - Include only the necessary facts to illustrate the point
+   - Ensure the facts are valid Prolog atoms
+4. Format each example with proper Prolog syntax
+5. Make sure your examples cover different aspects of the knowledge base
+6. Focus on realistic scenarios that help understand the rules
+7. Wrap your answers in XML as demonstrated below
+8. The violation rules are the goal of the formalism. Focus on the outcome of these.
+9. Keep variable names consistent. Do not rename variables. For dynamic predicates, use the variable name used in the comment of the definition. Prefer this variable name over any variable name in rule definitions. For example for `:- dynamic processed/1. % processed(Data). a(X) :- processed(X).`, use `Data` as the variable name in your example fact base.
+10. For each fact, denote the predicate using the predicate tag with all variables, e.g., <predicate>processed(Data)</predicate>
+
+## Example:
+### Input
+:- dynamic processed/1. % processed(Data).
+:- dynamic deleted/1. % deleted(Data).
+violation(X) :- processed(X), deleted(X).
+
+## Output Format:
+<examples>
+    <example>
+        <description>If data is processed and deleted, not violation occurs</description>
+        <facts>
+            <fact>
+                <predicate>processed(Data)</predicate>
+                <arguments>
+                    <argument>
+                        <variable>Data</variable>
+                        <value>data</value>
+                    </argument>
+                </arguments>
+            </fact>
+            <fact>
+                <predicate>deleted(Data)</predicate>
+                <arguments>
+                    <argument>
+                        <variable>Data</variable>
+                        <value>data</value>
+                    </argument>
+                </arguments>
+            </fact>
+        </facts>
+    </example>
+    <example>
+        <description>If data is processed and not deleted, a violation occurs</description>
+        <facts>
+            <fact>
+                <predicate>processed(Data)</predicate>
+                <arguments>
+                    <argument>
+                        <variable>Data</variable>
+                        <value>data</value>
+                    </argument>
+                </arguments>
+            </fact>
+        </facts>
+    </example>
+</examples>
+
+Now generate examples for the following Prolog knowledge base:
+
+### Input:
+{}
+
+### Output:

@@ -1,3 +1,4 @@
+import sys
 from itertools import chain
 from typing import List, Optional, Tuple
 
@@ -8,8 +9,9 @@ from modules.models.application.dto.chat_agent_message_ingress_dto import ChatAg
 from modules.models.application.llm_adapter import LLMAdapter
 from modules.reasoning.application.dto.prolog_result_dto import PrologAnswerDTO
 from modules.reasoning.application.prolog_reasoner import PrologReasoner
-from modules.reasoning.domain.prompt_service import PromptService
+from modules.models.domain.prompt_service import PromptService
 from modules.regulation_fragment.application.regulation_fragment_service import RegulationFragmentService
+from modules.regulation_fragment.domain import Formalism
 from modules.rules.application.dto.create_rule_dto import CreateRuleDTO
 from modules.rules.application.dto.regenerate_rules_dto import RegenerateRulesDTO
 from modules.rules.application.dto.rule_dto import RuleDTO
@@ -80,7 +82,7 @@ class RuleService:
             created_at=rule.created_at
         )
 
-    def get_rules_by_regulation_id(self, regulation_fragment_id: int) -> List[RuleDTO]:
+    def get_rules_for_regulation_fragment(self, regulation_fragment_id: int) -> List[RuleDTO]:
         """
         Get all rules for a specific regulation fragment.
         
@@ -148,7 +150,7 @@ class RuleService:
         Returns:
             The number of rules deleted
         """
-        rules = self.get_rules_by_regulation_id(regulation_fragment_id)
+        rules = self.get_rules_for_regulation_fragment(regulation_fragment_id)
         count = 0
         for rule in rules:
             if self.delete_rule(rule.id):
@@ -170,7 +172,7 @@ class RuleService:
         if not regulation:
             raise ValueError(f"Regulation fragment with ID {regulation_fragment_id} not found.")
 
-        existing_rules = self.get_rules_by_regulation_id(regulation_fragment_id)
+        existing_rules = self.get_rules_for_regulation_fragment(regulation_fragment_id)
         if existing_rules:
             print(f"Rules already exist for regulation fragment {regulation_fragment_id}. Skipping generation.")
             return
@@ -200,7 +202,7 @@ class RuleService:
         parsed_result = RuleExtractionResultDTO.from_xml(returned_message.message)
 
         retries_remaining = self._retry_limit
-        syntax_correct, err = self._check_rule_syntax(parsed_result, atoms)
+        syntax_correct, err = self._check_rule_syntax(parsed_result, atoms, formalism=regulation.formalism)
         while retries_remaining > 0 and not syntax_correct:
             print(f"Rule syntax error: {err}. Retrying... ({retries_remaining} attempts left)")
             retries_remaining -= 1
@@ -254,7 +256,7 @@ class RuleService:
         if not fragment:
             raise ValueError(f"Regulation fragment with ID {regulation_fragment_id} not found.")
 
-        rules = self.get_rules_by_regulation_id(regulation_fragment_id)
+        rules = self.get_rules_for_regulation_fragment(regulation_fragment_id)
         if not rules:
             raise ValueError(f"No rules found for regulation fragment {regulation_fragment_id}.")
 
@@ -285,7 +287,7 @@ class RuleService:
         self.delete_rules_for_regulation_fragment(regulation_fragment_id)
         self._save_extracted_rules(regenerated_result, regulation_fragment_id)
 
-    def _check_rule_syntax(self, result: RuleExtractionResultDTO, atoms: List[AtomDTO]) -> Tuple[
+    def _check_rule_syntax(self, result: RuleExtractionResultDTO, atoms: List[AtomDTO], formalism: Formalism) -> Tuple[
         bool, List[PrologAnswerDTO]]:
         """
         Check if a rule definition has valid Prolog syntax.
@@ -301,6 +303,13 @@ class RuleService:
         Returns:
             True if the rule has valid syntax, False otherwise
         """
+        if formalism != Formalism.PROLOG:
+            print(
+                f"Syntax check is only implemented for Prolog formalism, but got {formalism}. Skipping syntax check.",
+                file=sys.stderr
+            )
+            return True, []
+
         try:
             facts = "\n".join(mask_variables_in_atoms(atoms))
             knowledge_base = "\n".join(
