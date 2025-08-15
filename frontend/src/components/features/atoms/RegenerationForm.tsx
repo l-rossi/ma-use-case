@@ -3,10 +3,9 @@
 import { FormEvent, ForwardedRef, forwardRef, ReactNode } from 'react';
 import { Textarea } from '@/components/ui/Textarea';
 import { Button } from '@/components/ui/Button';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { regenerateAtomsForFragment } from './atoms.api';
 import { cn } from '@/lib/utils';
 import { RefreshCw } from 'lucide-react';
+import { useRegenerateAtoms } from '@/hooks/useRegenerateAtoms';
 
 interface RegenerationFormProps {
   fragmentId: number;
@@ -22,14 +21,9 @@ export const RegenerationForm = forwardRef<HTMLTextAreaElement, Readonly<Regener
     { fragmentId, onFocus, onBlur, feedback, setFeedback, highlightedFeedback },
     ref: ForwardedRef<HTMLTextAreaElement>
   ) => {
-    const queryClient = useQueryClient();
-
-    const regenerateAtomsMutation = useMutation({
-      mutationFn: () => regenerateAtomsForFragment(fragmentId, { feedback }),
-      onSettled: () =>
-        queryClient.invalidateQueries({
-          queryKey: ['atoms', fragmentId],
-        }),
+    const regenerateAtomsMutation = useRegenerateAtoms({
+      fragmentId,
+      feedback,
       onSuccess: () => setFeedback(''),
     });
 

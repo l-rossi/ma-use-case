@@ -19,6 +19,7 @@ export function Message({ message }: Readonly<Props>) {
       <FormattedMarkdown
         codeClassName={"bg-gray-200"}
         content={message.content}
+        renderChatSuggestions
       />
       <span className="text-xs text-gray-400 self-end">
         {new Date(message.created_at).toLocaleTimeString(["de"], {

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { AtomDTO, Example } from '@dtos/dto-types';
+import { persist } from 'zustand/middleware';
 
 export interface PrologAtom {
   id: string;
@@ -101,79 +102,90 @@ function emptyEntry(fragmentId: number, set: SetFn<ExamplesState>): ExamplesStat
 }
 
 const useExampleStore = create<ExamplesState>()(
-  immer((set, getState) => ({
-    data: {},
-    reset: (fragmentId: number) =>
-      set(state => {
-        delete state.data[fragmentId];
-      }),
-    addGenerated: (fragmentId, example, predicates: AtomDTO[]) =>
-      set(state => {
-        // Warning: horrible code incoming :)
-        const newEntry: ExamplesStateEntry = emptyEntry(fragmentId, set);
-        newEntry.description = example.description;
-        const atomValues = Array.from(
-          new Set(
-            example.facts
-              ?.flatMap(fact => fact.arguments?.map(arg => arg.value))
-              .filter(arg => arg !== undefined) || []
-          )
-        );
-        const atoms = Object.fromEntries(
-          atomValues.map(value => [
-            value,
-            {
-              id: crypto.randomUUID(),
-              value,
-            },
-          ])
-        );
+  immer(
+    persist(
+      (set, getState) => ({
+        data: {},
+        reset: (fragmentId: number) =>
+          set(state => {
+            delete state.data[fragmentId];
+          }),
+        addGenerated: (fragmentId, example, predicates: AtomDTO[]) =>
+          set(state => {
+            // Warning: horrible code incoming :)
+            const newEntry: ExamplesStateEntry = emptyEntry(fragmentId, set);
+            newEntry.description = example.description;
+            const atomValues = Array.from(
+              new Set(
+                example.facts
+                  ?.flatMap(fact => fact.arguments?.map(arg => arg.value))
+                  .filter(arg => arg !== undefined) || []
+              )
+            );
+            const atoms = Object.fromEntries(
+              atomValues.map(value => [
+                value,
+                {
+                  id: crypto.randomUUID(),
+                  value,
+                },
+              ])
+            );
 
-        const facts =
-          example.facts
-            ?.map(fact => {
-              const predicate = predicates.find(p => p.predicate === fact.predicate);
-              if (!predicate) {
-                console.warn(`Predicate not found for fact: ${fact.predicate}`);
-                return null;
-              }
-              return {
-                id: crypto.randomUUID(),
-                predicateId: predicate.id,
-                prologAtoms: Object.fromEntries(
-                  fact.arguments?.map(arg => [arg.variable, atoms[arg.value]!.id]) ?? []
-                ),
-              } satisfies PrologFact;
-            })
-            .filter(it => it !== null && it !== undefined) ?? [];
+            const facts =
+              example.facts
+                ?.map(fact => {
+                  const predicate = predicates.find(p => p.predicate === fact.predicate);
+                  if (!predicate) {
+                    console.warn(`Predicate not found for fact: ${fact.predicate}`);
+                    return null;
+                  }
+                  return {
+                    id: crypto.randomUUID(),
+                    predicateId: predicate.id,
+                    prologAtoms: Object.fromEntries(
+                      fact.arguments?.map(arg => [arg.variable, atoms[arg.value]!.id]) ?? []
+                    ),
+                  } satisfies PrologFact;
+                })
+                .filter(it => it !== null && it !== undefined) ?? [];
 
-        newEntry.prologAtoms = Object.values(atoms);
-        newEntry.prologFacts = facts;
-        state.data[fragmentId].push(newEntry);
+            newEntry.prologAtoms = Object.values(atoms);
+            newEntry.prologFacts = facts;
+            state.data[fragmentId].push(newEntry);
+          }),
+        addEmpty: fragmentId =>
+          set(state => {
+            const newEntry: ExamplesStateEntry = emptyEntry(fragmentId, set);
+            state.data[fragmentId].push(newEntry);
+          }),
+        remove: (fragmentId, key) =>
+          set(state => {
+            state.data[fragmentId] = state.data[fragmentId].filter(entry => entry.key !== key);
+          }),
+        get: fragmentId => {
+          const state = getState();
+          const entry = state.data[fragmentId];
+          if (entry) {
+            return entry;
+          }
+
+          const newEntry: ExamplesStateEntry[] = [];
+          set(state => {
+            state.data[fragmentId] = newEntry;
+          });
+          return newEntry;
+        },
       }),
-    addEmpty: fragmentId =>
-      set(state => {
-        const newEntry: ExamplesStateEntry = emptyEntry(fragmentId, set);
-        state.data[fragmentId].push(newEntry);
-      }),
-    remove: (fragmentId, key) =>
-      set(state => {
-        state.data[fragmentId] = state.data[fragmentId].filter(entry => entry.key !== key);
-      }),
-    get: fragmentId => {
-      const state = getState();
-      const entry = state.data[fragmentId];
-      if (entry) {
-        return entry;
+      {
+        name: 'examples-store',
+        // partialize: state => {
+        //   // Only persist the data, not the functions
+        //   return { data: state.data };
+        // },
       }
-
-      const newEntry: ExamplesStateEntry[] = [];
-      set(state => {
-        state.data[fragmentId] = newEntry;
-      });
-      return newEntry;
-    },
-  }))
+    )
+  )
 );
 
 export function useExamples(fragmentId: number): ExamplesStateEntry[] {

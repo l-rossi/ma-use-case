@@ -65,8 +65,8 @@ export function CreateRegulationFragmentForm({ className, onSuccess }: Readonly<
       console.error('Error creating regulation fragment:', error);
       toast.error('Failed to create regulation fragment');
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['regulation-fragments'] });
+    onSettled: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['regulation-fragments'] });
       setIsSubmitting(false);
     },
   });

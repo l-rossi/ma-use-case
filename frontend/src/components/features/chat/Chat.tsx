@@ -27,7 +27,7 @@ function ChatBox({ children, className }: { children: ReactNode; className?: str
         <InfoDialog
           title={'Chat'}
           description={
-            'Chat allows you to interact with the system and ask questions about the regulation fragments.'
+            'Chat allows you to interact with the system and ask questions about the regulation fragments. This chat only supports question answering. Use the feedback windows to modify the formalism.'
           }
         />
       </div>

@@ -3,9 +3,8 @@
 import { FormEvent, ForwardedRef, forwardRef } from 'react';
 import { Textarea } from '@/components/ui/Textarea';
 import { Button } from '@/components/ui/Button';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { regenerateRulesForFragment } from './rules.api';
 import { RefreshCw } from 'lucide-react';
+import { useRegenerateRules } from '@/hooks/useRegenerateRules';
 
 interface RegenerationFormProps {
   fragmentId: number;
@@ -20,14 +19,9 @@ export const RegenerationForm = forwardRef<HTMLTextAreaElement, Readonly<Regener
     { fragmentId, onFocus, onBlur, feedback, setFeedback },
     ref: ForwardedRef<HTMLTextAreaElement>
   ) => {
-    const queryClient = useQueryClient();
-
-    const regenerateRulesMutation = useMutation({
-      mutationFn: () => regenerateRulesForFragment(fragmentId, { feedback }),
-      onSettled: () =>
-        queryClient.invalidateQueries({
-          queryKey: ['rules', fragmentId],
-        }),
+    const regenerateRulesMutation = useRegenerateRules({
+      fragmentId,
+      feedback,
       onSuccess: () => setFeedback(''),
     });
 

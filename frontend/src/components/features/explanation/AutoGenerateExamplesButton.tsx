@@ -4,6 +4,7 @@ import { useAtoms } from '@/hooks/useAtoms';
 import { generateExamples } from './explanation.api';
 import { Sparkles } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 interface Props {
   regulationFragmentId: number | null;
@@ -19,8 +20,8 @@ export function AutoGenerateExamplesButton({ regulationFragmentId }: Readonly<Pr
         addGenerated(example, atoms!);
       });
     },
-    onError: error => {
-      console.error('Failed to generate examples:', error);
+    onError: () => {
+      toast.error('Examples could not be generated. Please consult the agentic logs.');
     },
   });
 
