@@ -1,9 +1,20 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, Response
 from di_container import container
 from modules.regulation_fragment.application.dto.create_regulation_fragment_dto import \
     CreateRegulationFragmentDTO
 
 regulation_fragment_controller = Blueprint('regulation_fragment', __name__)
+
+
+@regulation_fragment_controller.get('/regulation-fragments/<fragment_id>/export')
+def export_fragment(fragment_id: str):
+    print(fragment_id)
+    content = container.export_service().export_regulation_fragment(int(fragment_id))
+    return Response(
+        content,
+        mimetype="text/plain",
+        headers={"Content-Disposition": "attachment;filename=export.txt"}
+    )
 
 
 @regulation_fragment_controller.get('/regulation-fragments')

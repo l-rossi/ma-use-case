@@ -229,7 +229,7 @@ class RuleService:
                 raise ValueError(f"Error regenerating rules: {returned_message.message}")
 
             parsed_result = RuleExtractionResultDTO.from_xml(returned_message.message)
-            syntax_correct, err = self._check_rule_syntax(parsed_result, atoms)
+            syntax_correct, err = self._check_rule_syntax(parsed_result, atoms, regulation.formalism)
 
         if not syntax_correct:
             # raise ValueError(f"Failed to generate valid rules after {self.retry_limit} attempts. Last error: {err}")

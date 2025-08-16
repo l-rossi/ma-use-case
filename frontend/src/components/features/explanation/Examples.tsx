@@ -22,7 +22,7 @@ export function Examples() {
   }
 
   return (
-    <Tabs className="w-full">
+    <Tabs className="w-full" defaultValue={examples.length > 0 ? examples[0].key : undefined}>
       <TabsList className="bg-transparent w-full flex justify-start mb-4 border-b border-gray-200">
         {examples.map((example, index) => (
           <TabsTrigger

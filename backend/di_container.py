@@ -12,6 +12,7 @@ from modules.models.infra.agentic_log_repository import AgenticLogRepository
 from modules.reasoning.application.prolog_reasoner import PrologReasoner
 from modules.reasoning.application.prolog_reasoning_service import PrologReasoningService
 from modules.models.domain.prompt_service import PromptService
+from modules.regulation_fragment.application.export_service import ExportService
 from modules.regulation_fragment.application.regulation_fragment_service import RegulationFragmentService
 from modules.regulation_fragment.infra.regulation_fragment_repository import \
     RegulationFragmentRepository
@@ -89,6 +90,13 @@ class Container(containers.DeclarativeContainer):
         atom_service=atom_service,
         prompt_service=prompt_service,
         llm_adapter=llm_adapter,
+    )
+
+    export_service = providers.Singleton(
+        ExportService,
+        regulation_fragment_service=regulation_fragment_service,
+        atom_service=atom_service,
+        rule_service=rule_service,
     )
 
 

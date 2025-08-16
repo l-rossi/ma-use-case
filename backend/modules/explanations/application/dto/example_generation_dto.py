@@ -1,5 +1,6 @@
 from typing import List
 
+from pydantic import constr
 from pydantic_xml import BaseXmlModel, element, wrapped
 
 
@@ -14,7 +15,7 @@ class Fact(BaseXmlModel, tag='fact', extra = "forbid"):
 
 
 class Example(BaseXmlModel, tag='example', extra = "forbid"):
-    description: str = element(tag='description')
+    description: constr(strip_whitespace=True) = element(tag='description')
     facts: List[Fact] = wrapped("facts", element(default_factory=list))
 
 

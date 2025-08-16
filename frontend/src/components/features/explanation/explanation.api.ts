@@ -1,6 +1,25 @@
 import { ExamplesDTO, PrologHttpResponseDTO, PrologQueryDTO } from '@dtos/dto-types';
 
 /**
+ * Fetch the formalism text for a specific regulation fragment
+ * @param regulationFragmentId The ID of the regulation fragment
+ * @returns Promise with the formalism text
+ */
+export async function getFormalism(
+  regulationFragmentId: number
+): Promise<{ text: string }> {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/regulation-fragments/${regulationFragmentId}/formalism`
+  );
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch formalism text');
+  }
+
+  return await res.json();
+}
+
+/**
  * Execute a Prolog query with user-provided facts for a specific regulation fragment
  * @param regulationFragmentId The ID of the regulation fragment
  * @param dto The Prolog query data transfer object containing facts

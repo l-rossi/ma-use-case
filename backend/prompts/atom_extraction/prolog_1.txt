@@ -86,6 +86,7 @@ All <atom id="1">employees</atom> must <atom id="2">complete safety training</at
 13. The annotated text may not deviate from the original statement, except for the added `<atom>` tags
 14. Violation will be determined for a specific instance in time.
 15. Keep facts simple. Avoid unnecessary Prolog atoms, literals and variables.
+16. Make sure to always keep the original whitespace intact. Do not introduce or remove whitespace.
 
 Now extract atoms from the following compliance statement:
 

@@ -37,8 +37,8 @@ export function RuleView({ rule }: Readonly<Props>) {
     >
       <div className="font-semibold text-base truncate whitespace-normal overflow-hidden text-ellipsis min-w-0 break-words w-full">
         <p>{head + HORN_TAIL_SEP}</p>
-        {windowed(literals, 2, 2).map((it) => (
-          <PredicateView key={it[0]} literal={it[0]!.trim()} separator={it[1]} atoms={atoms} />
+        {windowed(literals, 2, 2).map((it, index) => (
+          <PredicateView key={it[0] + "-" + index} literal={it[0]!.trim()} separator={it[1]} atoms={atoms} />
         ))}
         .
       </div>

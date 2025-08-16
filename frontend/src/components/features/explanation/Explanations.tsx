@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { InfoDialog } from '@/components/ui/InfoDialog';
 import { ReactNode } from 'react';
 import { Examples } from '@/components/features/explanation/Examples';
+import { FormalismTab } from '@/components/features/explanation/FormalismTab';
 
 interface Props {
   className?: string;
@@ -111,12 +112,16 @@ export function Explanations({ className }: Readonly<Props>) {
         <TabsList className={'mx-4 gap-1'}>
           <TabsTrigger value="graph">Graph</TabsTrigger>
           <TabsTrigger value="examples">Examples</TabsTrigger>
+          <TabsTrigger value="formalism">Formalism</TabsTrigger>
         </TabsList>
         <TabsContent value="graph" className={'size-full flex'}>
           <GraphVisualization className="size-full" />
         </TabsContent>
         <TabsContent value="examples" className={'size-full flex overflow-hidden'}>
           <Examples />
+        </TabsContent>
+        <TabsContent value="formalism" className={'size-full flex overflow-hidden'}>
+          <FormalismTab regulationFragmentId={selectedFragmentId} />
         </TabsContent>
       </Tabs>
     </ExplanationBox>

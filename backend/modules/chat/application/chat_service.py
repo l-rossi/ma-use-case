@@ -60,7 +60,7 @@ class ChatService:
 
         system_prompt = self.prompt_service.get(
             regulation.formalism,
-        ).chat_prompt(
+        ).chat_system_prompt(
             regulation.content,
             atoms,
             rules,

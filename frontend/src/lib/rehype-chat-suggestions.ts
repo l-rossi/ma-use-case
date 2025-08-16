@@ -6,7 +6,13 @@ import { toast } from 'sonner';
 import { location } from 'vfile-location';
 import { VFile } from 'vfile';
 
-// Careful, you are about to withness some code written by someone who doesn't know what they are doing.
+/**
+ * Rehype plugin to handle <suggestion>, <explanation>, and <action> tags in the AST.
+ * This is a really primitive and unstable implementation based on orthographic matching of tags
+ * and joining children together retrospectively. This is not a robust solution.
+ *
+ * Careful, you are about to withness some code written by someone who doesn't know what they are doing.
+ */
 export const rehypeChatSuggestionPlugin: Plugin<[], Root> = () => {
   return (tree, file) => {
     visit(

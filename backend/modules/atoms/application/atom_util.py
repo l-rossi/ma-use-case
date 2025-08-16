@@ -161,6 +161,9 @@ def determine_predicate_arity(predicate: str) -> int:
 
 
 def atoms_to_dynamic_statement(atom: AtomDTO) -> str:
+    if not atom.is_fact:
+        return f"%:- dynamic {atom.predicate.split('(')[0]}/{determine_predicate_arity(atom.predicate)}. % {atom.predicate}; This is a derived predicate, not a fact."
+
     # We add the full
     return f":- dynamic {atom.predicate.split('(')[0]}/{determine_predicate_arity(atom.predicate)}. % {atom.predicate}"
 

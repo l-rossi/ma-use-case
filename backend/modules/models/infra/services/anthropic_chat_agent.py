@@ -54,7 +54,8 @@ class AnthropicAIChatAgent(IChatAgent):
                 temperature=0,
                 model=self.model,
                 messages=messages,
-                max_tokens=1024,
+                # TODO add streaming or something similar to stop cut offs.
+                max_tokens=1024 * 16,
                 system=message.system_prompt,
             )
 

@@ -1,50 +1,35 @@
-import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Download } from 'lucide-react';
 import { FormattedMarkdown } from '@/components/ui/FormattedMarkdown';
+import { useQuery } from '@tanstack/react-query';
+import { getFormalism } from './explanation.api';
 
 interface Props {
   regulationFragmentId: number;
 }
 
 export function FormalismTab({ regulationFragmentId }: Readonly<Props>) {
-  const [formalism, setFormalism] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data,
+    isLoading,
+    isError,
+    error
+  } = useQuery({
+    queryKey: ['regulation-fragments', regulationFragmentId, 'formalism'],
+    queryFn: () => getFormalism(regulationFragmentId),
+    enabled: !!regulationFragmentId,
+  });
 
-  useEffect(() => {
-    const fetchFormalism = async () => {
-      if (!regulationFragmentId) return;
-      
-      setLoading(true);
-      setError(null);
-      
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/regulation-fragments/${regulationFragmentId}/formalism`);
-        
-        if (!response.ok) {
-          throw new Error(`Failed to fetch formalism: ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        setFormalism(data.text);
-      } catch (err) {
-        console.error('Error fetching formalism:', err);
-        setError('Failed to load formalism. Please try again.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchFormalism();
-  }, [regulationFragmentId]);
+  const formalism = data?.text;
 
-  if (loading) {
+  if (isLoading) {
     return <div className="p-4">Loading formalism...</div>;
   }
 
-  if (error) {
-    return <div className="p-4 text-red-500">{error}</div>;
+  if (isError) {
+    return <div className="p-4 text-red-500">
+      {error instanceof Error ? error.message : 'Failed to load formalism. Please try again.'}
+    </div>;
   }
 
   if (!formalism) {
@@ -52,7 +37,7 @@ export function FormalismTab({ regulationFragmentId }: Readonly<Props>) {
   }
 
   return (
-    <div className="p-4">
+    <div className="p-4 overflow-hidden flex flex-col w-full">
       <div className="flex justify-end mb-4">
         <Button
           variant="ghost"
@@ -66,9 +51,9 @@ export function FormalismTab({ regulationFragmentId }: Readonly<Props>) {
           </a>
         </Button>
       </div>
-      
-      <div className="border p-4 rounded-md bg-gray-50">
-        <FormattedMarkdown>{`\`\`\`prolog\n${formalism}\n\`\`\``}</FormattedMarkdown>
+
+      <div className="text-black whitespace-pre-wrap font-mono overflow-y-auto h-full">
+        {formalism}
       </div>
     </div>
   );

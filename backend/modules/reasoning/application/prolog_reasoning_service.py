@@ -1,5 +1,6 @@
 from modules.atoms.application.atom_service import AtomService
 from modules.atoms.application.atom_util import create_wildcard_predicates, atoms_to_dynamic_statement
+from modules.common.util import format_prolog_knowledge_base
 from modules.reasoning.application.prolog_reasoner import PrologReasoner
 from modules.rules.application.rule_service import RuleService
 
@@ -31,17 +32,13 @@ class PrologReasoningService:
         """
 
         atoms = self._atom_service.get_atoms_for_regulation_fragment(regulation_fragment_id)
-
-        # To make sure everything is defined at least once using dynamic:
-        # :- dynamic atom/arity.
-        knowledge_base = "\n".join(sorted(
-            atoms_to_dynamic_statement(atom) for atom in atoms
-        ))
-
         rules = self._rule_service.get_rules_for_regulation_fragment(regulation_fragment_id)
-        knowledge_base += "\n"
+
         sorted_facts = "\n".join(sorted(facts.split("\n")))
-        knowledge_base += "\n".join(sorted(rule.definition for rule in rules)) + "\n" + sorted_facts
+        knowledge_base = format_prolog_knowledge_base(
+            atoms,
+            rules,
+        ) + "\n" + sorted_facts
 
         # TODO this raises if no rules are found, should handle this case
         goal, _ = create_wildcard_predicates(

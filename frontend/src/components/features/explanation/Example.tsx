@@ -21,6 +21,7 @@ import {
 import { AddPrologAtomModal } from './AddPrologAtomModal';
 import { AddMultiVarFactModal } from './AddMultiVarFactModal';
 import { ConfirmDeleteDialog } from '@/components/ui/ConfirmDeleteDialog';
+import { FormattedMarkdown } from '@/components/ui/FormattedMarkdown';
 
 interface Props {
   className?: string;
@@ -94,7 +95,9 @@ export function Example({ className, example }: Readonly<Props>) {
   return (
     <div className={cn('overflow-y-auto pb-24 size-full', className)}>
       {example.description && (
-        <p className={'text-sm px-4 text-gray-500 mb-4'}>{example.description}</p>
+        <div className={'text-sm px-4 text-gray-500 mb-4 whitespace-pre-wrap'}>
+          {example.description}
+        </div>
       )}
 
       <div className="px-4">

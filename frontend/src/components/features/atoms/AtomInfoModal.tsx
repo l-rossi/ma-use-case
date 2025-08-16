@@ -106,10 +106,10 @@ export function AtomInfoModal({ atom, showButton = true }: AtomInfoModalProps) {
           <Info className="size-4 text-blue-500" />
         </button>
       </DialogTrigger>
-      <DialogContent title="Atom Description">
+      <DialogContent title="Atom Description" className={"overflow-hidden"}>
         {!isEditing ? (
           <>
-            <div className="flex items-center">
+            <div className="flex items-center flex-wrap gap-2">
               <DialogTitle>{atom.predicate}</DialogTitle>
               <FactFlag isFact={atom.is_fact} />
             </div>

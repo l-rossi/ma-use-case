@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { CircleDollarSign } from 'lucide-react';
 import {
   Dialog,
@@ -33,6 +33,8 @@ export function PriceModal({ fragmentId, className }: PriceModalProps) {
     enabled: !!fragmentId,
   });
 
+  const queryClient = useQueryClient();
+
   const formattedPrice = useMemo(() => {
     if (!priceData) return '';
     // cents to dollars
@@ -44,12 +46,21 @@ export function PriceModal({ fragmentId, className }: PriceModalProps) {
   }, [priceData]);
 
   return (
-    <Dialog>
+    <Dialog
+      onOpenChange={b => {
+        if (b) {
+          void queryClient.invalidateQueries({
+            queryKey: ['regulation-fragments', fragmentId, 'cost'],
+          });
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button
           variant="ghost"
           size="icon"
           aria-label="View estimated cost"
+          title="View estimated cost"
         >
           <CircleDollarSign className="size-4" />
         </Button>

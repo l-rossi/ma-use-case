@@ -3,6 +3,7 @@ from typing import List
 from modules.atoms.application.atom_service import AtomService
 from modules.chat.application.dto.context_message_dto import ContextMessageDTO
 from modules.chat.domain.context_message_type import ContextMessageType
+from modules.common.util import format_prolog_knowledge_base
 from modules.explanations.application.dto.example_generation_dto import ExamplesDTO
 from modules.models.application.dto.chat_agent_message_ingress_dto import ChatAgentMessageIngressDTO
 from modules.models.application.llm_adapter import LLMAdapter
@@ -103,172 +104,22 @@ class ExplanationService:
         print("Returning: " + str(parsed_response))
         return parsed_response
 
-        return ExamplesDTO.from_xml("""<examples>
-    <example>
-        <description>This "green path" example demonstrates a scenario where personal data is collected, processed lawfully (due to explicit consent), and subsequently deleted within the required timeframe. This set of facts ensures that no data retention or processing violations occur according to the defined rules.</description>
-        <facts>
-            <fact>
-                <predicate>personal_data(Data)</predicate>
-                <arguments>
-                    <argument>
-                        <variable>Data</variable>
-                        <value>user_profile_data</value>
-                    </argument>
-                </arguments>
-            </fact>
-            <fact>
-                <predicate>collected(Data)</predicate>
-                <arguments>
-                    <argument>
-                        <variable>Data</variable>
-                        <value>user_profile_data</value>
-                    </argument>
-                </arguments>
-            </fact>
-            <fact>
-                <predicate>processed(Data)</predicate>
-                <arguments>
-                    <argument>
-                        <variable>Data</variable>
-                        <value>user_profile_data</value>
-                    </argument>
-                </arguments>
-            </fact>
-            <fact>
-                <predicate>individual(Individual)</predicate>
-                <arguments>
-                    <argument>
-                        <variable>Individual</variable>
-                        <value>john_doe</value>
-                    </argument>
-                </arguments>
-            </fact>
-            <fact>
-                <predicate>has_given_explicit_consent(Individual, Data)</predicate>
-                <arguments>
-                    <argument>
-                        <variable>Individual</variable>
-                        <value>john_doe</value>
-                    </argument>
-                    <argument>
-                        <variable>Data</variable>
-                        <value>user_profile_data</value>
-                    </argument>
-                </arguments>
-            </fact>
-            <fact>
-                <predicate>deleted(Data)</predicate>
-                <arguments>
-                    <argument>
-                        <variable>Data</variable>
-                        <value>user_profile_data</value>
-                    </argument>
-                </arguments>
-            </fact>
-            <fact>
-                <predicate>is_deleted_within_30_days_of_purpose_fulfillment(Data)</predicate>
-                <arguments>
-                    <argument>
-                        <variable>Data</variable>
-                        <value>user_profile_data</value>
-                    </argument>
-                </arguments>
-            </fact>
-        </facts>
-    </example>
-    <example>
-        <description>This failure case illustrates multiple violations: personal data is collected and processed without a legal basis (neither explicit consent nor contract necessity), leading to an "unlawful_processing" violation. Furthermore, since the data is not deleted and its retention is not allowed, it also triggers "data_not_deleted_at_all" and "not_deleted_on_time" violations.</description>
-        <facts>
-            <fact>
-                <predicate>personal_data(Data)</predicate>
-                <arguments>
-                    <argument>
-                        <variable>Data</variable>
-                        <value>customer_email</value>
-                    </argument>
-                </arguments>
-            </fact>
-            <fact>
-                <predicate>collected(Data)</predicate>
-                <arguments>
-                    <argument>
-                        <variable>Data</variable>
-                        <value>customer_email</value>
-                    </argument>
-                </arguments>
-            </fact>
-            <fact>
-                <predicate>processed(Data)</predicate>
-                <arguments>
-                    <argument>
-                        <variable>Data</variable>
-                        <value>customer_email</value>
-                    </argument>
-                </arguments>
-            </fact>
-        </facts>
-    </example>
-    <example>
-        <description>This edge case demonstrates a scenario where personal data is collected and processed, but the individual explicitly requests its retention. This fact set shows that even if the data is not deleted, it does not lead to "data_not_deleted_at_all" or "not_deleted_on_time" violations because retention is explicitly allowed. Processing is lawful due to contract necessity.</description>
-        <facts>
-            <fact>
-                <predicate>personal_data(Data)</predicate>
-                <arguments>
-                    <argument>
-                        <variable>Data</variable>
-                        <value>order_history</value>
-                    </argument>
-                </arguments>
-            </fact>
-            <fact>
-                <predicate>collected(Data)</predicate>
-                <arguments>
-                    <argument>
-                        <variable>Data</variable>
-                        <value>order_history</value>
-                    </argument>
-                </arguments>
-            </fact>
-            <fact>
-                <predicate>processed(Data)</predicate>
-                <arguments>
-                    <argument>
-                        <variable>Data</variable>
-                        <value>order_history</value>
-                    </argument>
-                </arguments>
-            </fact>
-            <fact>
-                <predicate>individual(Individual)</predicate>
-                <arguments>
-                    <argument>
-                        <variable>Individual</variable>
-                        <value>jane_doe</value>
-                    </argument>
-                </arguments>
-            </fact>
-            <fact>
-                <predicate>has_explicitly_requested_data_retention(Individual, Data)</predicate>
-                <arguments>
-                    <argument>
-                        <variable>Individual</variable>
-                        <value>jane_doe</value>
-                    </argument>
-                    <argument>
-                        <variable>Data</variable>
-                        <value>order_history</value>
-                    </argument>
-                </arguments>
-            </fact>
-            <fact>
-                <predicate>is_necessary_for_contract_performance(Data)</predicate>
-                <arguments>
-                    <argument>
-                        <variable>Data</variable>
-                        <value>order_history</value>
-                    </argument>
-                </arguments>
-            </fact>
-        </facts>
-    </example>
-</examples>""")
+    def get_formalism_text(self, regulation_fragment_id: int) -> str:
+        """
+        Get the formalism text for a regulation fragment.
+
+        :param regulation_fragment_id: The ID of the regulation fragment.
+        :return: The formatted formalism text.
+        """
+        atoms = self._atom_service.get_atoms_for_regulation_fragment(regulation_fragment_id)
+        if not atoms:
+            raise ValueError(f"No atoms found for regulation fragment ID {regulation_fragment_id}.")
+
+        rules = self._rule_service.get_rules_for_regulation_fragment(regulation_fragment_id)
+        if not rules:
+            raise ValueError(f"No rules found for regulation fragment ID {regulation_fragment_id}.")
+
+        return format_prolog_knowledge_base(
+            atoms=atoms,
+            rules=rules,
+        )

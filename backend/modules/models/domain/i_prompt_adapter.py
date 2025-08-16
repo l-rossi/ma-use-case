@@ -13,11 +13,11 @@ from modules.rules.application.dto.rule_extraction_result_dto import RuleExtract
 class IPromptAdapter(ABC):
 
     @abstractmethod
-    def chat_prompt(self,
-                    regulation_content: str,
-                    atoms: List[AtomDTO],
-                    rules: List[RuleDTO],
-                    ) -> str:
+    def chat_system_prompt(self,
+                           regulation_content: str,
+                           atoms: List[AtomDTO],
+                           rules: List[RuleDTO],
+                           ) -> str:
         raise NotImplementedError()
 
     @abstractmethod

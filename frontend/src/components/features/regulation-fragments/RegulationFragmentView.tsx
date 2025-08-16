@@ -6,6 +6,8 @@ import { cn } from '@/lib/utils';
 import { useHoveredAtom } from '@/hooks/useHoveredAtom';
 import { llmIdentifierToName } from '@/lib/enumToName';
 import { PriceModal } from './PriceModal';
+import { Button } from '@/components/ui/Button';
+import { Download } from 'lucide-react';
 
 interface Props {
   fragment: RegulationFragmentDTO;
@@ -27,9 +29,20 @@ export function RegulationFragmentView({ fragment }: Readonly<Props>) {
           </span>
         )}
         <PriceModal fragmentId={fragment.id} />
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Download formalism"
+          title="Download formalism"
+          asChild
+        >
+          <a href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/regulation-fragments/${fragment.id}/export`} download target="_blank">
+            <Download className="size-4" />
+          </a>
+        </Button>
       </div>
       <hr />
-      <p className={cn(!!atoms.length && 'leading-8')}>
+      <p className={cn("whitespace-pre-wrap", !!atoms.length && 'leading-8')}>
         <HighlightedContent atoms={atoms} text={fragment.content} />
       </p>
     </div>
