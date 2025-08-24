@@ -35,6 +35,7 @@ type ExamplesState = {
   addGenerated: (fragmentId: number, example: Example, predicates: AtomDTO[]) => void;
   remove: (fragmentId: number, key: string) => void;
   reset: (fragmentId: number) => void;
+  _set: any;
 };
 
 type SetFn<T> = (typeof useExampleStore<T>)['setState'];
@@ -105,6 +106,7 @@ const useExampleStore = create<ExamplesState>()(
   immer(
     persist(
       (set, getState) => ({
+        _set: set,
         data: {},
         reset: (fragmentId: number) =>
           set(state => {
@@ -179,10 +181,27 @@ const useExampleStore = create<ExamplesState>()(
       }),
       {
         name: 'examples-store',
-        // partialize: state => {
-        //   // Only persist the data, not the functions
-        //   return { data: state.data };
-        // },
+        merge: (persistedState: any, currentState) => {
+          return {
+            ...currentState,
+            data: Object.fromEntries(
+              Object.entries(persistedState.data).map(([fragmentId, examples]) => [
+                fragmentId,
+                (examples as ExamplesStateEntry[]).map(example => {
+                  const newEntry: ExamplesStateEntry = emptyEntry(
+                    Number(fragmentId),
+                    currentState._set
+                  );
+                  newEntry.key = example.key;
+                  newEntry.description = example.description;
+                  newEntry.prologAtoms = example.prologAtoms || [];
+                  newEntry.prologFacts = example.prologFacts || [];
+                  return newEntry;
+                }),
+              ])
+            ),
+          };
+        },
       }
     )
   )

@@ -21,7 +21,6 @@ import {
 import { AddPrologAtomModal } from './AddPrologAtomModal';
 import { AddMultiVarFactModal } from './AddMultiVarFactModal';
 import { ConfirmDeleteDialog } from '@/components/ui/ConfirmDeleteDialog';
-import { FormattedMarkdown } from '@/components/ui/FormattedMarkdown';
 
 interface Props {
   className?: string;

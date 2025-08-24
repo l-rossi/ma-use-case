@@ -35,20 +35,20 @@ function AgenticLogsBox({
     <Box className={cn(className, 'shadow-emerald-500 flex-col h-full')}>
       <div className="bg-gray-900 text-white p-2 font-mono flex justify-between items-center">
         <div className={'flex flex-row items-center gap-1'}>
-          <h3 className="font-semibold">Agentic Logs</h3>
+          <h3 className="font-semibold">Logs</h3>
           <Button
             size={'icon'}
             onClick={() => setShouldFollow(b => !b)}
             variant={'ghost'}
             title={shouldFollow ? 'Turn Auto Scroll Off' : 'Turn Auto Scroll On'}
-            className={' hover:bg-gray-500 hover:text-gray-100'}
+            className={'hover:bg-gray-500 hover:text-gray-100'}
           >
             {shouldFollow ? <Lock /> : <LockOpen />}
           </Button>
           <InfoDialog
-            title={'Agentic Logs'}
+            title={'Logs'}
             description={
-              "Agentic Logs display the system's internal processing and reasoning steps during operations."
+              "Logs display the system's internal processing and reasoning steps during operations."
             }
           />
           {hasError && <CircleAlert className={'ml-auto text-red-800 size-4'} />}

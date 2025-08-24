@@ -1,4 +1,4 @@
-import { LLMIdentifier } from '@dtos/dto-types';
+import { LLMIdentifier, Formalism1 } from '@dtos/dto-types';
 
 export const llmIdentifierToName: Record<LLMIdentifier, string> = {
   GPT_3_5_TURBO: 'GPT-3.5 Turbo (OpenAI)',
@@ -11,6 +11,6 @@ export const llmIdentifierToName: Record<LLMIdentifier, string> = {
 };
 
 
-export const formalismToName: Record<string, string> = {
+export const formalismToName: Record<Formalism1, string> = {
   PROLOG: 'Prolog',
 }

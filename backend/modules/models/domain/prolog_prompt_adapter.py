@@ -56,7 +56,7 @@ class PrologPromptAdapter(IPromptAdapter):
                                atoms: List[AtomDTO]) -> str:
         return self._rule_extraction_prompt.format(
             regulation_content,
-            self._atom_predicates_as_list(atoms)
+            self._atoms_predicates_as_verbose_list(atoms)
         )
 
     def rule_regeneration_prompt(self,
@@ -73,7 +73,7 @@ class PrologPromptAdapter(IPromptAdapter):
 
         return self._rule_regeneration_prompt.format(
             regulation_content,
-            self._atom_predicates_as_list(atoms),
+            self._atoms_predicates_as_verbose_list(atoms),
             formatted_rules,
             feedback or ""
         )

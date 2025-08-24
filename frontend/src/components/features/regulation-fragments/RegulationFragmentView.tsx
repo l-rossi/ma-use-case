@@ -4,7 +4,7 @@ import { useAtoms } from '@/hooks/useAtoms';
 import { getHighlightColor } from '@/lib/getHighlightColor';
 import { cn } from '@/lib/utils';
 import { useHoveredAtom } from '@/hooks/useHoveredAtom';
-import { llmIdentifierToName } from '@/lib/enumToName';
+import { llmIdentifierToName, formalismToName } from '@/lib/enumToName';
 import { PriceModal } from './PriceModal';
 import { Button } from '@/components/ui/Button';
 import { Download } from 'lucide-react';
@@ -27,6 +27,16 @@ export function RegulationFragmentView({ fragment }: Readonly<Props>) {
           <span className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded-full border border-gray-300">
             {fragment.source ? `${fragment.source}` : 'No source provided'}
           </span>
+        )}
+        {!!fragment.formalism && (
+          <a 
+            href="https://book.simply-logical.space/src/simply-logical.html" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded-full border border-gray-300 hover:bg-gray-200"
+          >
+            {formalismToName[fragment.formalism]}
+          </a>
         )}
         <PriceModal fragmentId={fragment.id} />
         <Button
