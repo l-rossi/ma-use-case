@@ -311,7 +311,7 @@ class RuleService:
             return True, []
 
         try:
-            facts = "\n".join(mask_variables_in_atoms(atoms))
+            facts = "\n".join(mask_variables_in_atoms(a for a in atoms if a.is_fact))
             knowledge_base = "\n".join(
                 x.definition for x in chain(result.rules, result.goals)
             )

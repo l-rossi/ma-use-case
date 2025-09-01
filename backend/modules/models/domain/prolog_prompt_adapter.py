@@ -20,6 +20,12 @@ class PrologPromptAdapter(IPromptAdapter):
         with open("./prompts/atom_regeneration/prolog_1.txt", "r", encoding="utf-8") as file:
             self._atom_regeneration_prompt = file.read()
 
+        with open("./prompts/atom_regeneration/prolog_retry_1.txt", "r", encoding="utf-8") as file:
+            self._atom_regeneration_retry_prompt = file.read()
+
+        with open("./prompts/atom_extraction/prolog_retry_1.txt", "r", encoding="utf-8") as file:
+            self._atom_generation_retry_prompt = file.read()
+
         with open("./prompts/rule_extraction/prolog_1.txt", "r", encoding="utf-8") as file:
             self._rule_extraction_prompt = file.read()
 
@@ -102,6 +108,18 @@ class PrologPromptAdapter(IPromptAdapter):
             regulation_content,
             self._atoms_to_xml(regulation_content, atoms),
             feedback
+        )
+
+    def atom_regeneration_retry_prompt(self,
+                                       error_message: str) -> str:
+        return self._atom_regeneration_retry_prompt.format(
+            error_message
+        )
+
+    def atom_extraction_retry_prompt(self,
+                                     error_message: str) -> str:
+        return self._atom_generation_retry_prompt.format(
+            error_message
         )
 
     def example_generation_prompt(self,

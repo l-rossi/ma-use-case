@@ -16,6 +16,7 @@ class ExplanationService:
     """
     Service for generating explanations for regulation fragments.
     """
+    MAX_RETRIES = 5
 
     def __init__(
             self,
@@ -58,7 +59,7 @@ class ExplanationService:
         response = self._llm_adapter.send_message(message)
 
         print("Received response from LLM")
-        max_retries = 5
+        max_retries = self.MAX_RETRIES
 
         parsed_response = None
         previous_messages: List[ContextMessageDTO] = []

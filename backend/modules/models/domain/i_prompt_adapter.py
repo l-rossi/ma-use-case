@@ -59,6 +59,18 @@ class IPromptAdapter(ABC):
         raise NotImplementedError()
 
     @abstractmethod
+    def atom_regeneration_retry_prompt(self,
+                                       error_message: str,
+                                       ) -> str:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def atom_extraction_retry_prompt(self,
+                                     error_message: str,
+                                     ) -> str:
+        raise NotImplementedError()
+
+    @abstractmethod
     def example_generation_prompt(self,
                                   atoms: List[AtomDTO],
                                   rules: List[RuleDTO],

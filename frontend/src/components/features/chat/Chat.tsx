@@ -14,6 +14,7 @@ import { SendIcon, Loader2Icon } from 'lucide-react';
 import { Message } from '@/components/features/chat/Message';
 import { getDay } from 'date-fns';
 import { InfoDialog } from '@/components/ui/InfoDialog';
+import { ChatEmptySuggestions } from '@/components/features/chat/ChatEmptySuggestions';
 
 interface Props {
   className?: string;
@@ -144,6 +145,16 @@ export function Chat({ className }: Readonly<Props>) {
           ))
         )}
       </ul>
+
+      {messages.length === 0 && (
+        <ChatEmptySuggestions
+          disabled={sendMessageMutation.isPending}
+          onSelect={text => {
+            if (!selectedFragmentId) return;
+            sendMessageMutation.mutate(text);
+          }}
+        />
+      )}
 
       <form onSubmit={handleSendMessage} className="flex gap-2 p-4">
         <textarea

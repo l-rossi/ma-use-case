@@ -35,6 +35,7 @@ type ExamplesState = {
   addGenerated: (fragmentId: number, example: Example, predicates: AtomDTO[]) => void;
   remove: (fragmentId: number, key: string) => void;
   reset: (fragmentId: number) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _set: any;
 };
 
@@ -181,6 +182,7 @@ const useExampleStore = create<ExamplesState>()(
       }),
       {
         name: 'examples-store',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         merge: (persistedState: any, currentState) => {
           return {
             ...currentState,

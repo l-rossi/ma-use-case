@@ -12,9 +12,13 @@ from modules.models.application.llm_adapter import LLMAdapter
 from modules.reasoning.application.prolog_reasoner import PrologReasoner
 from modules.models.domain.prompt_service import PromptService
 from modules.regulation_fragment.application.regulation_fragment_service import RegulationFragmentService
+from modules.chat.application.dto.context_message_dto import ContextMessageDTO
+from modules.chat.domain.context_message_type import ContextMessageType
 
 
 class AtomService:
+    MAX_RETRIES = 5
+
     def __init__(self, regulation_fragment_service: RegulationFragmentService, atom_repository: AtomRepository,
                  chat_agent: LLMAdapter, prolog_reasoner: PrologReasoner, prompt_service: PromptService):
         self._atom_repository = atom_repository
@@ -132,9 +136,8 @@ class AtomService:
         if not atoms:
             raise ValueError(f"No atoms found for regulation fragment {regulation_fragment_id}.")
 
-        regeneration_request = self._prompt_service.get(
-            fragment.formalism
-        ).atom_regeneration_prompt(
+        prompt_adapter = self._prompt_service.get(fragment.formalism)
+        regeneration_request = prompt_adapter.atom_regeneration_prompt(
             regulation_content=fragment.content,
             atoms=atoms,
             feedback=regenerate_data.feedback
@@ -146,12 +149,40 @@ class AtomService:
                 regulation_fragment_id=regulation_fragment_id,
             )
         )
-        if response.is_error:
-            raise ValueError(f"Error regenerating atoms: {response.message}")
 
-        regenerated_result = AtomExtractionResultDTO.from_xml(response.message)
+        # Retry logic similar to atom generation
+        max_retries = self.MAX_RETRIES
+        parsed_result = None
+        previous_messages = []
+        current_prompt = regeneration_request
+
+        while max_retries > 0:
+            try:
+                regenerated_result = AtomExtractionResultDTO.from_xml(response.message)
+                parsed_result = regenerated_result
+                break
+            except Exception as e:
+                max_retries -= 1
+                previous_messages.append(ContextMessageDTO(type=ContextMessageType.USER, content=current_prompt))
+                previous_messages.append(ContextMessageDTO(type=ContextMessageType.AGENT, content=response.message))
+                # Create retry prompt with error details
+                current_prompt = prompt_adapter.atom_regeneration_retry_prompt(str(e))
+                response = self._chat_agent.send_message(
+                    ChatAgentMessageIngressDTO(
+                        user_prompt=current_prompt,
+                        regulation_fragment_id=regulation_fragment_id,
+                    ),
+                    context_messages=previous_messages
+                )
+                if response.is_error:
+                    # Agent error; proceed to next retry
+                    continue
+
+        if parsed_result is None:
+            raise ValueError("Failed to parse atom regeneration response after retries.")
+
         self.delete_atoms_for_regulation_fragment(regulation_fragment_id)
-        self._save_extracted_atoms(regenerated_result, regulation_fragment_id)
+        self._save_extracted_atoms(parsed_result, regulation_fragment_id)
 
     def generate_atoms_for_regulation_fragment(self, regulation_fragment_id: int):
         """
@@ -184,13 +215,43 @@ class AtomService:
         if returned_message.is_error:
             raise ValueError(f"Error generating atoms: {returned_message.message}")
 
-        parsed_result = AtomExtractionResultDTO.from_xml(returned_message.message)
+        # Retry logic inspired by example generation retry (without predicate derivation logic)
+        max_retries = self.MAX_RETRIES
+        parsed_result = None
+        previous_messages = []
+        prompt_adapter = self._prompt_service.get(regulation.formalism)
+        current_prompt = input_message
+
+        while max_retries > 0:
+            try:
+                parsed_result = AtomExtractionResultDTO.from_xml(returned_message.message)
+                break
+            except Exception as e:
+                max_retries -= 1
+                previous_messages.append(ContextMessageDTO(type=ContextMessageType.USER, content=current_prompt))
+                previous_messages.append(ContextMessageDTO(type=ContextMessageType.AGENT, content=returned_message.message))
+                # Create retry prompt with error details
+                current_prompt = prompt_adapter.atom_extraction_retry_prompt(str(e))
+                returned_message = self._chat_agent.send_message(
+                    ChatAgentMessageIngressDTO(
+                        user_prompt=current_prompt,
+                        regulation_fragment_id=regulation_fragment_id,
+                    ),
+                    context_messages=previous_messages
+                )
+
+                if returned_message.is_error:
+                    raise ValueError(f"Error generating atoms: {returned_message.message}")
+
+        if parsed_result is None:
+            # If we exhausted retries without success, raise the last message
+            raise ValueError("Failed to parse atom extraction response after retries.")
+
         self._save_extracted_atoms(parsed_result, regulation_fragment_id)
 
     def _save_extracted_atoms(self, parsed_result: AtomExtractionResultDTO, regulation_fragment_id: int):
         local_id_to_global_id = dict()
 
-        # TODO error handling and retry logic.
         for atom in parsed_result.atoms:
             persisted_atom = self._atom_repository.save(
                 CreateAtomDTO(

@@ -37,10 +37,17 @@ export const FormattedMarkdown = memo(function FormattedMarkdown({
       rehypePlugins={renderChatSuggestions ? [rehypeChatSuggestionPlugin] : []}
       components={{
         ...(renderChatSuggestions ? componentExtension : {}),
-        code: ({ node, className, children, ...props }) => (
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        pre: ({ className, children, node: _, ...props }) => (
+          <pre className={'max-w-full overflow-x-auto'} {...props}>
+            {children}
+          </pre>
+        ),
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        code: ({ node, className, children, node: _, ...props }) => (
           <code
             className={cn(
-              'bg-gray-800 p-1 rounded-md overflow-y-auto mb-4',
+              'bg-gray-800 p-1 rounded-md overflow-x-auto mb-4',
               node?.properties?.className ? 'block' : 'inline',
               className,
               codeClassName

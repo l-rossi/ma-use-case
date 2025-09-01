@@ -19,9 +19,10 @@ export function AutoGenerateExamplesButton({ regulationFragmentId }: Readonly<Pr
       examples.examples?.forEach(example => {
         addGenerated(example, atoms!);
       });
+      toast.success(`Successfully generated examples.`);
     },
     onError: () => {
-      toast.error('Examples could not be generated. Please consult the agentic logs.');
+      toast.error('Examples could not be generated. Please consult the logs.');
     },
   });
 

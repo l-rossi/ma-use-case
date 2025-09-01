@@ -1,6 +1,5 @@
 import { Button } from '@/components/ui/Button';
 import { Download } from 'lucide-react';
-import { FormattedMarkdown } from '@/components/ui/FormattedMarkdown';
 import { useQuery } from '@tanstack/react-query';
 import { getFormalism } from './explanation.api';
 
@@ -9,12 +8,7 @@ interface Props {
 }
 
 export function FormalismTab({ regulationFragmentId }: Readonly<Props>) {
-  const {
-    data,
-    isLoading,
-    isError,
-    error
-  } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ['regulation-fragments', regulationFragmentId, 'formalism'],
     queryFn: () => getFormalism(regulationFragmentId),
     enabled: !!regulationFragmentId,
@@ -27,9 +21,11 @@ export function FormalismTab({ regulationFragmentId }: Readonly<Props>) {
   }
 
   if (isError) {
-    return <div className="p-4 text-red-500">
-      {error instanceof Error ? error.message : 'Failed to load formalism. Please try again.'}
-    </div>;
+    return (
+      <div className="p-4 text-red-500">
+        {error instanceof Error ? error.message : 'Failed to load formalism. Please try again.'}
+      </div>
+    );
   }
 
   if (!formalism) {
@@ -46,7 +42,11 @@ export function FormalismTab({ regulationFragmentId }: Readonly<Props>) {
           title="Download formalism"
           asChild
         >
-          <a href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/regulation-fragments/${regulationFragmentId}/formalism/download`} download target="_blank">
+          <a
+            href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/regulation-fragments/${regulationFragmentId}/formalism/download`}
+            download
+            target="_blank"
+          >
             <Download className="size-4" />
           </a>
         </Button>
