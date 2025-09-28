@@ -3,6 +3,7 @@ import { getHighlightColor } from '@/lib/getHighlightColor';
 import { cn, windowed } from '@/lib/utils';
 import { CSSProperties } from 'react';
 import { useAtoms } from '@/hooks/useAtoms';
+import { InfoDialog } from '@/components/ui/InfoDialog';
 
 interface Props {
   rule: RuleDTO;
@@ -35,13 +36,18 @@ export function RuleView({ rule }: Readonly<Props>) {
         } as CSSProperties
       }
     >
-      <div className="font-semibold text-base truncate whitespace-normal overflow-hidden text-ellipsis min-w-0 break-words w-full">
+      <div className="font-semibold text-base truncate whitespace-normal overflow-hidden text-ellipsis min-w-0 break-words w-full pr-2">
         <p>{head + HORN_TAIL_SEP}</p>
         {windowed(literals, 2, 2).map((it, index) => (
           <PredicateView key={it[0] + "-" + index} literal={it[0]!.trim()} separator={it[1]} atoms={atoms} />
         ))}
         .
       </div>
+      <InfoDialog
+        title={"Rule description"}
+        description={rule.description || "No description available."}
+        triggerClassName="shrink-0 ml-2"
+      />
     </li>
   );
 }
