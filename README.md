@@ -1,35 +1,6 @@
 # MA Use Case
-
-## TODOs
--	Write logs to file of user interactions.
--	ReadME: Add User instructions
-
-
-Take more notes:
--	For example security of Prolog
--	LLM comes up with stuff, also has too much general knowledge
--	Talk about UI/UX 
-
-
-Gold standard:
-5-10 cases.
-	Completely artificial is fine.
-	Maybe convert from LTL or DOL to Prolog
-	No need to focus on DDL
-
-
-
-Suggest possible errors (in the regulation) if LLM output format is wrong.
-	Add Retry on Atom extraction
-
-
-Atoms
-	Mention mismatch in thesis the mismatch, potential problem 
-
-
-Is the user recommended using one LLM model for some types of regulation fragments? (e.g., GPT-4o Mini achieves higher quality with more complex regulatory fragments)
-	Focus on one
-
+This repository contains the prototypical implementation of
+the human-machine system described in Lukas Rossi's Master's thesis.
 
 
 ## How to Run
@@ -129,4 +100,8 @@ Run the Next.js development server:
 npm run dev
 ```
 
-## Project Overview
+## How to use
+The application will run at [http://localhost:3000](http://localhost:3000).
+You should be greeted by the following screen:
+
+![Main Screen](./readme-assets/main-screen.png)
