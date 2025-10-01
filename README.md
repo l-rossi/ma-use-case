@@ -1,7 +1,7 @@
 # MA Use Case
+
 This repository contains the prototypical implementation of
 the human-machine system described in Lukas Rossi's Master's thesis.
-
 
 ## How to Run
 
@@ -101,7 +101,50 @@ npm run dev
 ```
 
 ## How to use
+
 The application will run at [http://localhost:3000](http://localhost:3000).
 You should be greeted by the following screen:
 
 ![Main Screen](./readme-assets/main-screen.png)
+
+### Adding Regulation Fragments
+Add new regulation fragments by clicking the "Add Regulation Fragment" button.
+![Add Fragment](./readme-assets/add-reg-frag.png)
+Make sure to select the LLM you want to use as it cannot be changed later.
+You can switch between existing fragments using the burger menu in the top left corner.
+![Switch Fragment](./readme-assets/select-frag.png)
+Note, all panels can be resized by dragging their borders or clicking the full-screen button
+in the top right corner.
+
+
+### Generating Atoms
+Begin the atom extraction by clicking the "Generate Atoms" button.
+![Generate Atoms](./readme-assets/create-atoms.png)
+
+After the atoms are generated, you can inspect them in the "Atoms" panel.
+![Inspect Atoms](./readme-assets/generated-atoms.png)
+Created traces can be inspected by hovering over each atom. The
+corresponding text spans will be highlighted in the regulation fragment text area.
+You can regenerate the atoms by providing feedback in the feedback text area.
+You can also create individual atoms using the "Add Atom" button.
+
+### Generating Rules
+When you are satisfied with the created atoms, you can generate rules by clicking the
+"Generate Rules" button.
+You can again regenerate rules by providing feedback in the corresponding text area.
+
+### The Explanations
+Use the Graph tab to view the dependency graph of the created atoms and rules.
+In the examples tab, you can generate examples and execute them to see how
+the rules behave. Us ethe play button to execute the example.
+![Examples](./readme-assets/examples.png)
+
+
+### The Logs
+The logs provide you with a detailed view of all interactions with the LLMs.
+![Logs](./readme-assets/logs.png)
+
+### The Chat
+You can use the chat to ask questions about the currently loaded regulation fragment.
+When prompted, the chat will provide you with improvements to the current knowledge base.
+![Chat](./readme-assets/chat.png)

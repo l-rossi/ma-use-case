@@ -30,7 +30,7 @@ services:
       - FLASK_APP=app.py
       - FLASK_ENV=production
       - DATABASE_URL=postgresql://postgres:postgres@lrossi-ma-thesis-db:5432/db
-      - SWI_PROLOG_URL=http://lrossi-ma-thesis-swi-prolog.service:8080
+      - SWI_PROLOG_URL=http://lrossi-ma-thesis-swi-prolog:8080
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
